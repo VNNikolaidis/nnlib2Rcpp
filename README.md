@@ -13,3 +13,4 @@ To cite this software (once installed) use the following R command for informati
 
 citation("nnlib2Rcpp")
 
+
