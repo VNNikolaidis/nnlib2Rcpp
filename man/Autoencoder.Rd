@@ -20,7 +20,7 @@ Autoencoder(
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{data_in}{
-data to be autoencoded, a numeric matrix, (2d, cases in rows, variables in columns).
+data to be autoencoded, a numeric matrix, (2d, cases in rows, variables in columns).  It is recommended to be in [0 1] range.
 }
   \item{desired_new_dimension}{
 number of new variables to be produced (effectively the size of the special hidden layer that outputs the new variable values, thus the dimension of the output vector space).
@@ -51,8 +51,8 @@ Nikolaidis V.N., Makris I.A, Stavroyiannis S, "ANS-based preprocessing of compan
 Vasilis N. Nikolaidis <vnnikolaidis@gmail.com>
 }
 \note{
-Autoencoder employs a BP-based NN to perform a data pre-processing step baring similarities to PCA since it too can be used for dimensionality reduction (Kramer 1991)(DeMers and Cottrell 1993)(Hinton and Salakhutdinov 2006). Unlike
-PCA, an autoencoding NN can also expand the feature-space dimensions (as feature expansion methods do). The NN maps input vectors to themselves via a special hidden layer (the coding layer, usually of different size than the input vector length) from which the new data vectors are produced. More for this particular autoencoder implementation can be found in (Nikolaidis, Makris, and Stavroyiannis 2013). The method is not deterministic and the mappings may be non-linear, depending on the NN topology.
+Autoencoder employs a BP-based NN to perform a data pre-processing step baring similarities to PCA since it too can be used for dimensionality reduction (Kramer 1991)(DeMers and Cottrell 1993)(Hinton and Salakhutdinov 2006). Unlike PCA, an autoencoding NN can also expand the feature-space dimensions (as feature expansion methods do). The NN maps input vectors to themselves via a special hidden layer (the coding layer, usually of different size than the input vector length) from which the new data vectors are produced. Note:
+The internal BP PEs in computing layers apply the logistic sigmoid threshold function, and their output is in [0 1] range. It is recommended to use this range in your data as well. More for this particular autoencoder implementation can be found in (Nikolaidis, Makris, and Stavroyiannis 2013). The method is not deterministic and the mappings may be non-linear, depending on the NN topology.
 
 (This function uses Rcpp to employ bpu_autoencoder_nn class in nnlib2 C++ Artificial Neural Network library.)
 }
