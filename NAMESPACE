@@ -1,0 +1,4 @@
+exportPattern("^[[:alpha:]]+")
+useDynLib(nnlib2Rcpp)
+importFrom(Rcpp, sourceCpp)
+importFrom(methods, new)

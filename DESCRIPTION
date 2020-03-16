@@ -1,0 +1,15 @@
+Package: nnlib2Rcpp
+Type: Package
+Title: Collection of Artificial Neural Networks
+Version: 0.1.0
+Author: Vasilis N. Nikolaidis
+Maintainer: Nikolaidis Vasilis <vnnikolaidis@gmail.com>
+Description: A collection of artificial neural networks. Currently includes versions of BP, Autoencoder, MAM, LVQ, SOM. All NNs are created using nnlib2 C++ NN library and accessed via RCpp.
+LazyData: true
+LinkingTo: Rcpp
+Imports: Rcpp , methods
+License: MIT + file LICENSE
+Authors@R: person(given = "Vasilis", family = "Nikolaidis", middle = "N.", email = "vnnikolaidis@gmail.com", role = c("aut", "cre"))
+RcppModules: 
+RoxygenNote: 7.0.2
+Encoding: UTF-8
