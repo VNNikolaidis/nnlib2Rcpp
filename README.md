@@ -20,7 +20,7 @@ citation("nnlib2Rcpp")
 
 ---
 
-This R package uses nnlib2 C++ library (latest version available at https://github.com/VNNikolaidis/nnlib2) whose early versions were created many years ago [1][2].
+This R package uses nnlib2 C++ library (latest version is at https://github.com/VNNikolaidis/nnlib2) [1][2].
 
 ----
 References:
