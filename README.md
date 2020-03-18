@@ -20,11 +20,4 @@ citation("nnlib2Rcpp")
 
 ---
 
-This R package uses nnlib2 C++ library (latest version is at https://github.com/VNNikolaidis/nnlib2) [1][2].
-
-----
-References:
-
-[1] Nikolaidis VN, Makris IA, Stavroyiannis S (2013). “ANS-based Preprocessing of Company Performance Indicators.” Global Business and Economics Review, 15(1), 49–58.
-
-[2] Nikolaidis V (1999). Non-Destructive Inspection (NDI) Techniques for Composite Materials using Unconventional Pattern Regognition Methods (in Greek). Ph.D. thesis, University of Patras. URL https://thesis.ekt.gr/thesisBookReader/id/11158.
+This R package uses nnlib2 C++ library (latest version is at https://github.com/VNNikolaidis/nnlib2)
