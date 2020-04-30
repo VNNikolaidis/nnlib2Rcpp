@@ -4,7 +4,7 @@
 //		nn_lvq.h		 							Version 0.1
 //		-----------------------------------------------------------
 //		Definition - implementation of kohonen clustering nets
-//		(lvq_nn) SOM and LVQ functionality.
+//		(lvq_nn) SOM (actually LVQ-unsupervised) and LVQ functionality.
 //		SOM implementation is described as Unsupervised Learning LVQ
 //		in P.K.Simpson's Artificial Neural Systems (1990)";
 //		m_neighborhood_size=1 => Single Winner Unsupervised.
@@ -256,7 +256,7 @@ lvq_nn::~lvq_nn() {}
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // optional matrix initializes weights; must be sized output_dimension X input_dimension
 
-bool lvq_nn::setup(int input_dimension, int output_dimension,DATA ** initial_cluster_centers_matrix) 
+bool lvq_nn::setup(int input_dimension, int output_dimension,DATA ** initial_cluster_centers_matrix)
  {
  lvq_input_layer    * p_input_layer;
  lvq_output_layer   * p_output_layer;
@@ -383,7 +383,7 @@ void lvq_nn::from_stream ( std::istream REF s )
  lvq_output_layer   * p_output_layer;
  lvq_connection_set * p_connection_set;
  int number_of_components;
- 
+
  nn::from_stream(s);		                                    // read header (the way it was done in older versions)
 
  if(no_error())
@@ -433,7 +433,7 @@ void lvq_nn::from_stream ( std::istream REF s )
 som_nn::som_nn(int neighborhood_size)
  :lvq_nn()
  {
- m_name = "SOM ANS";
+ m_name = "LVQu (SOM) ANS";
  m_output_neighborhood_size = neighborhood_size;
  if(m_output_neighborhood_size%2==0) m_output_neighborhood_size=m_output_neighborhood_size-1;
  if(m_output_neighborhood_size<1) m_output_neighborhood_size=1;

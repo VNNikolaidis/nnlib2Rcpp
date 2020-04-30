@@ -113,9 +113,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// LVQ
-IntegerVector LVQ(NumericMatrix data, IntegerVector desired_cluster_ids, int number_of_training_epochs, NumericMatrix test_data, bool show_nn);
-RcppExport SEXP _nnlib2Rcpp_LVQ(SEXP dataSEXP, SEXP desired_cluster_idsSEXP, SEXP number_of_training_epochsSEXP, SEXP test_dataSEXP, SEXP show_nnSEXP) {
+// LVQs
+IntegerVector LVQs(NumericMatrix data, IntegerVector desired_cluster_ids, int number_of_training_epochs, NumericMatrix test_data, bool show_nn);
+RcppExport SEXP _nnlib2Rcpp_LVQs(SEXP dataSEXP, SEXP desired_cluster_idsSEXP, SEXP number_of_training_epochsSEXP, SEXP test_dataSEXP, SEXP show_nnSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -124,7 +124,22 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type number_of_training_epochs(number_of_training_epochsSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type test_data(test_dataSEXP);
     Rcpp::traits::input_parameter< bool >::type show_nn(show_nnSEXP);
-    rcpp_result_gen = Rcpp::wrap(LVQ(data, desired_cluster_ids, number_of_training_epochs, test_data, show_nn));
+    rcpp_result_gen = Rcpp::wrap(LVQs(data, desired_cluster_ids, number_of_training_epochs, test_data, show_nn));
+    return rcpp_result_gen;
+END_RCPP
+}
+// LVQu
+IntegerVector LVQu(NumericMatrix data, int max_number_of_desired_clusters, int number_of_training_epochs, int neighborhood_size, bool show_nn);
+RcppExport SEXP _nnlib2Rcpp_LVQu(SEXP dataSEXP, SEXP max_number_of_desired_clustersSEXP, SEXP number_of_training_epochsSEXP, SEXP neighborhood_sizeSEXP, SEXP show_nnSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< int >::type max_number_of_desired_clusters(max_number_of_desired_clustersSEXP);
+    Rcpp::traits::input_parameter< int >::type number_of_training_epochs(number_of_training_epochsSEXP);
+    Rcpp::traits::input_parameter< int >::type neighborhood_size(neighborhood_sizeSEXP);
+    Rcpp::traits::input_parameter< bool >::type show_nn(show_nnSEXP);
+    rcpp_result_gen = Rcpp::wrap(LVQu(data, max_number_of_desired_clusters, number_of_training_epochs, neighborhood_size, show_nn));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -142,24 +157,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// SOM
-IntegerVector SOM(NumericMatrix data, int max_number_of_desired_clusters, int number_of_training_epochs, int neighborhood_size, bool show_nn);
-RcppExport SEXP _nnlib2Rcpp_SOM(SEXP dataSEXP, SEXP max_number_of_desired_clustersSEXP, SEXP number_of_training_epochsSEXP, SEXP neighborhood_sizeSEXP, SEXP show_nnSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type data(dataSEXP);
-    Rcpp::traits::input_parameter< int >::type max_number_of_desired_clusters(max_number_of_desired_clustersSEXP);
-    Rcpp::traits::input_parameter< int >::type number_of_training_epochs(number_of_training_epochsSEXP);
-    Rcpp::traits::input_parameter< int >::type neighborhood_size(neighborhood_sizeSEXP);
-    Rcpp::traits::input_parameter< bool >::type show_nn(show_nnSEXP);
-    rcpp_result_gen = Rcpp::wrap(SOM(data, max_number_of_desired_clusters, number_of_training_epochs, neighborhood_size, show_nn));
-    return rcpp_result_gen;
-END_RCPP
-}
 
 RcppExport SEXP _rcpp_module_boot_class_BP_NN();
-RcppExport SEXP _rcpp_module_boot_class_LVQ_NN();
+RcppExport SEXP _rcpp_module_boot_class_LVQs_NN();
 
 static const R_CallMethodDef CallEntries[] = {
     {"_nnlib2Rcpp_Autoencoder", (DL_FUNC) &_nnlib2Rcpp_Autoencoder, 7},
@@ -171,11 +171,11 @@ static const R_CallMethodDef CallEntries[] = {
     {"_nnlib2Rcpp_BP_recall_set", (DL_FUNC) &_nnlib2Rcpp_BP_recall_set, 1},
     {"_nnlib2Rcpp_BP_save_to_file", (DL_FUNC) &_nnlib2Rcpp_BP_save_to_file, 1},
     {"_nnlib2Rcpp_BP_load_from_file", (DL_FUNC) &_nnlib2Rcpp_BP_load_from_file, 1},
-    {"_nnlib2Rcpp_LVQ", (DL_FUNC) &_nnlib2Rcpp_LVQ, 5},
+    {"_nnlib2Rcpp_LVQs", (DL_FUNC) &_nnlib2Rcpp_LVQs, 5},
+    {"_nnlib2Rcpp_LVQu", (DL_FUNC) &_nnlib2Rcpp_LVQu, 5},
     {"_nnlib2Rcpp_MAM", (DL_FUNC) &_nnlib2Rcpp_MAM, 4},
-    {"_nnlib2Rcpp_SOM", (DL_FUNC) &_nnlib2Rcpp_SOM, 5},
     {"_rcpp_module_boot_class_BP_NN", (DL_FUNC) &_rcpp_module_boot_class_BP_NN, 0},
-    {"_rcpp_module_boot_class_LVQ_NN", (DL_FUNC) &_rcpp_module_boot_class_LVQ_NN, 0},
+    {"_rcpp_module_boot_class_LVQs_NN", (DL_FUNC) &_rcpp_module_boot_class_LVQs_NN, 0},
     {NULL, NULL, 0}
 };
 

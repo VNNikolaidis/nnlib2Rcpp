@@ -428,7 +428,7 @@ void bp_nn::from_stream ( std::istream REF s )
  string comment;
  bp_layer * source_layer, * destin_layer;
  bp_connection_set * new_connection_set;
- 
+
  nn::from_stream(s);	                                    // read header (the way it was done in older versions)
 
  if(no_error())
@@ -513,7 +513,7 @@ bpu1_nn::bpu1_nn()
  }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// recalls a vector and then encodes it (similar to what SOM does).
+// recalls a vector and then encodes it (similar to what unsupervised LVQ does).
 // do we really want to do this???
 
 DATA bpu1_nn::encode_u(DATA PTR input, int input_dim, int iteration)
@@ -603,7 +603,7 @@ bpu2_nn::bpu2_nn()
  }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// recalls a vector and then encodes it (similar to what SOM does).
+// recalls a vector and then encodes it (similar to what unsupervised LVQ does).
 // do we really want to do this???
 
 DATA bpu2_nn::encode_u(DATA PTR input, int input_dim, int iteration)
@@ -696,7 +696,7 @@ bpu3_nn::bpu3_nn()
  }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// recalls a vector and then encodes it (similar to what SOM does).
+// recalls a vector and then encodes it (similar to what unsupervised LVQ does).
 // do we really want to do this???
 
 DATA bpu3_nn::encode_u(DATA PTR input, int input_dim, int iteration)

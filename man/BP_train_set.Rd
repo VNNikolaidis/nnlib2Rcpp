@@ -21,7 +21,9 @@ number of training epochs, aka presentations of all training data to ANN during 
 }
 }
 \details{
-This is the main function for training the active BP, as it accepts entire input-output datasets. Since the PEs in computing layers of this BP implementation apply the logistic sigmoid threshold function, their output is in [0 1] range (and so should the desired output vector values). This function is one of several used to handle BP supervised ANNs in this package. A BP NN object must be created by invoking the BP_create (or BP_load_from_file) function before it can be used . Any further calls of BP_create would replace the current BP NN by a new one. The BP NN object should also be deleted when no longer needed by invoking the BP_destroy function.
+This is the main function for training the active BP, as it accepts entire input-output datasets. Since the PEs in computing layers of this BP implementation apply the logistic sigmoid threshold function, their output is in [0 1] range (and so should the desired output vector values). This function is one of several used to handle BP supervised ANNs in this package(*). A BP NN object must be created by invoking the BP_create (or BP_load_from_file) function before it can be used . Any further calls of BP_create would replace the current BP NN by a new one. The BP NN object should also be deleted when no longer needed by invoking the BP_destroy function.
+
+(*) A simpler approach is to use \code{\link{BP_NN}} which includes all the required BP functionality in a module.
 }
 \value{
 Returns a real number, indicator of training error.

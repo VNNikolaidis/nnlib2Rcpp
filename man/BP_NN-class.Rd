@@ -4,6 +4,9 @@
 \alias{BP_NN-class}
 \alias{BP_NN}
 \alias{Rcpp_BP_NN}
+\alias{Rcpp_BP_NN-class}
+\alias{C++Object-class}
+\alias{RcppClass-class}
 
 \title{Class \code{"BP_NN Backpropagation NN"}}
 \description{
@@ -39,8 +42,6 @@ Simpson (1991) as the vanilla back-propagation algorithm, to store input-output 
   \code{\link{BP_load_from_file}},
   \code{\link{BP_destroy}}.}
 \examples{
-showClass("BP_NN")
-
 # create some data...
 iris_s                  <- as.matrix(scale(iris[1:4]))
 

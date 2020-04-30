@@ -24,7 +24,7 @@ using namespace nnlib2::lvq;
 //--------------------------------------------------------------------------------
 // R wrapper class:
 
-class LVQ_NN
+class LVQs_NN
 {
 protected:
 
@@ -34,7 +34,7 @@ public:
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  LVQ_NN()
+  LVQs_NN()
   {
   TEXTOUT << "LVQ created, now encode data (or load NN from file).\n";
   lvq.reset();
@@ -169,15 +169,15 @@ public:
 
 //--------------------------------------------------------------------------------
 
-RCPP_MODULE(class_LVQ_NN) {
-  class_<LVQ_NN>( "LVQ_NN" )
+RCPP_MODULE(class_LVQs_NN) {
+  class_<LVQs_NN>( "LVQs_NN" )
   .constructor()
   //.constructor<NumericMatrix,IntegerVector,int>()
-  .method( "encode",    &LVQ_NN::encode,        "Encode input and output (classification) for a dataset using LVQ NN" )
-  .method( "recall",    &LVQ_NN::recall,        "Get output (classification) for a dataset using LVQ NN" )
-  .method( "print",     &LVQ_NN::print,         "Print LVQ NN details" )
-  .method( "load",      &LVQ_NN::load_from_file,"Load LVQ" )
-  .method( "save",      &LVQ_NN::save_to_file,  "Save LVQ" )
+  .method( "encode",    &LVQs_NN::encode,        "Encode input and output (classification) for a dataset using LVQ NN" )
+  .method( "recall",    &LVQs_NN::recall,        "Get output (classification) for a dataset using LVQ NN" )
+  .method( "print",     &LVQs_NN::print,         "Print LVQ NN details" )
+  .method( "load",      &LVQs_NN::load_from_file,"Load LVQ" )
+  .method( "save",      &LVQs_NN::save_to_file,  "Save LVQ" )
   ;
 }
 

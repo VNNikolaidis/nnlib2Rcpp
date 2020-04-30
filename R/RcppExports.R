@@ -37,15 +37,15 @@ BP_load_from_file <- function(filename) {
     .Call('_nnlib2Rcpp_BP_load_from_file', PACKAGE = 'nnlib2Rcpp', filename)
 }
 
-LVQ <- function(data, desired_cluster_ids, number_of_training_epochs, test_data, show_nn = FALSE) {
-    .Call('_nnlib2Rcpp_LVQ', PACKAGE = 'nnlib2Rcpp', data, desired_cluster_ids, number_of_training_epochs, test_data, show_nn)
+LVQs <- function(data, desired_cluster_ids, number_of_training_epochs, test_data, show_nn = FALSE) {
+    .Call('_nnlib2Rcpp_LVQs', PACKAGE = 'nnlib2Rcpp', data, desired_cluster_ids, number_of_training_epochs, test_data, show_nn)
+}
+
+LVQu <- function(data, max_number_of_desired_clusters, number_of_training_epochs, neighborhood_size = 1L, show_nn = FALSE) {
+    .Call('_nnlib2Rcpp_LVQu', PACKAGE = 'nnlib2Rcpp', data, max_number_of_desired_clusters, number_of_training_epochs, neighborhood_size, show_nn)
 }
 
 MAM <- function(train_data_in, train_data_out, test_data_in, show_nn) {
     .Call('_nnlib2Rcpp_MAM', PACKAGE = 'nnlib2Rcpp', train_data_in, train_data_out, test_data_in, show_nn)
-}
-
-SOM <- function(data, max_number_of_desired_clusters, number_of_training_epochs, neighborhood_size = 1L, show_nn = FALSE) {
-    .Call('_nnlib2Rcpp_SOM', PACKAGE = 'nnlib2Rcpp', data, max_number_of_desired_clusters, number_of_training_epochs, neighborhood_size, show_nn)
 }
 

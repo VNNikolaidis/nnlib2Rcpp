@@ -12,7 +12,9 @@ BP_print()
 }
 \details{
 Prints the current active BP ANN created via \code{\link{BP_create}} or \code{\link{BP_load_from_file}}.
-This is one of several functions used to handle BP supervised ANNs in this package. A BP NN object must be created by invoking the BP_create (or BP_load_from_file) function before it can be used . Any further calls of BP_create would replace the current BP NN by a new one. The BP NN object should also be deleted when no longer needed by invoking the BP_destroy function.
+This is one of several functions used to handle BP supervised ANNs in this package(*). A BP NN object must be created by invoking the BP_create (or BP_load_from_file) function before it can be used . Any further calls of BP_create would replace the current BP NN by a new one. The BP NN object should also be deleted when no longer needed by invoking the BP_destroy function.
+
+(*) A simpler approach is to use \code{\link{BP_NN}} which includes all the required BP functionality in a module.
 }
 \author{
 Vasilis N. Nikolaidis <vnnikolaidis@gmail.com>

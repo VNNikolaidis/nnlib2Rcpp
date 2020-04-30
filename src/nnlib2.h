@@ -16,7 +16,7 @@
 #ifndef VNN_H
 #define VNN_H
 
-#define NN_VERSION "nnlib2 v.0.1.3 (Ugly Duck-20YLE) (c)2019 Vasilis N. Nikolaidis"
+#define NN_VERSION "nnlib2 v.0.1.4 (Ugly Duck-20YLE) (c)2019 Vasilis N. Nikolaidis"
 
 /*-----------------------------------------------------------------------*/
 

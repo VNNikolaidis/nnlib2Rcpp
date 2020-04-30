@@ -20,7 +20,7 @@ using namespace nnlib2::lvq;
 //--------------------------------------------------------------------------------
 
 // [[Rcpp::export]]
-IntegerVector LVQ (  NumericMatrix data,
+IntegerVector LVQs ( NumericMatrix data,
                      IntegerVector desired_cluster_ids,              // 0 to max cluster id
                      int number_of_training_epochs,
                      NumericMatrix test_data,
