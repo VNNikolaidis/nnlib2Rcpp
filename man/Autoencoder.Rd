@@ -5,7 +5,7 @@
 Autoencoder NN
 }
 \description{
-Artificial Neural Network for autoencoding data, projects data to a new set of variables.
+A neural network for autoencoding data, projects data to a new set of variables.
 }
 \usage{
 Autoencoder(
@@ -29,7 +29,7 @@ number of new variables to be produced (effectively the size of the special hidd
 number of training epochs, aka presentations of all training data to ANN during training.
 }
   \item{learning_rate}{
-Back-Propagation ANN learning rate.
+the learning rate parameter of the Back-Propagation (BP) NN.
 }
   \item{num_hidden_layers}{
 number of hidden layers on each side of the special layer.
@@ -51,14 +51,14 @@ Nikolaidis V.N., Makris I.A, Stavroyiannis S, "ANS-based preprocessing of compan
 Vasilis N. Nikolaidis <vnnikolaidis@gmail.com>
 }
 \note{
-Autoencoder employs a BP-based NN to perform a data pre-processing step baring similarities to PCA since it too can be used for dimensionality reduction (Kramer 1991)(DeMers and Cottrell 1993)(Hinton and Salakhutdinov 2006). Unlike PCA, an autoencoding NN can also expand the feature-space dimensions (as feature expansion methods do). The NN maps input vectors to themselves via a special hidden layer (the coding layer, usually of different size than the input vector length) from which the new data vectors are produced. Note:
+This Autoencoder NN employs a {\code{\link{BP}}}-type NN to perform a data pre-processing step baring similarities to PCA since it too can be used for dimensionality reduction (Kramer 1991)(DeMers and Cottrell 1993)(Hinton and Salakhutdinov 2006). Unlike PCA, an autoencoding NN can also expand the feature-space dimensions (as feature expansion methods do). The NN maps input vectors to themselves via a special hidden layer (the coding layer, usually of different size than the input vector length) from which the new data vectors are produced. Note:
 The internal BP PEs in computing layers apply the logistic sigmoid threshold function, and their output is in [0 1] range. It is recommended to use this range in your data as well. More for this particular autoencoder implementation can be found in (Nikolaidis, Makris, and Stavroyiannis 2013). The method is not deterministic and the mappings may be non-linear, depending on the NN topology.
 
-(This function uses Rcpp to employ bpu_autoencoder_nn class in nnlib2 C++ Artificial Neural Network library.)
+(This function uses Rcpp to employ 'bpu_autoencoder_nn' class in nnlib2.)
 }
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
-
+\seealso{\code{\link{BP}}.}
 \examples{
 iris_s <- as.matrix(scale(iris[1:4]))
 output_dim <- 2
@@ -69,7 +69,7 @@ hidden_layer_size <- 5
 
 out_data <-  Autoencoder( iris_s, output_dim,
                           epochs, learning_rate,
-                          num_hidden_layers, hidden_layer_size, TRUE)
+                          num_hidden_layers, hidden_layer_size, FALSE)
 
 plot( out_data,pch=21,
       bg=c("red","green3","blue")[unclass(iris$Species)],

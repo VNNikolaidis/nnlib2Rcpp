@@ -369,7 +369,6 @@ bool bp_nn::setup(int input_dimension, int output_dimension)
    }
   }
 
-
  return no_error();
  }
 

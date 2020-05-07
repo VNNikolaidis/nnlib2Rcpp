@@ -3,7 +3,9 @@ An R package with Neural Nets created using nnlib2.
 
 ---
 
-This collection of artificial neural networks currently includes versions of BP, Autoencoder, MAM, LVQ, SOM (simplified version, 1-d unsupervised LVQ). All NNs were created using nnlib2 C++ NN library and interfaced to R via RCpp.
+This collection of artificial neural networks (NNs or ANNs or ANSs).
+Currently includes versions of BP, Autoencoder, MAM, LVQ (supervised and unsupervised). 
+All NNs were created using nnlib2 C++ library for implementing NNs and interfaced with R via RCpp.
 
 ---
 
@@ -16,11 +18,6 @@ install_github("VNNikolaidis/nnlib2Rcpp")
 To cite this software (once installed) use the following R command for information:
 
 citation("nnlib2Rcpp")
-
-
----
-
-This R package uses nnlib2 C++ library for NNs.
 
 ---
 
@@ -37,3 +34,15 @@ Changes to nnlib2Rcpp version 0.1.1 (from 0.1.0)
   
 - minor documentation improvements.
 - pdf documentation removed, but can be built by running the following R command: devtools::build_manual()
+
+---
+
+Changes to nnlib2Rcpp version 0.1.2 (from 0.1.1)
+-	Checked with R 3.6.3 and RTools35.
+-	Checked with R 4.0.0 and RTools40 (produces 1 extra NOTE).
+-	Removed redundant BP functions. All BP functionality is now implemented in BP module class (safer and more convenient for supervised methods).
+-	Removed MAM functions. All MAM functionality is now implemented in BP module class (safer and more convenient for supervised methods).
+-	Minor changes in nnlib2 (now uses nnlib2 v.0.1.5)
+-	Fixed LICENCE file (was incompatible with CRAN)
+
+

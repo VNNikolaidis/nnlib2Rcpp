@@ -4,10 +4,10 @@
 
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Unsupervised Learning Vector Quantization
+Unsupervised LVQ
 }
 \description{
-Employ an unsupervised clustering LVQ NN, an extension of which is the Self-Organizing Map (SOM) introduced by Kohonen.
+Unsupervised (clustering) Learning Vector Quantization (LVQ) NN.
 }
 \usage{
 LVQu(
@@ -40,18 +40,19 @@ Returns a vector of integers containing a cluster id for each data case (row).
 }
 \references{
 Kohonen, T (1988). Self-Organization and Associative Memory, Springer-Verlag.; Simpson, P. K. (1991). Artificial neural systems: Foundations, paradigms, applications, and implementations. New York: Pergamon Press.
+
+Philippidis, TP & Nikolaidis, VN & Kolaxis, JG. (1999). Unsupervised pattern recognition techniques for the prediction of composite failure. Journal of acoustic emission. 17. 69-81.
 }
 \author{
 Vasilis N. Nikolaidis <vnnikolaidis@gmail.com>
 }
 \note{
-Function LVQu employs a simplified 1-D version of the Self-Organizing-Map NN for clustering data (Kohonen 1988). This SOM variant is described as Unsupervised Learning LVQ in Simpson (1991). Its parameter neighborhood_size controls the encoding mode (where neighborhood_size=1 is Single-Winner Unsupervised encoding, similar to k-means, while an odd valued neighborhood_size > 1 means Multiple-Winner Unsupervised encoding mode). Initial weights are random (uniform distribution) in 0 to 1 range. Since these weights represent cluster center coordinates (the class reference vector), it is important that input data is also scaled to this range.
+Function LVQu employs an unsupervised LVQ for clustering data (Kohonen 1988). This LVQ variant is described as Unsupervised Learning LVQ in Simpson (1991) and is a simplified 1-D version of Self-Organizing-Map (SOM). Its parameter \code{neighborhood_size} controls the encoding mode (where \code{neighborhood_size}=1 is Single-Winner Unsupervised encoding, similar to k-means, while an odd valued \code{neighborhood_size} > 1 means Multiple-Winner Unsupervised encoding mode). Initial weights are random (uniform distribution) in 0 to 1 range. As these weights represent cluster center coordinates (the class reference vector), it is important that input data is also scaled to this range.
 
-(This function uses Rcpp to employ som_nn class in nnlib2 C++ Artificial Neural Network library.)
+(This function uses Rcpp to employ 'som_nn' class in nnlib2.)
 }
 \seealso{
-  \code{\link{LVQs_NN}} (supervised LVQ module),
-  \code{\link{LVQs}} (supervised LVQ function).
+  \code{\link{LVQs}} (supervised LVQ module),
 }
 \examples{
 # LVQ expects data in 0 to 1 range, so scale...

@@ -1,2 +1,4 @@
-BP_NN  <- Rcpp::setRcppClass("BP_NN")
-LVQs_NN <- Rcpp::setRcppClass("LVQs_NN")
+BP   <- Rcpp::setRcppClass("BP")
+LVQs <- Rcpp::setRcppClass("LVQs")
+MAM  <- Rcpp::setRcppClass("MAM")
+

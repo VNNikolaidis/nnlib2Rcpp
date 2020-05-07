@@ -54,46 +54,46 @@ string m1;
 switch(i)
  {
  case NN_MEMORY_ERR :
-		  m1 =("Allocate Memory Error");
+		  m1 =("memory allocation error");
 		  severity=5;
 		  break;
 
  case NN_IOFILE_ERR :
-		  m1 =("File read/write Error");
+		  m1 =("file read/write error");
 		  severity=2;
 		  break;
 
  case NN_SYSTEM_ERR :
-		  m1 =("System-related Error");
+		  m1 =("system-related error");
 		  severity=5;
 		  break;
 
  case NN_INTEGR_ERR :
-		  m1 =("NN integrity violation Error");
+		  m1 =("NN integrity violation error");
 		  severity=4;
 		  break;
 
  case NN_NULLPT_ERR :
-		  m1 =("Null Pointer Error");
+		  m1 =("null pointer error");
 		  severity=4;
 		  break;
 
  case NN_DATAST_ERR :
-		  m1 =("Data Set Error");
+		  m1 =("dataset error");
 		  severity=2;
 		  break;
 
  case NN_ARITHM_ERR :
-		  m1 =("Arithmetic Error");
+		  m1 =("arithmetic error");
 		  severity=6;
 		  break;
 
  case NN_USRABR_ERR :
-		  m1 =("User Abort Error");
+		  m1 =("user-abort error");
 		  severity=1;
 		  break;
 
- default: m1 =("Unknown Error");
+ default: m1 =("Unknown error");
 		  severity=1;
 		  break;
  }

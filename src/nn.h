@@ -14,6 +14,8 @@
 #include "nnlib2.h"
 #include "nnlib2_dllist.h"
 #include "component.h"
+#include "layer.h"
+#include "connection_set.h"
 
 #ifdef NNLIB2_FOR_MFC_UI
 #include "..\nnlib2.mfcgui\nnlib2_mfc_ui.h"

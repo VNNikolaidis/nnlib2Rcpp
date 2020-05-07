@@ -5,15 +5,14 @@
 //		-----------------------------------------------------------
 
 #include "nnlib2.h"
-#include <iostream>
-#include <fstream>
 
 #ifdef NNLIB2_FOR_RCPP
-using namespace Rcpp;
 
 //--------------------------------------------------------------------------------
 
 #include "nn_bp.h"
+#include <iostream>
+#include <fstream>
 
 using namespace nnlib2;
 using namespace nnlib2::bp;
@@ -23,7 +22,7 @@ using namespace nnlib2::bp;
 //--------------------------------------------------------------------------------
 // R wrapper class:
 
-class BP_NN
+class BP
 {
 protected:
 
@@ -33,49 +32,67 @@ public:
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  BP_NN()
+  BP()
   {
   TEXTOUT << "BP NN created, now encode data (or load NN from file).\n";
   bp.reset();
   }
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // Setup BP and encode input-output datasets in the NN
 
-  void encode(NumericMatrix tr_dataset_in,
-         NumericMatrix tr_dataset_out,
-         double learning_rate,
-         int training_epochs,
-         int hidden_layers,
-         int hidden_layer_size)
+  void encode(NumericMatrix data_in,
+              NumericMatrix data_out,
+              double learning_rate,
+              int training_epochs,
+              int hidden_layers,
+              int hidden_layer_size)
   {
-    if((tr_dataset_in.rows()<=0) OR
-         (tr_dataset_in.rows()!=tr_dataset_out.rows()))
+    int input_dim  = data_in.cols();
+    int output_dim = data_out.cols();
+
+    if(setup(input_dim,output_dim,learning_rate,hidden_layers,hidden_layer_size))
+     train_multiple(data_in,data_out,training_epochs);
+  }
+
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // Setup a new BP
+
+  bool setup(int input_dim, int output_dim, double learning_rate, int hidden_layers, int hidden_layer_size)
+  {
+    if(!bp.setup(input_dim, output_dim, learning_rate, hidden_layers, hidden_layer_size))
+      {
+        error(NN_INTEGR_ERR,"Cannot setup BP NN");
+        bp.reset();
+        return false;
+      }
+    return true;
+  }
+
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // Encode multiple input-output vector pairs stored in corresponding datasets
+
+  double train_multiple (NumericMatrix data_in,
+                         NumericMatrix data_out,
+                         int training_epochs)
+  {
+    if((data_in.rows()<=0) OR
+         (data_in.rows()!=data_out.rows()))
     {
-      error(NN_DATAST_ERR,"Cannot setup BP for these datasets");
-      return;
+      error(NN_DATAST_ERR,"Cannot train BP with these datasets");
+      return DATA_MAX;
     }
 
-    int input_data_dim = tr_dataset_in.cols();
-    int output_dim = tr_dataset_out.cols();
-
-    if(!bp.setup(input_data_dim,output_dim,learning_rate,hidden_layers,hidden_layer_size))
-    {
-      error(NN_INTEGR_ERR,"Cannot setup BP NN");
-      bp.reset();
-      return;
-    }
-
-    int num_training_cases=tr_dataset_in.rows();
-
+    int num_training_cases=data_in.rows();
     // encode all data input-output pairs
     DATA error_level = DATA_MAX;
 
-    for(int i=0;i<training_epochs && bp.no_error();i++)
+    for(int i=0;i<training_epochs && bp.is_ready();i++)
     {
       for(int r=0;r<num_training_cases;r++)
       {
-        NumericVector v_in  = tr_dataset_in( r , _ );         // (interface with R)
-        NumericVector v_out = tr_dataset_out( r , _ );        // (interface with R)
+        NumericVector v_in  = data_in( r , _ );         // (interface with R)
+        NumericVector v_out = data_out( r , _ );        // (interface with R)
         // Encode a case item pair (supervised)
         error_level = train_single (v_in,v_out);
       }
@@ -87,10 +104,11 @@ public:
     }
 
     TEXTOUT << "Training Finished, error level indicator is " << error_level << " .\n";
+    return error_level;
   }
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
+  // Encode a single input-output vector pair in current BP NN
 
   double train_single (NumericVector data_in,
                        NumericVector data_out)
@@ -105,10 +123,12 @@ public:
                                     data_in.length(),
                                     fpdata_out,
                                     data_out.length() );
+
     return(error_level/data_out.length());
   }
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // Get output for a dataset using BP NN
 
   NumericMatrix recall(NumericMatrix data_in)
   {
@@ -171,16 +191,18 @@ public:
 
 //--------------------------------------------------------------------------------
 
-RCPP_MODULE(class_BP_NN) {
-  class_<BP_NN>( "BP_NN" )
+RCPP_MODULE(class_BP) {
+  class_<BP>( "BP" )
   .constructor()
 //.constructor<NumericMatrix,NumericMatrix,double,int,int,int>()
-  .method( "encode",      &BP_NN::encode,         "Setup BP and encode input-output datasets in the NN" )
-  .method( "recall",      &BP_NN::recall,         "Get output for a dataset using BP NN" )
-  .method( "train_single",&BP_NN::train_single,   "Encode a single input-output vector pair in current BP NN" )
-  .method( "print",       &BP_NN::print,          "Print BP NN details" )
-  .method( "load",        &BP_NN::load_from_file, "Load BP" )
-  .method( "save",        &BP_NN::save_to_file,   "Save BP" )
+  .method( "encode",          &BP::encode,          "Setup BP and encode input-output datasets in the NN" )
+  .method( "train_multiple",  &BP::train_single,    "Encode multiple input-output vector pairs stored in corresponding datasets" )
+  .method( "train_single",    &BP::train_single,    "Encode a single input-output vector pair in current BP NN" )
+  .method( "setup",           &BP::setup,           "Setup the BP NN" )
+  .method( "recall",          &BP::recall,          "Get output for a dataset using BP NN" )
+  .method( "print",           &BP::print,           "Print BP NN details" )
+  .method( "load",            &BP::load_from_file,  "Load BP" )
+  .method( "save",            &BP::save_to_file,    "Save BP" )
   ;
 }
 

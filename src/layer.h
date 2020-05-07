@@ -241,7 +241,7 @@ bool Layer<PE_TYPE>::input_data_from_vector(DATA* data, int dimension)
     if (NOT no_error()) return false;
     if (data == NULL) return false;
     if (dimension NEQL size())
-		{ error(NN_INTEGR_ERR, "Incompatible input vector dimension (number of PEs,length)");
+		{ warning ("Incompatible vector dimension (number of PEs vs vector length)");
 		  return false; }
     for (int i = 0; i < dimension; i++)
      {
@@ -261,7 +261,7 @@ bool Layer<PE_TYPE>::output_data_to_vector(DATA* buffer, int dimension)
 {
     if (NOT no_error()) return false;
     if (buffer == NULL) return false;
-    if (dimension NEQL size()) { error(NN_INTEGR_ERR, "Incompatible output vector dimension (number of PEs, length)"); return false; }
+    if (dimension NEQL size()) { warning ("Incompatible output vector dimension (number of PEs vs vector length)"); return false; }
     for (int i = 0; i < dimension; i++) buffer[i] = pes[i].output;
     return true;
 }

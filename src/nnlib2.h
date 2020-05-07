@@ -16,7 +16,7 @@
 #ifndef VNN_H
 #define VNN_H
 
-#define NN_VERSION "nnlib2 v.0.1.4 (Ugly Duck-20YLE) (c)2019 Vasilis N. Nikolaidis"
+#define NN_VERSION "nnlib2 v.0.1.5 (Ugly Duck-20YLE) (c)2019 Vasilis N. Nikolaidis"
 
 /*-----------------------------------------------------------------------*/
 
@@ -32,6 +32,7 @@
 #ifdef NNLIB2_FOR_RCPP
 #include <Rcpp.h>
 // [[Rcpp::plugins("cpp11")]]
+using namespace Rcpp;
 #define TEXTOUT Rcpp::Rcout
 #endif
 

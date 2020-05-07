@@ -62,8 +62,8 @@ void nn::reset()
 
  while(topology.goto_last())
    {
-   delete(topology.current());			// first free the component...
-   topology.remove_last();				// then remove its entry from pointer list.
+   delete(topology.current());		  // first free the component...
+   topology.remove_last();	        // then remove its entry from pointer list.
    }
  topology.looks_ok();
 
@@ -80,10 +80,10 @@ DATA nn::encode_u(DATA PTR input, int input_dim, int iteration)
  }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// performs a typical supervised encoding, assuming input will go to first layer, while
-// desired output will be presented as _input_ to the last layer in topology.
+// performs a typical supervised encoding, assuming input will go to first layer (unless otherwise defined), while
+// desired output will be presented as _input_ to the last layer in topology (unless otherwise defined).
 // May return indication of encoding success.
-// Should overide with needed behaviour, as this is very basic.
+// Should be overiden with needed behaviour, as this is very basic.
 
 DATA nn::encode_s(DATA PTR input, int input_dim, DATA PTR desired_output, int output_dim, int iteration)
  {
@@ -169,7 +169,7 @@ int nn::output_dimension()
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // (required by data_receiver class)
-// attemps to place data on the first component
+// attemps to place data on the first component, unless otherwise defined.
 // assuming it [is a layer that] can input data (data_receiver)
 
 bool nn::input_data_from_vector(DATA * data, int dimension)
@@ -207,7 +207,7 @@ return pl->send_input_to(position,d);
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // (required by data_provider class)
-// attemps to get data from the last component
+// attemps to get data from the last component, unless otherwise defined
 // assuming it [is a layer that] outputs data (data_provider)
 
 bool nn::output_data_to_vector(DATA * buffer, int dimension)

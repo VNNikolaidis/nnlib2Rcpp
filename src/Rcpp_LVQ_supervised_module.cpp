@@ -5,16 +5,15 @@
 //		-----------------------------------------------------------
 
 #include "nnlib2.h"
-#include <iostream>
-#include <fstream>
 
 #ifdef NNLIB2_FOR_RCPP
-using namespace Rcpp;
 
 //--------------------------------------------------------------------------------
 
 #include "nn_lvq.h"
 #include "nnlib2_misc.h"                     // for which_max etc.
+#include <iostream>
+#include <fstream>
 
 using namespace nnlib2;
 using namespace nnlib2::lvq;
@@ -24,7 +23,7 @@ using namespace nnlib2::lvq;
 //--------------------------------------------------------------------------------
 // R wrapper class:
 
-class LVQs_NN
+class LVQs
 {
 protected:
 
@@ -34,7 +33,7 @@ public:
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  LVQs_NN()
+  LVQs()
   {
   TEXTOUT << "LVQ created, now encode data (or load NN from file).\n";
   lvq.reset();
@@ -169,15 +168,15 @@ public:
 
 //--------------------------------------------------------------------------------
 
-RCPP_MODULE(class_LVQs_NN) {
-  class_<LVQs_NN>( "LVQs_NN" )
+RCPP_MODULE(class_LVQs) {
+  class_<LVQs>( "LVQs" )
   .constructor()
   //.constructor<NumericMatrix,IntegerVector,int>()
-  .method( "encode",    &LVQs_NN::encode,        "Encode input and output (classification) for a dataset using LVQ NN" )
-  .method( "recall",    &LVQs_NN::recall,        "Get output (classification) for a dataset using LVQ NN" )
-  .method( "print",     &LVQs_NN::print,         "Print LVQ NN details" )
-  .method( "load",      &LVQs_NN::load_from_file,"Load LVQ" )
-  .method( "save",      &LVQs_NN::save_to_file,  "Save LVQ" )
+  .method( "encode",    &LVQs::encode,        "Encode input and output (classification) for a dataset using LVQ NN" )
+  .method( "recall",    &LVQs::recall,        "Get output (classification) for a dataset using LVQ NN" )
+  .method( "print",     &LVQs::print,         "Print LVQ NN details" )
+  .method( "load",      &LVQs::load_from_file,"Load LVQ" )
+  .method( "save",      &LVQs::save_to_file,  "Save LVQ" )
   ;
 }
 

@@ -5,47 +5,7 @@ Autoencoder <- function(data_in, desired_new_dimension, number_of_training_epoch
     .Call('_nnlib2Rcpp_Autoencoder', PACKAGE = 'nnlib2Rcpp', data_in, desired_new_dimension, number_of_training_epochs, learning_rate, num_hidden_layers, hidden_layer_size, show_nn)
 }
 
-BP_destroy <- function() {
-    invisible(.Call('_nnlib2Rcpp_BP_destroy', PACKAGE = 'nnlib2Rcpp'))
-}
-
-BP_create <- function(input_data_dim, output_dim, learning_rate, num_hidden_layers, hidden_layer_size) {
-    .Call('_nnlib2Rcpp_BP_create', PACKAGE = 'nnlib2Rcpp', input_data_dim, output_dim, learning_rate, num_hidden_layers, hidden_layer_size)
-}
-
-BP_print <- function() {
-    invisible(.Call('_nnlib2Rcpp_BP_print', PACKAGE = 'nnlib2Rcpp'))
-}
-
-BP_train_single <- function(data_in, data_out) {
-    .Call('_nnlib2Rcpp_BP_train_single', PACKAGE = 'nnlib2Rcpp', data_in, data_out)
-}
-
-BP_train_set <- function(dataset_in, dataset_out, training_epochs) {
-    .Call('_nnlib2Rcpp_BP_train_set', PACKAGE = 'nnlib2Rcpp', dataset_in, dataset_out, training_epochs)
-}
-
-BP_recall_set <- function(data_in) {
-    .Call('_nnlib2Rcpp_BP_recall_set', PACKAGE = 'nnlib2Rcpp', data_in)
-}
-
-BP_save_to_file <- function(filename) {
-    .Call('_nnlib2Rcpp_BP_save_to_file', PACKAGE = 'nnlib2Rcpp', filename)
-}
-
-BP_load_from_file <- function(filename) {
-    .Call('_nnlib2Rcpp_BP_load_from_file', PACKAGE = 'nnlib2Rcpp', filename)
-}
-
-LVQs <- function(data, desired_cluster_ids, number_of_training_epochs, test_data, show_nn = FALSE) {
-    .Call('_nnlib2Rcpp_LVQs', PACKAGE = 'nnlib2Rcpp', data, desired_cluster_ids, number_of_training_epochs, test_data, show_nn)
-}
-
 LVQu <- function(data, max_number_of_desired_clusters, number_of_training_epochs, neighborhood_size = 1L, show_nn = FALSE) {
     .Call('_nnlib2Rcpp_LVQu', PACKAGE = 'nnlib2Rcpp', data, max_number_of_desired_clusters, number_of_training_epochs, neighborhood_size, show_nn)
-}
-
-MAM <- function(train_data_in, train_data_out, test_data_in, show_nn) {
-    .Call('_nnlib2Rcpp_MAM', PACKAGE = 'nnlib2Rcpp', train_data_in, train_data_out, test_data_in, show_nn)
 }
 
