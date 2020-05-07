@@ -15,6 +15,8 @@ library(devtools)
 
 install_github("VNNikolaidis/nnlib2Rcpp")
 
+---
+
 To cite this software (once installed) use the following R command for information:
 
 citation("nnlib2Rcpp")
