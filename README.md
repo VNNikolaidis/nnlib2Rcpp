@@ -23,6 +23,9 @@ citation("nnlib2Rcpp")
 
 ---
 
+I would like to add more classic NNs implementations in nnlib2 (and thus nnlib2Rcpp) but have limited time right now. Please let me know if interested to contribute.
+
+---
 Changes to nnlib2Rcpp version 0.1.1 (from 0.1.0)
 - removed redundant unused files.
 - minor documentation fixes (Rcpp missing entries added), passes devtools::check() with no related warnings. 
