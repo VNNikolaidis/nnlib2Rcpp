@@ -15,11 +15,24 @@ Changes to nnlib2Rcpp version 0.1.1 (from 0.1.0)
 ---
 
 Changes to nnlib2Rcpp version 0.1.2 (from 0.1.1)
--	Checked with R 3.6.3 and RTools35.
--	Checked with R 4.0.0 and RTools40 (produces 1 extra NOTE).
+-	(Checked with R 3.6.3 and RTools35.)
+-	(Checked with R 4.0.0 and RTools40 (produces 1 extra NOTE).
 -	Removed redundant BP functions. All BP functionality is now implemented in BP module class (safer and more convenient for supervised methods).
--	Removed MAM functions. All MAM functionality is now implemented in BP module class (safer and more convenient for supervised methods).
+-	Removed MAM functions. All MAM functionality is now implemented in MAM module class (safer and more convenient for supervised methods).
 -	Minor changes in nnlib2 (now uses nnlib2 v.0.1.5)
 -	Fixed LICENCE file (was incompatible with CRAN)
 
+---
+
+Changes to nnlib2Rcpp version 0.1.3 (from 0.1.2)
+-	includes nnlib2 v.0.1.7.
+
+---
+
+
+Changes to nnlib2Rcpp version 0.1.4 (from 0.1.3)
+-	(checked on Linux Mint 19.3 with R 3.6.3)
+-	(Checked with R 4.0.0 and RTools40 (produces 1 extra NOTE).
+-	includes new nnlib2 v.0.2.0.
+-	added module "NN" which allows creation and control of custom NNs from R using predefined components. It also provides fixed method for adding user-defined NN components which can be used in the module.
 
