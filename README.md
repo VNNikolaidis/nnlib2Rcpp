@@ -12,7 +12,7 @@ Since v.1.4, the package also provides the NN R module (Class "NN") which allows
 
 ---
 
-To install in your R installation, use the following R commands:
+To add the package to your R installation, use the following R commands:
 
 library(devtools) 
 
@@ -26,4 +26,6 @@ citation("nnlib2Rcpp")
 
 ---
 
-The nnlib2 used in this package is a collection of C++ classes and templates for creating NNs. For an exemple of NN implementation see the MAM related code. We would like to add more classic NNs implementations in nnlib2 (and thus nnlib2Rcpp). Please let us know if interested to contribute.  
+The nnlib2 used in this package is a collection of C++ classes and templates for creating NNs. For an example of NN implementation see the MAM related code. 
+
+We would like to add more classic NNs implementations in nnlib2 (and thus nnlib2Rcpp). Please let us know if interested to contribute.  
