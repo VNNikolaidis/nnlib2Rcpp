@@ -3,9 +3,12 @@ An R package with Neural Nets created using nnlib2.
 
 ---
 
-This collection of artificial neural networks (NNs or ANNs or ANSs).
+A collection of artificial neural networks (NNs or ANNs or ANSs).
+
 Currently includes versions of BP, Autoencoder, MAM, LVQ (supervised and unsupervised). 
-All NNs were created using nnlib2 (a C++ library for implementing NNs) and interfaced with R via RCpp.
+All NNs are created using nnlib2 (a C++ library for implementing NNs) and interfaced with R via RCpp.
+
+The package also provides the NN R module (Class "NN") which allows creation and control of custom NNs configurations from R using predefined components; it also allows the addition of new user-defined NN components (layers, nodes, connection and sets of connections) using a predifined procedure (requires some familiarity with C++).
 
 ---
 
