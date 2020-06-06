@@ -108,29 +108,29 @@ DATA pe::activation_function(DATA value)
 DATA pe::threshold_function(DATA value)
  {
  return value;
-}
+ }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // should be overriden. By default, employs input->activation->threshold
 // function sequence and places results to output
 
 void pe::encode()
-{
-DATA v;
-v = input_function();
-v = activation_function(v);
-v = threshold_function(v);
-output = v;
-}
-
-void pe::recall()
-{
+ {
   DATA v;
   v = input_function();
   v = activation_function(v);
   v = threshold_function(v);
   output = v;
-}
+ }
+
+void pe::recall()
+ {
+  DATA v;
+  v = input_function();
+  v = activation_function(v);
+  v = threshold_function(v);
+  output = v;
+ }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

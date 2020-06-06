@@ -53,10 +53,10 @@ class component
  component(const std::string name, const component_type type);
  virtual ~component();
 
- virtual void reset ()		{error(NN_SYSTEM_ERR,"reset() not implemented");}
- string REF name ()             { return m_name; }
+ virtual void reset ()		                { error(NN_SYSTEM_ERR,"reset() not implemented"); }
+ string REF name ()                             { return m_name; }
  virtual string description ();
- virtual string item_description(int item)              {error(NN_SYSTEM_ERR,"item_description() not implemented"); return("No item description");}
+ virtual string item_description(int item)      { error(NN_SYSTEM_ERR,"item_description() not implemented"); return("No item description"); }
 
  virtual void encode () = 0;
  virtual void recall ()	= 0;
@@ -78,7 +78,7 @@ class data_receiver
 {
 public:
 virtual bool input_data_from_vector(DATA * data, int dimension) = 0;
-virtual bool send_input_to(int position, DATA d) = 0;
+virtual bool send_input_to(int index, DATA d) = 0;
 };
 
 //-----------------------------------------------------------------------
@@ -88,7 +88,7 @@ class data_provider
 {
 public:
 virtual bool output_data_to_vector(DATA * buffer, int dimension) = 0;
-virtual DATA get_output_from (int position) = 0;
+virtual DATA get_output_from (int index) = 0;
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

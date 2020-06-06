@@ -159,6 +159,47 @@ void connection::recall()
   return s;
   }
 
+
+//*-----------------------------------------------------------------------*/
+// a generic connection that passes source output to destination input
+// multiplied by m_weight (which is 1 and is NOT adjusted during encode)
+// (note: m_weight may be adjusted externaly)
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// passes source output to destination input (via its receive_input_value())
+
+void weighted_pass_through_connection::encode()
+	{
+	destin_pe().receive_input_value ( m_weight * source_pe().output );
+	}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// passes source output to destination input (via its receive_input_value())
+
+void pass_through_connection::recall()
+	{
+	destin_pe().receive_input_value ( source_pe().output );
+	}
+
+//*-----------------------------------------------------------------------*/
+// a generic connection that passes source output to destination input
+// (note: ignores m_weight)
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// passes source output to destination input (via its receive_input_value())
+
+void pass_through_connection::encode()
+	{
+	destin_pe().receive_input_value ( source_pe().output );
+	}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// passes source output to destination input (via its receive_input_value())
+
+void weighted_pass_through_connection::recall()
+{
+	destin_pe().receive_input_value ( m_weight * source_pe().output );
+}
+
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 }   // end of namespace nnlib2

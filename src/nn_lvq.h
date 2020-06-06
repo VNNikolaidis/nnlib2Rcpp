@@ -33,7 +33,6 @@ namespace lvq {
 /*-----------------------------------------------------------------------*/
 /* Kohonen LVQ	ANS	(Supervised LVQ)									 */
 /*-----------------------------------------------------------------------*/
-
 class lvq_nn : public NN_PARENT_CLASS
  {
  protected:
@@ -65,8 +64,49 @@ class som_nn : public lvq_nn
  DATA encode_u(DATA PTR input, int input_dim, int iteration);
  };
 
+/*-----------------------------------------------------------------------*/
+
+class lvq_input_layer : public pe_layer
+{
+public:
+        void recall();
+};
+
+/*-----------------------------------------------------------------------*/
+
+class lvq_output_layer : public pe_layer
+{
+private:
+        int m_neighborhood_size;	// must be 1 in Single Winner Unsupervised, 3,5,7... in Multiple Winner Unsupervised.
+public:
+        void setup(string name, int size, int neighborhood);
+        void recall();
+};
+
+/*-----------------------------------------------------------------------*/
+
+class lvq_connection_set : public generic_connection_set
+{
+private:
+        int m_iteration;
+
+public:
+
+        lvq_connection_set();
+
+        void set_iteration_number(int iteration);
+
+        void recall();						// virtual, defined in component
+        void encode();						// virtual, defined in component
+        void encode(int iteration);		                // a variation of above, imposes iteration
+};
+
+/*-----------------------------------------------------------------------*/
+
 } // namespace lvq
 } // namespace nnlib2
+
+
 
 #else
 #error Header file included twice : NN_LVQ_H

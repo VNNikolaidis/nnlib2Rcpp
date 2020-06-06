@@ -94,10 +94,10 @@ void component::to_stream (std::ostream REF s)
 
   type = component_nn_type_name [m_type];
 
-  s << "Component: " << m_name << "\n";
-  s << "Origin.ID: " << m_id   << "\n";
-  s << "Comp.Type: " << type   << "\n";
-  s << "Aux.Param: " << m_auxiliary_parameter  << "\n";
+  s << "Component: " 	<< m_name << "\n";
+  s << "ID: " 			<< m_id   << "\n";
+  s << "Type: " 		<< type   << "\n";
+  s << "Aux.Param: " 	<< m_auxiliary_parameter  << "\n";
  }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -23,7 +23,7 @@ Simpson, P. K. (1991). Artificial neural systems: Foundations, paradigms, applic
 Vasilis N. Nikolaidis <vnnikolaidis@gmail.com>
 }
 \note{
-This R module contains an internal Back-Propagation (BP) multilayer perceptron NN (described in Simpson (1991) as the vanilla back-propagation algorithm), which can be used to store input-output vector pairs. Since the nodes (PEs) in computing layers of this BP implementation apply the logistic sigmoid threshold function, their output is in [0 1] range (and so should the desired output vector values).
+This R module maintains an internal Back-Propagation (BP) multilayer perceptron NN (described in Simpson (1991) as the vanilla back-propagation algorithm), which can be used to store input-output vector pairs. Since the nodes (PEs) in computing layers of this BP implementation apply the logistic sigmoid threshold function, their output is in [0 1] range (and so should the desired output vector values).
 
 (This object uses Rcpp to employ 'bp_nn' class in nnlib2.)}
 

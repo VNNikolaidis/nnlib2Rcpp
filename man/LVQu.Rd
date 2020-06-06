@@ -32,7 +32,7 @@ number of training epochs, aka presentations of all training data to ANN during 
 integer >=1, specifies affected neighbor output nodes during training. if 1 (Single Winner) the ANN is somewhat similar to k-means.
 }
   \item{show_nn}{
-boolean, option to print an outline of the (trained) ANN internal structure.
+boolean, option to display the (trained) ANN internal structure.
 }
 }
 \value{

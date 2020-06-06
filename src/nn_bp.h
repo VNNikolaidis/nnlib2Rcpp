@@ -131,6 +131,60 @@ class bpu5_nn : public bp_nn
  bool recall(DATA PTR input,int input_dim,DATA PTR output_buffer,int output_dim);
  };
 
+/*-----------------------------------------------------------------------*/
+/* Back Propagation Perceptron Layers					 */
+/*-----------------------------------------------------------------------*/
+
+#include "layer.h"
+
+class bp_layer : public pe_layer
+{
+protected:
+        DATA m_learning_rate;
+
+public:
+        void set_learning_rate(DATA lrate);
+};
+
+/*-----------------------------------------------------------------------*/
+// computing layer (includes hidden and output layers).
+
+class bp_comput_layer : public bp_layer
+{
+public:
+        void encode();
+        void recall();
+};
+
+/*-----------------------------------------------------------------------*/
+// in BP output layer has similar functionality to hidden...
+// it is a computing layer.
+// but also needs to be able to accept "desired output" as input when encoding.
+
+class bp_output_layer : public bp_comput_layer
+{
+public:
+        void encode();
+};
+
+/*-----------------------------------------------------------------------*/
+/* Back Propagation Perceptron Connections		                 */
+/*-----------------------------------------------------------------------*/
+
+class bp_connection_set : public generic_connection_set
+{
+protected:
+        DATA m_learning_rate;
+
+public:
+        void encode();
+        void recall();
+        void set_learning_rate(DATA d);
+};
+
+/*-----------------------------------------------------------------------*/
+
+
 } // end of namespace bp
 } // end of namespace nnlib2
 

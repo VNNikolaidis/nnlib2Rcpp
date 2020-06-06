@@ -16,6 +16,8 @@
 #include "nnlib2_dllist.h"
 #include "nnlib2_misc.h"
 
+#include <sstream>
+
 namespace nnlib2 {
 
 /*-----------------------------------------------------------------------*/
@@ -25,14 +27,18 @@ namespace nnlib2 {
 class connection_set : public component, public error_flag_client
 {
 public:
-	virtual void get_connection_info( int connection,int REF source_component_id,int REF source_item,int REF destin_component_id,int REF destin_item) = 0;
+	virtual bool connection_properties( int connection,int REF source_component_id,int REF source_item,int REF destin_component_id,int REF destin_item, DATA REF weight) = 0;
 	virtual layer REF source_layer() = 0;
 	virtual layer REF destin_layer() = 0;
-	virtual bool has_source_layer() = 0;
-	virtual bool has_destin_layer() = 0;
+	virtual bool has_source_layer()  = 0;
+	virtual bool has_destin_layer()  = 0;
+	virtual pe REF source_pe(int c)  = 0;
+	virtual pe REF destin_pe(int c)  = 0;
+	virtual	bool setup (layer PTR source_layer, layer PTR destin_layer, bool PTR error_flag_to_use, bool fully_connect_layers = false) = 0;
 	virtual	bool setup (string name, layer PTR source_layer, layer PTR destin_layer, bool PTR error_flag_to_use, bool fully_connect_layers = false) = 0;
     virtual	bool setup (string name, layer PTR source_layer, layer PTR destin_layer, bool PTR error_flag_to_use, bool fully_connect_layers, DATA min_random_weight, DATA max_random_weight) = 0;
-};
+	virtual bool add_connection(const int source_pe, const int destin_pe, const DATA initial_weight) = 0;
+ };
 
 /*-----------------------------------------------------------------------*/
 /* Neural connection set template for any CONNECTION_TYPE       		 */
@@ -60,6 +66,7 @@ class Connection_Set : public connection_set
  ~Connection_Set();
 
  bool setup (layer PTR source_layer, layer PTR destin_layer);
+ bool setup (layer PTR source_layer, layer PTR destin_layer, bool PTR error_flag_to_use, bool fully_connect_layers = false);
  bool setup (string name, layer PTR source_layer, layer PTR destin_layer);
  bool setup (string name, layer PTR source_layer, layer PTR destin_layer, bool PTR error_flag_to_use, bool fully_connect_layers = false);
  bool setup (string name, layer PTR source_layer, layer PTR destin_layer, bool PTR error_flag_to_use, bool fully_connect_layers, DATA min_random_weight, DATA max_random_weight);
@@ -88,12 +95,14 @@ class Connection_Set : public connection_set
  layer REF source_layer();                                      // note: this is not PE_TYPE specific (layer), returns mp_source_layer as a reference to layer (or to a dummy_layer if error)
  layer REF destin_layer();                                      // note: this is not PE_TYPE specific (layer), returns mp_destin_layer as a reference to layer (or to a dummy_layer if error)
 
- void get_connection_info( int connection,int REF source_component_id,int REF source_item,int REF destin_component_id,int REF destin_item);
+ bool connection_properties( int connection,int REF source_component_id,int REF source_item,int REF destin_component_id,int REF destin_item, DATA REF weight);
  bool has_source_layer();
  bool has_destin_layer();
 
  void encode();													// (virtual in component) may be overiden by derived classes with specific layer functiobality.
  void recall();													// (virtual in component) may be overiden by derived classes with specific layer functiobality.
+
+ bool add_connection(const int source_pe, const int destin_pe, const DATA initial_weight);
  };
 
 
@@ -113,49 +122,42 @@ typedef Connection_Set<connection> generic_connection_set;
 
 template <class CONNECTION_TYPE>
 Connection_Set<CONNECTION_TYPE>::Connection_Set()
-{
-        if(no_error())
-        {
-				mp_source_layer = NULL;
-				mp_destin_layer = NULL;
-                m_type = cmpnt_connection_set;
-                m_name = "uninitialized zero-sized unnamed set of connections";
-        }
-}
+ {
+ mp_source_layer = NULL;
+ mp_destin_layer = NULL;
+ if(no_error())
+  {
+  m_type = cmpnt_connection_set;
+  m_name = "Connection set";
+  }
+ }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 template <class CONNECTION_TYPE>
 Connection_Set<CONNECTION_TYPE>::Connection_Set(string name)
-{
-        if(no_error())
-        {
-				mp_source_layer = NULL;
-				mp_destin_layer = NULL;
-                m_type = cmpnt_connection_set;
-                m_name = name;
-        }
-}
+ :Connection_Set()
+ {
+ if(no_error()) m_name = name;
+ }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 template <class CONNECTION_TYPE>
 Connection_Set<CONNECTION_TYPE>::Connection_Set(string name, bool PTR error_flag_to_use)
-{
-        if(no_error())
-        {		mp_source_layer = NULL;
-				mp_destin_layer = NULL;
-                m_type = cmpnt_connection_set;
-                m_name = name;
-                if(error_flag_to_use!=NULL) set_error_flag(error_flag_to_use);
-        }
-}
+ :Connection_Set<CONNECTION_TYPE>(name)
+ {
+ if(no_error())
+  if(error_flag_to_use!=NULL)
+  	set_error_flag(error_flag_to_use);
+ }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 template <class CONNECTION_TYPE>
 Connection_Set<CONNECTION_TYPE>::Connection_Set(string name, layer PTR source_layer, layer PTR destin_layer)
-{
+ :Connection_Set<CONNECTION_TYPE>()
+ {
 		if((source_layer==NULL)OR(destin_layer==NULL))
 		{
 		error(NN_INTEGR_ERR,"Cannot connect non-existant layers");
@@ -163,16 +165,15 @@ Connection_Set<CONNECTION_TYPE>::Connection_Set(string name, layer PTR source_la
 
         if(no_error())
         {
-        m_type = cmpnt_connection_set;
         setup(name,source_layer,destin_layer);
         }
-}
+ }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 template <class CONNECTION_TYPE>
 Connection_Set<CONNECTION_TYPE>::Connection_Set(string name, layer PTR source_layer, layer PTR destin_layer, bool PTR error_flag_to_use, bool fully_connect_layers)
-{
+	{
         set_error_flag(error_flag_to_use);
 
 		if((source_layer==NULL)OR(destin_layer==NULL))
@@ -207,11 +208,21 @@ bool Connection_Set<CONNECTION_TYPE>::setup (layer PTR source_layer, layer PTR d
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 template <class CONNECTION_TYPE>
+bool Connection_Set<CONNECTION_TYPE>::setup (layer PTR source_layer, layer PTR destin_layer, bool PTR error_flag_to_use, bool fully_connect_layers)
+{
+	set_error_flag(error_flag_to_use);
+	setup(source_layer,destin_layer);
+	if(fully_connect_layers) fully_connect();
+	return(no_error());
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+template <class CONNECTION_TYPE>
 bool Connection_Set<CONNECTION_TYPE>::setup (string name, layer PTR source_layer, layer PTR destin_layer)
  {
  m_name = name;
- setup(source_layer,destin_layer);
- return no_error();
+ return(setup(source_layer,destin_layer));
  }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -219,10 +230,8 @@ bool Connection_Set<CONNECTION_TYPE>::setup (string name, layer PTR source_layer
 template <class CONNECTION_TYPE>
 bool Connection_Set<CONNECTION_TYPE>::setup (string name, layer PTR source_layer, layer PTR destin_layer, bool PTR error_flag_to_use, bool fully_connect_layers)
  {
- set_error_flag(error_flag_to_use);
- setup(name,source_layer,destin_layer);
- if(fully_connect_layers) fully_connect();
- return(no_error());
+ m_name = name;
+ return(setup(source_layer, destin_layer, error_flag_to_use, fully_connect_layers));
  }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -299,11 +308,15 @@ return false;
 template <class CONNECTION_TYPE>
 string Connection_Set<CONNECTION_TYPE>::description ()
 {
-string s;
-s = component::description();
-s = s +  "\nSource = " + mp_source_layer->name();
-s = s +  "\nDestination = " + mp_destin_layer->name();
-return s;
+std::stringstream s;
+s << component::description();
+if((mp_source_layer==NULL)OR(mp_destin_layer==NULL))
+ {
+ s << " (Not Connected)";
+ return s.str();
+ }
+s << " " << mp_source_layer->id() <<  "-->"  << mp_destin_layer->id();
+return s.str();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -362,7 +375,7 @@ if(no_error())
     for(int s=0;s<mp_source_layer->size();s++)
      connect(s,d,0.0);
    }
-  m_name.append(" (Fully Connected) ");
+  m_name.append(" (Fully Connected)");
   return no_error();
   }
  error(NN_INTEGR_ERR,"Cannot fully connect layers");
@@ -373,17 +386,36 @@ return false;
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 template <class CONNECTION_TYPE>
-void Connection_Set<CONNECTION_TYPE>::get_connection_info (
+bool Connection_Set<CONNECTION_TYPE>::connection_properties (
                                            int connection,
                                            int REF source_component_id,
                                            int REF source_item,
                                            int REF destin_component_id,
-                                           int REF destin_item)
+                                           int REF destin_item,
+										   DATA REF weight)
 {
-        source_component_id=mp_source_layer->id();   	 	  // this is component id
-        source_item=connections[connection].source_pe_id();	  // this is position in layer
-        destin_component_id=mp_destin_layer->id();	    	  // this is component id
-        destin_item=connections[connection].destin_pe_id();	  // this is position in layer
+		if ((connection<0) OR (connection>=connections.size())) return false;
+        source_component_id=mp_source_layer->id();   	 	  // this is component (layer) id
+        source_item=connections[connection].source_pe_id();	  // this is pe's index in layer
+        destin_component_id=mp_destin_layer->id();	    	  // this is component (layer) id
+        destin_item=connections[connection].destin_pe_id();	  // this is pe's index in layer
+        weight=connections[connection].weight();
+        return true;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+template <class CONNECTION_TYPE>
+bool Connection_Set<CONNECTION_TYPE>::add_connection(const int source_pe, const int destin_pe, const DATA initial_weight)
+{
+if((mp_source_layer==NULL) OR (mp_destin_layer==NULL)) return false;
+if((source_pe<0) OR (source_pe)>=mp_source_layer->size()) return false;
+if((destin_pe<0) OR (destin_pe)>=mp_destin_layer->size()) return false;
+if(NOT connections.append()) return false;
+CONNECTION_TYPE REF c = connections.last();
+c.setup(this,source_pe,destin_pe,initial_weight);
+return true;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -412,8 +444,9 @@ void Connection_Set<CONNECTION_TYPE>::to_stream (std::ostream REF s)
         if(no_error())
         {
                 component::to_stream(s);
+        		if((mp_source_layer==NULL)OR(mp_destin_layer==NULL)) return;
                 s << "SourceCom: " << mp_source_layer->id() << "\n";		// this is the id, not the original pointer.
-                s << "DestinCom: " << mp_destin_layer->id() << "\n";		// this is the id, not the original pointer.
+        		s << "DestinCom: " << mp_destin_layer->id() << "\n";		// this is the id, not the original pointer.
                 connections.to_stream(s);					                // changed for VC7 port,was	s << connections;
         }
 }

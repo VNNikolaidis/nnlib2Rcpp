@@ -41,6 +41,7 @@ END_RCPP
 RcppExport SEXP _rcpp_module_boot_class_BP();
 RcppExport SEXP _rcpp_module_boot_class_LVQs();
 RcppExport SEXP _rcpp_module_boot_class_MAM();
+RcppExport SEXP _rcpp_module_boot_class_NN();
 
 static const R_CallMethodDef CallEntries[] = {
     {"_nnlib2Rcpp_Autoencoder", (DL_FUNC) &_nnlib2Rcpp_Autoencoder, 7},
@@ -48,6 +49,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rcpp_module_boot_class_BP", (DL_FUNC) &_rcpp_module_boot_class_BP, 0},
     {"_rcpp_module_boot_class_LVQs", (DL_FUNC) &_rcpp_module_boot_class_LVQs, 0},
     {"_rcpp_module_boot_class_MAM", (DL_FUNC) &_rcpp_module_boot_class_MAM, 0},
+    {"_rcpp_module_boot_class_NN", (DL_FUNC) &_rcpp_module_boot_class_NN, 0},
     {NULL, NULL, 0}
 };
 

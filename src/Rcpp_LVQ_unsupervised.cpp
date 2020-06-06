@@ -21,7 +21,7 @@ using namespace nnlib2::lvq;
 // Rcpp glue code for LVQ-unsupervised (som_nn)
 
 // [[Rcpp::export]]
-IntegerVector LVQu (  NumericMatrix data,
+IntegerVector LVQu ( NumericMatrix data,
                      int max_number_of_desired_clusters,
                      int number_of_training_epochs,          // (each presents all data)
                      int neighborhood_size =1,               // should be odd.

@@ -22,8 +22,8 @@ public:
 	pe REF PE(int c1, int c2) { return PE(coords2PEid(c1,c2)); }
 	int dim1() { return m_dim1; };
 	int dim2() { return m_dim2; };
-	int  coords2PEid(int c1, int c2);						// Note: PE id is PE's position in vector of PEs.
-	void PEid2coords(int id, int REF c1, int REF c2);		// Note: PE id is PE's position in vector of PEs
+	int  coords2PEid(int c1, int c2);						// Note: PE id is PE's index position in vector of PEs.
+	void PEid2coords(int id, int REF c1, int REF c2);		// Note: PE id is PE's index position in vector of PEs
 	bool coords_are_valid(int c1, int c2);
 };
 
@@ -61,7 +61,7 @@ return false;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// Note: PE id is position in vector of PEs
+// Note: PE id is index position in vector of PEs
 
 template <class PE_TYPE>
 int Layer2D<PE_TYPE>::coords2PEid(int c1, int c2)
@@ -73,7 +73,7 @@ return id;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// Note: PE id is position in vector of PEs
+// Note: PE id is index position in vector of PEs
 
 template <class PE_TYPE>
 void Layer2D<PE_TYPE>::PEid2coords(int id, int REF c1, int REF c2)

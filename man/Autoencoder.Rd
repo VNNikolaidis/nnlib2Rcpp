@@ -38,7 +38,7 @@ number of hidden layers on each side of the special layer.
 number of nodes (Processing Elements or PEs) in each hidden layer
 }
   \item{show_nn}{
-boolean, option to print an outline of the (trained) ANN internal structure.
+boolean, option to display the (trained) ANN internal structure.
 }
 }
 \value{

@@ -71,8 +71,8 @@ class Layer : public layer
 
  bool input_data_from_vector(DATA * data, int dimension);               // overides virtual method in data_receiver, sets values to pe inputs
  bool output_data_to_vector(DATA * buffer, int dimension);              // overides virtual method in data_provider, gets values from pe outputs
- bool send_input_to(int position, DATA d);                              // overides virtual method in data_receiver, sets value to corresponding pe input sets this input to respective pe input (and also appends to pe's list of input values)
- DATA get_output_from (int position);                                   // overides virtual method in data_provider, gets value from corresponding pe output
+ bool send_input_to(int index, DATA d);                                 // overides virtual method in data_receiver, sets value to corresponding pe input sets this input to respective pe input (and also appends to pe's list of input values)
+ DATA get_output_from (int index);                                      // overides virtual method in data_provider, gets value from corresponding pe output
 
  void encode();                                                         // (virtual in component) may be overiden by derived classes with specific layer functiobality.
  void recall();                                                         // (virtual in component) may be overiden by derived classes with specific layer functiobality.
@@ -80,16 +80,6 @@ class Layer : public layer
  //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
  };
-
-
-//-------------------------------------------------------------------------
-// For explitit instantiation of layer template per pe type (not needed
-// as implementation is in header below) use code similar to:
-// template class layer<pe>;                                             // instantiate a layer of generic pes
-
-//-------------------------------------------------------------------------
-// to define layer of generic "dumb" pes where most processing will be done in layer code.
-typedef Layer<pe> pe_layer;
 
 //-------------------------------------------------------------------------
 // Neural Layer implementation follows:
@@ -229,7 +219,6 @@ void Layer<PE_TYPE>::to_stream(std::ostream REF s)
     }
 }
 
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // overides virtual method in data_receiver, sets values to pe inputs
 // (sets this input to respective pe input and to received_values,
@@ -270,12 +259,12 @@ bool Layer<PE_TYPE>::output_data_to_vector(DATA* buffer, int dimension)
 // overides virtual method in data_receiver, sets value to corresponding pe input
 
 template <class PE_TYPE>
-bool Layer<PE_TYPE>::send_input_to(int position, DATA d)
+bool Layer<PE_TYPE>::send_input_to(int index, DATA d)
 {
     if (NOT no_error()) return false;
-    if (position < 0) return false;
-    if (position >= size()) { error(NN_INTEGR_ERR, "Cannot access PE at this position"); return false; }
-    pes[position].input = d;
+    if (index < 0) return false;
+    if (index >= size()) { error(NN_INTEGR_ERR, "Cannot access PE at this index position"); return false; }
+    pes[index].input = d;
     return true;
 }
 
@@ -283,12 +272,12 @@ bool Layer<PE_TYPE>::send_input_to(int position, DATA d)
 // overides virtual method in data_provider, gets value from corresponding pe output
 
 template <class PE_TYPE>
-DATA Layer<PE_TYPE>::get_output_from(int position)
+DATA Layer<PE_TYPE>::get_output_from(int index)
 {
     if (NOT no_error()) return false;
-    if (position < 0) return false;
-    if (position >= size()) { error(NN_INTEGR_ERR, "Cannot access PE at this position"); return false; }
-    return(pes[position].output);
+    if (index < 0) return false;
+    if (index >= size()) { error(NN_INTEGR_ERR, "Cannot access PE at this index position"); return false; }
+    return(pes[index].output);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -319,7 +308,32 @@ if (no_error())
  for (int i = 0; i < size(); i++) pes[i].recall();
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+//-------------------------------------------------------------------------
+// Various layer-related useful definitions:
+
+//-------------------------------------------------------------------------
+// For explicit instantiation of layer template per pe type (not needed
+// as implementation is in this header) use code similar to:
+// template class layer<pe>;                        // instantiate a layer of generic pes
+
+//-------------------------------------------------------------------------
+// layer of generic "dumb" pes where most processing will be done in layer code:
+
+typedef Layer<pe> pe_layer;
+
+//-------------------------------------------------------------------------
+// layer of generic "dumb" pes that only passes pe input variable to output:
+// note: this uses the pe internal input _variable_ (does not process inputs)
+
+class pass_through_layer : public pe_layer
+{
+public:
+    pass_through_layer(string name, int size):pe_layer(name,size){}
+    void encode() { move_all_pe_input_to_output(); }
+    void recall() { move_all_pe_input_to_output(); }
+};
+
+//-------------------------------------------------------------------------
 
 }   // end of namespace nnlib2
 

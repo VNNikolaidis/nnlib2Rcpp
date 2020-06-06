@@ -35,8 +35,8 @@ public:
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // define MAM components (layers containing generic pes and connections_sets of mam_connections)
 
-typedef Layer<pe> mam_layer;
-typedef Connection_Set<mam_connection> mam_connection_set;
+typedef Layer<pe> mam_layer;								// not used below, MAM layers are generic
+typedef Connection_Set<mam_connection> mam_connection_set;  // not used below, MAM connection sets simply consist of MAM connections
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // define the actual MAM nn class here:
@@ -67,18 +67,15 @@ public:
 		// components are reported to the entire neural net.
 		// also add (register) the components to topology. These will be deleted when NN is deleted.
 
-		topology.append(new mam_layer ("Input layer",input_length,my_error_flag()));
-		topology.append(new mam_connection_set);
-		topology.append(new mam_layer("Output layer",output_length,my_error_flag()));
+		add_layer(new pe_layer ("Input layer",input_length));
+		add_connection_set(new mam_connection_set);
+		add_layer(new pe_layer ("Output layer",output_length));
 
 		// setup connections for all layer+connection_set+layer sequences, fully connecting them
-		connect_consequent_layers();
+		connect_consecutive_layers();
 
-		set_component_for_input(0);				// optional (as it is the first layer)
-		set_component_for_output(2);			// optional (as it is the last layer), but will this will be set at first recall
-
-		// indicate NN is ready to encode/decode
-		if (no_error()) set_ready();
+//		set_component_for_input(0);				// optional (as it is the first layer)
+//		set_component_for_output(2);			// optional (as it is the last layer)
 
 		return no_error();
 

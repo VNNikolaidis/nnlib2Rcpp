@@ -13,6 +13,8 @@
 #include "nnlib2_string.h"
 #include "nnlib2_error.h"
 
+#define DLLIST_EXTRA_INTEGRITY_CHECKS
+
 namespace nnlib2 {
 
 template <class T>
@@ -47,6 +49,7 @@ class dllist : public error_flag_client
  T REF current ();							// returns item pointed by mp_current
  bool append();
  virtual bool append(const T REF item);
+ virtual bool insert(int at_index, const T REF item);
  bool reset();
  bool remove_last();
  bool remove_current();
@@ -61,7 +64,7 @@ class dllist : public error_flag_client
  void to_stream   (std::ostream REF s);
  friend std::istream REF operator >> ( std::istream REF is, dllist REF it ) {it.from_stream(is);return is;};
  friend std::ostream REF operator << ( std::ostream REF os, dllist REF it ) {it.to_stream(os);return os;};
- bool looks_ok();
+ bool check();
  };
 
 // implementation follows:
@@ -90,7 +93,7 @@ class dllist : public error_flag_client
  template <class T>
  dllist<T>::~dllist()
   {
-  looks_ok();
+  check();
   reset();
   }
 
@@ -168,35 +171,56 @@ class dllist : public error_flag_client
  }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// a few checks, just to be on the safe side.Hmmm,I should have used STL...
+// a few checks, just to be on the safe side. Hmmm, I should have used STL...
 
  template <class T>
- bool dllist<T>::looks_ok()
+ bool dllist<T>::check()
   {
-  int c = 0;
-  T_wrapper PTR	p = mp_first;
-  bool ok = true;
 
+  #ifdef DLLIST_EXTRA_INTEGRITY_CHECKS
+
+  bool ok = true;
+  T_wrapper PTR	p;
+
+  int c1 = 0;
+  p = mp_first;
   while (p != NULL)
    {
-   c++;
+   c1++;
+   if(p->next==NULL) if(p!=mp_last) ok=false;
    p=p->next;
    }
 
-  if (c NEQL m_number_of_items) ok = false;
-
-  if( (mp_first EQL NULL)   OR (mp_last  EQL NULL) OR
-	   (mp_current EQL NULL)  OR (m_number_of_items EQL 0) )
+  int c2 = 0;
+  p = mp_last;
+  while (p != NULL)
    {
-	 if( (mp_first EQL NULL)  AND (mp_last  EQL NULL) AND
-	    (mp_current EQL NULL) AND (m_number_of_items EQL 0) )
-       ok = ok;  // no change
-	 else
-       ok = false;
+   c2++;
+   if(p->previous==NULL) if(p!=mp_first) ok=false;
+   p=p->previous;
    }
+
+  if (c1 NEQL m_number_of_items) ok = false;
+  if (c2 NEQL m_number_of_items) ok = false;
+
+  if( (mp_first EQL NULL)  OR
+      (mp_last  EQL NULL) OR
+	  (mp_current EQL NULL)  OR
+      (m_number_of_items EQL 0) )
+  	 if( NOT ((mp_first EQL NULL) AND
+              (mp_last  EQL NULL) AND
+              (mp_current EQL NULL) AND
+              (m_number_of_items EQL 0) ))
+       ok = false;
 
   if(NOT ok) error (NN_SYSTEM_ERR,"dllist:does not pass checks");
   return ok;
+
+  #else
+
+  return true;
+
+  #endif
   }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -229,7 +253,7 @@ class dllist : public error_flag_client
     {
     if(mp_first EQL NULL)							// List empty?
      {
-     looks_ok();
+     check();
      p_new_wrapper->previous=NULL;
      p_new_wrapper->next=NULL;
      mp_first = p_new_wrapper;
@@ -259,7 +283,70 @@ class dllist : public error_flag_client
   return ok;
   }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+ template <class T>
+ bool dllist<T>::insert(int at_index, const T REF item)
+  {
+  if(NOT check()) return false;
+
+  T_wrapper PTR p_new;
+  p_new = new T_wrapper;
+  if(p_new == NULL) return false;
+
+  p_new->item = item;
+  p_new->previous=NULL;
+  p_new->next=NULL;
+
+  if(mp_first EQL NULL)						  	// list empty.
+ 	{
+ 	mp_first 			= p_new;
+ 	mp_last  			= p_new;
+ 	mp_current			= p_new;
+ 	m_number_of_items++;
+ 	return(check());
+ 	}
+
+   if(at_index <= 0)  							// insert at first index position, list not empty, new becomes first
+ 	{
+   	p_new->next = mp_first;
+   	mp_first->previous	= p_new;
+   	mp_first 			= p_new;
+   	m_number_of_items++;
+   	return(check());
+ 	}
+
+  if(at_index >= m_number_of_items)  			// insert at index last position, list not empty, new becomes last
+   	{
+   	p_new->previous 	= mp_last;
+   	mp_last->next 		= p_new;
+   	mp_last 			= p_new;
+   	m_number_of_items++;
+   	return(check());
+   	}
+
+  // insert at arbitrary internal index position, in non empty list
+
+  T_wrapper PTR p_existing = mp_first;
+  int c=0;
+  while ((p_existing!=NULL) AND (c<at_index))
+  	{
+  	p_existing=p_existing->next;
+  	c++;
+  	}
+
+  if(p_existing==NULL) return false;
+
+  p_new->next 					= p_existing;
+  p_new->previous 				= p_existing->previous;
+  p_existing->previous->next 	= p_new;
+  p_existing->previous			= p_new;
+  m_number_of_items++;
+
+  return(check());
+  }
+
+ //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
  template <class T>
  bool dllist<T>::reset()
@@ -272,7 +359,7 @@ class dllist : public error_flag_client
    c++;
    }
 
-  looks_ok();
+  check();
 
   mp_first = mp_current = mp_last = NULL;
   m_number_of_items = 0;

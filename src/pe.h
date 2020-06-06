@@ -33,10 +33,10 @@ class pe
 
  public:
 
- DATA input;					    // final input to this pe, may be accessed directly or result from input_function.
- DATA bias;						    // bias
- DATA output;					    // output of this pe.
- DATA misc;						    // helper register for misc use.
+ DATA input;					        // final input to this pe, may be accessed directly or result from input_function.
+ DATA bias;					        // bias
+ DATA output;					        // output of this pe.
+ DATA misc;						// helper register for misc use.
 
  pe();
  ~pe();
@@ -51,7 +51,7 @@ class pe
  DATA add_to_input (DATA value);        	        // directly add (arithmeticaly) the value to input (summation function)
  bool receive_input_value (DATA value);                 // append to list of input values (received_values), later to be processed by input_function for producing final input value.
  int  reset_received_values();                          // empties list of received input values (received_values).
- void move_input_to_output();                           // sometimes usefull, also sets input to 0 and resets received values.
+ void move_input_to_output();                           // sometimes useful, also sets input to 0 and resets received values.
 
  virtual void encode();                                 // should be overiden by derived classes. Default employs input->activation->threshold function sequence and places results to output
  virtual void recall();                                 // should be overiden by derived classes. Default employs input->activation->threshold function sequence and places results to output
