@@ -1,5 +1,5 @@
 # nnlib2Rcpp
-An R package with Neural Nets created using nnlib2. 
+An R package providing access to Neural Nets created using nnlib2. 
 
 ---
 
