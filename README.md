@@ -28,4 +28,4 @@ citation("nnlib2Rcpp")
 
 The nnlib2 used in this package is a collection of C++ classes and templates for creating NNs. For an example of NN implementation see the MAM related code. 
 
-We would like to add more classic NNs implementations in nnlib2 (and thus nnlib2Rcpp), or "NN" module-compatible NN components. Please let us know if interested to contribute.  
+We would like to add more classic neural network implementations in nnlib2 (and thus nnlib2Rcpp), as well as Class "NN"-compatible neural network components. Please let us know if interested to contribute.  
