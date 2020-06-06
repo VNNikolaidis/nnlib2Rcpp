@@ -14,6 +14,7 @@ Changes to nnlib2Rcpp version 0.1.2 (from 0.1.1)
 -	(Checked with R 3.6.3 and RTools35.)
 -	(Checked with R 4.0.0 and RTools40 (produces 1 extra NOTE).
 -	Removed redundant BP functions. All BP functionality is now implemented in BP module class (safer and more convenient for supervised methods).
+-	Removed redundant Supervised-LVQ functions. All Supervised-LVQ functionality is now implemented in LVQs module class (safer and more convenient for supervised methods). Unsupervised-LVQ is still implemented as a function (LVQu).
 -	Removed MAM functions. All MAM functionality is now implemented in MAM module class (safer and more convenient for supervised methods).
 -	Minor changes in nnlib2 (now uses nnlib2 v.0.1.5)
 -	Fixed LICENCE file (was incompatible with CRAN)
