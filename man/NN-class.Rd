@@ -48,26 +48,26 @@ n <- new("NN")
 n$add_layer("generic",4)
 # 2. add a set for connections that pass data unmodified:
 n$add_connection_set("pass-through")
-# 3. add another layer of 4 generic nodes:
+# 3. add another layer of 2 generic nodes:
 n$add_layer("generic",2)
 # 4. add a set for connections that pass data x weight:
 n$add_connection_set("wpass-through")
 # 5. add a layer of 1 generic node:
 n$add_layer("generic",1)
-# Create actual full connections in sets, with random weights in [0,1]:
+# Create actual full connections in sets, random initial weights in [0,1]:
 n$create_connections_in_sets(0,1)
 # Optionaly, show an outline of the topology:
 n$outline()
 
 # (1.C) use the network.
 
-# input some data, and run retreival operation for it:
+# input some data, and create output for it:
 n$input_at(1,c(10,20,30,40))
 n$recall_all(TRUE)
 # the final output:
 n$get_output_from(5)
 
-# (1.D) optionaly, examine the network:
+# (1.D) optionally, examine the network:
 
 # the input at first layer at position 1:
 n$get_input_at(1)
@@ -78,7 +78,7 @@ n$get_output_from(3)
 # Data is then passed multiplied by the random weights through
 # connections at position 4. The weights of these connections:
 n$get_weights_at(4)
-# Data is finaly summed together at the node of layer at position 5,
+# Data is finally summed together at the node of layer at position 5,
 # producing the final output, which (again) is:
 n$get_output_from(5)
 
@@ -133,14 +133,14 @@ plot(iris_data, pch=recalled_ids)
 
     \item{\code{add_layer( name, size )}:}{Setup a new \code{layer} component (a layer of processing nodes) and append it to the NN topology. Parameters are:
     \itemize{
-    \item{\code{name}}{: string, containing name (that also Specifies type) of new layer. Names of predefined layers currently include \code{'pe'}(same as \code{'generic'})\code{,'pass-through','which-max','MAM','LVQ-input','LVQ-output','BP-hidden','BP-output'} (additional names for user-defined components may be used, see note below.)}
+    \item{\code{name}}{: string, containing name (that also Specifies type) of new layer. Names of predefined layers currently include \code{'pe'}(same as \code{'generic'}), \code{'pass-through'}, \code{'which-max'}, \code{'MAM'}, \code{'LVQ-input'}, \code{'LVQ-output'}, \code{'BP-hidden'}, \code{'BP-output'} (additional names for user-defined components may be used, see note below.)}
     \item{\code{size}}{: integer, layer size i.e. number of \code{pe} (Processing Elements or nodes) to create in the layer.}
     }
     }
 
     \item{\code{add_connection_set( name )}:}{Create a new empty \code{connection_set} component (a set of connections between two layers). It does not connect any layers nor contain any connections between specific layer nodes. The set is appended to the NN topology. Parameters are:
     \itemize{
-    \item{\code{name}}{: string, containing name (that also specifies type) of new empty connection set. Names of predefined connection sets currently include \code{'generic',  'pass-through'}(which does not multiply weights), \code{'wpass-through'}(which does multiply weights), \code{'MAM','LVQ', 'BP'} (additional names for user-defined components may be used, see note below).}
+    \item{\code{name}}{: string, containing name (that also specifies type) of new empty connection set. Names of predefined connection sets currently include \code{'generic', 'pass-through'}(which does not multiply weights), \code{'wpass-through'}(which does multiply weights), \code{'MAM'}, \code{'LVQ'}, \code{'BP'} (additional names for user-defined components may be used, see note below).}
     }
     }
 
