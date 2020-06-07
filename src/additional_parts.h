@@ -13,6 +13,8 @@ public:
 void recall() {	pe::recall(); output = output + 10; }
 };
 
+typedef Layer < rjournal_pe > rjournal_layer;
+
 //--------------------------------------------------------------------------------------------
 // minimalistic examples of pe and layer creation:
 //--------------------------------------------------------------------------------------------
@@ -48,7 +50,9 @@ class example_connection_set_2: public Connection_Set<example_connection>
 
 layer PTR generate_custom_layer(string name, int size)
 {
-	if(name == "rjournal") 		  return new Layer<rjournal_pe>(name,size);
+	if(name == "rjournal")   	  return new rjournal_layer (name,size);
+
+	if(name == "example_layer_0") return new Layer<example_pe> (name, size);
 	if(name == "example_layer_1") return new example_pe_layer_1(name, size);
 	if(name == "example_layer_2") return new example_pe_layer_2(name, size);
 
@@ -62,6 +66,7 @@ return NULL;
 
 connection_set PTR generate_custom_connection_set(string name)
 {
+	if(name == "example_connection_set_0")  return new Connection_Set<example_connection>(name);
 	if(name == "example_connection_set_1")  return new example_connection_set_1(name);
 	if(name == "example_connection_set_2")  return new example_connection_set_2(name);
 

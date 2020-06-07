@@ -67,9 +67,9 @@ public:
 		// components are reported to the entire neural net.
 		// also add (register) the components to topology. These will be deleted when NN is deleted.
 
-		add_layer(new pe_layer ("Input layer",input_length));
-		add_connection_set(new mam_connection_set);
-		add_layer(new pe_layer ("Output layer",output_length));
+		add_layer( new Layer < pe > ( "Input layer" , input_length ) );
+		add_connection_set( new mam_connection_set );
+		add_layer( new Layer < pe > ( "Output layer", output_length ) );;
 
 		// setup connections for all layer+connection_set+layer sequences, fully connecting them
 		connect_consecutive_layers();
