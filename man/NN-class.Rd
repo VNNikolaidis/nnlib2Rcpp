@@ -25,10 +25,11 @@ Vasilis N. Nikolaidis <vnnikolaidis@gmail.com>
 \note{
 This R module maintains a generic neural network that can be manipulated using the provided methods. In addition to predefined, new neural network components can be defined and then employed by the \code{"NN"} module. Currently, definition of new components must be done in C++, requires the package source code (which includes the \pkg{nnlib2} C++ library of neural network base classes) and the ability to compile it.  In particular:
     \itemize{
-  \item Any new component type or class definition can be added to a single header file called "\code{additional_parts.h}" (which is included in the package source). All new components to be employed by the \code{NN} module must be defined in this file.
-  \item New \code{layer}, \code{connection_set}, \code{pe} or \code{connection} definitions must comply to the \pkg{nnlib2} base class hierarchy and structure and follow (at least loosely) the related guidelines. Note: some minimal examples of class and type definitions can be found in the "\code{additional_parts.h}" file itself.
+  \item Any new component type or class definition can be added to a single header file called "\code{additional_parts.h}" (which is included in the package source). All new components to be employed by the \code{NN} module must be defined in this file (or be accessible from functions in this file).
+  \item New \code{layer}, \code{connection_set}, \code{pe} or \code{connection} definitions must comply (at least loosely) to the \pkg{nnlib2} base class hierarchy and structure and follow the related guidelines. Note: some minimal examples of class and type definitions can be found in the "\code{additional_parts.h}" file itself.
   \item A textual name must be assigned to any new \code{layer} or \code{connection_set}, to be used as parameter in \code{NN} module methods that require a name to create a component. This can be as simple as a single line of code where given the textual name the corresponding component object is created and returned. This code must be added (as appropriate) to either \code{generate_custom_layer()} or \code{generate_custom_connection_set()} functions found in the same "\code{additional_parts.h}" header file. Note: example entries can be found in these functions at the "\code{additional_parts.h}" file.
 }
+Please consider submitting any components you create to be included in future versions of the package.
 }
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
@@ -179,7 +180,17 @@ plot(iris_data, pch=recalled_ids)
     }
     }
 
+   \item{\code{remove_single_connection( pos, con )}:}{
+   Remove a connection from a \code{connection_set}. Parameters are:
+    \itemize{
+    \item{\code{pos}}{: integer, position in topology of \code{connection_set}.}
+	\item{\code{con}}{: integer, connection to remove.}
+    }
+    }
+
    \item{\code{size()}:}{Returns neural network size, i.e. the number of components its topology.}
+
+   \item{\code{sizes()}:}{Returns sizes of components in topology.}
 
   \item{\code{component_ids()}:}{Returns an integer vector containing the ids of the components in topology (these ids are created at run-time and identify each NN component).}
 
@@ -220,7 +231,7 @@ plot(iris_data, pch=recalled_ids)
     }
     }
 
- \item{\code{get_input_at( pos )}:}{Get the current input of the component at specified topology index (depends on the implementation: for layers, this may be valid after the \code{pe}s (nodes) have performed their \code{input_function} on incoming values; \code{pe}s have an optional overidable \code{input_function} that collects all incoming values and produces a single value for further processing which is stored at an internal \code{input} register (whose value is retrieved here); by default \code{input_function} performs summation. If successful, returns NumericVector of final \code{input} values. Parameters are:
+ \item{\code{get_input_at( pos )}:}{Get the current input of the component at specified topology index (depends on the implementation: for layers, this may be valid after the \code{pe}s (nodes) have performed their \code{input_function} on incoming values; \code{pe}s have an overridable \code{input_function} that collects all incoming values and produces a single value for further processing which is stored at an internal \code{input} register (whose value is retrieved here); by default \code{input_function} performs summation. If successful, returns NumericVector of final \code{input} values. Parameters are:
     \itemize{
     \item{\code{pos}}{: integer, position in topology of component to use.}
     }

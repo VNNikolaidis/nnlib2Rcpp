@@ -40,6 +40,7 @@ class dllist : public error_flag_client
  bool goto_last ();							// move mp_current to last item, false if list is empty
  bool goto_next ();							// move mp_current to next item, false if at last of list, or list is empty
  bool goto_previous ();						// move mp_current to previous item, false if at first of list or list is empty
+ bool goto_item(int i);						// move mp_current to  specified item
  bool is_at_first_item ();					// check if mp_current is at the first item
  bool is_at_last_item ();					// check if mp_current is at the last item
  bool ended ();								// check if mp_current is NULL
@@ -201,6 +202,7 @@ class dllist : public error_flag_client
    }
 
   if (c1 NEQL m_number_of_items) ok = false;
+
   if (c2 NEQL m_number_of_items) ok = false;
 
   if( (mp_first EQL NULL)  OR
@@ -430,14 +432,20 @@ class dllist : public error_flag_client
   	if(mp_current->previous EQL NULL) 						// is this the first item ?
  		mp_first = mp_current->next;
 
+  	if(mp_current->previous NEQL NULL)						// this ΝΟΤ the first item.
+  		mp_current->previous->next = mp_current->next;
+
  	if(mp_current->next EQL NULL)							// is this the last item ?
  		mp_last = mp_current->previous;
+
+ 	if(mp_current->next NEQL NULL)							// this ΝΟΤ the last item.
+ 		mp_current->next->previous = mp_current->previous;
 
  	delete(mp_current);
  	m_number_of_items--;
  	mp_current = mp_first;
 
- 	return true;
+ 	return check();
  }
 
  //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -542,30 +550,40 @@ class dllist : public error_flag_client
   }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// move mp_current to  specified item
+
+template <class T>
+bool dllist<T>::goto_item(int i)
+ {
+	int c=0;
+
+	if((i<0) OR
+        (i>=m_number_of_items) OR
+        (NOT goto_first()) )
+	{
+		error(NN_SYSTEM_ERR,"dllist, empty list or attempt to access non-existant item");
+		return false;
+	}
+
+	while (i NEQL c)
+	{
+		if(NOT goto_next())
+		{
+			error(NN_SYSTEM_ERR,"dllist, attempt to access non-existant item");
+			return false;
+		}
+		c++;
+	}
+
+ return true;
+ }
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
  template <class T>
  T REF dllist<T>::operator [] (int i)
   {
-  int c=0;
-
-  if((i<0) OR
-	(i>=m_number_of_items) OR
-	(NOT goto_first()) )
-   {
-   error(NN_SYSTEM_ERR,"dllist, empty list or attempt to access non-existant item");
-   return m_junk;
-   }
-
-  while (i NEQL c)
-   {
-   if(NOT goto_next())
-    {
-    error(NN_SYSTEM_ERR,"dllist, attempt to access non-existant item");
-    return m_junk;
-    }
-   c++;
-   }
-
+  if(NOT goto_item(i)) return m_junk;
   return current();
   }
 

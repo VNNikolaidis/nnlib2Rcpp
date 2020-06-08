@@ -811,6 +811,7 @@ connection_set PTR nn::get_connection_set_at(int index)
   connection_set PTR p_cs = reinterpret_cast<connection_set PTR>(p_comp);
   return p_cs;
 }
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // patch.
 
@@ -819,6 +820,17 @@ bool nn::add_connection(int index, int source_pe, int destin_pe, DATA weight)
   connection_set PTR p_cs = get_connection_set_at(index);
   if(p_cs == NULL) return false;
   return p_cs->add_connection(source_pe,destin_pe,weight);
+  return false;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// patch.
+
+bool nn::remove_connection(int index, int connection_number)
+{
+  connection_set PTR p_cs = get_connection_set_at(index);
+  if(p_cs == NULL) return false;
+  return p_cs->remove_connection(connection_number);
   return false;
 }
 

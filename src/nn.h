@@ -132,6 +132,7 @@ class nn : public component, public data_receiver, public data_provider, public 
  layer PTR get_layer_at(int index);                                     // NULL if not found or not layer
  connection_set PTR get_connection_set_at(int index);                   // NULL if not found or not connection_set
  bool add_connection(int index, int source_pe, int destin_pe, DATA weight);
+ bool remove_connection(int index, int connection_number);
  bool get_input_data_at_component (int index, DATA * buffer, int dimension);
  bool get_weights_at_component (int index, DATA * buffer, int dimension);
  void change_is_ready_flag(bool new_state);                             // avoid using, nn should set m_nn_is_ready flag itself, once its setup is completed

@@ -38,7 +38,8 @@ public:
 	virtual	bool setup (string name, layer PTR source_layer, layer PTR destin_layer, bool PTR error_flag_to_use, bool fully_connect_layers = false) = 0;
     virtual	bool setup (string name, layer PTR source_layer, layer PTR destin_layer, bool PTR error_flag_to_use, bool fully_connect_layers, DATA min_random_weight, DATA max_random_weight) = 0;
 	virtual bool add_connection(const int source_pe, const int destin_pe, const DATA initial_weight) = 0;
- };
+	virtual bool remove_connection(int connection_number) = 0;
+};
 
 /*-----------------------------------------------------------------------*/
 /* Neural connection set template for any CONNECTION_TYPE       		 */
@@ -103,6 +104,7 @@ class Connection_Set : public connection_set
  void recall();													// (virtual in component) may be overiden by derived classes with specific layer functiobality.
 
  bool add_connection(const int source_pe, const int destin_pe, const DATA initial_weight);
+ bool remove_connection(int connection_number);
  };
 
 
@@ -405,7 +407,6 @@ bool Connection_Set<CONNECTION_TYPE>::connection_properties (
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-
 template <class CONNECTION_TYPE>
 bool Connection_Set<CONNECTION_TYPE>::add_connection(const int source_pe, const int destin_pe, const DATA initial_weight)
 {
@@ -416,6 +417,19 @@ if(NOT connections.append()) return false;
 CONNECTION_TYPE REF c = connections.last();
 c.setup(this,source_pe,destin_pe,initial_weight);
 return true;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+template <class CONNECTION_TYPE>
+bool Connection_Set<CONNECTION_TYPE>::remove_connection(int connection_number)
+{
+	if(connections.goto_item(connection_number))
+		{
+		connections.remove_current();
+		return true;
+		}
+	return false;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -244,6 +244,16 @@ public:
 		return m_nn.add_connection(pos-1,source_pe-1,destin_pe-1,weight);
 	}
 
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// remove a connection at a set that already connects two layers R to Cpp indexes converted)
+
+	bool remove_single_connection(int pos, int con)
+	{
+		return m_nn.remove_connection(pos-1,con-1);
+	}
+
+
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 	int size() {return m_nn.size();}
@@ -257,6 +267,18 @@ public:
 		x = IntegerVector(m_nn.size());
 		for(int i = 0;i<m_nn.size(); i++ )
 			x[i]=m_nn.component_id_from_topology_index(i);
+		return x;
+	}
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+	IntegerVector sizes()
+	{
+		IntegerVector x;
+		if(m_nn.size()<=0) return x;
+		x = IntegerVector(m_nn.size());
+		for(int i = 0;i<m_nn.size(); i++ )
+			x[i]=m_nn.component_from_topology_index(i)->size();
 		return x;
 	}
 
@@ -401,12 +423,14 @@ RCPP_MODULE(class_NN) {
 	.constructor()
 // 	.constructor<NumericMatrix,IntegerVector,int>()
     .method( "size",         							&NN::size, 		      							"Number of components in NN topology" )
+    .method( "sizes",         							&NN::sizes, 		      						"Sizes of components in NN topology" )
     .method( "add_layer", 								&NN::add_layer,     							"Append layer component to topology" )
     .method( "add_connection_set", 						&NN::add_connection_set,  						"Append set of connections to topology (disconnected and empty of connections)" )
     .method( "create_connections_in_sets", 				&NN::create_connections_in_sets,				"Create connections to fully connect consequent layers" )
     .method( "connect_layers_at",						&NN::connect_layers_at,							"Add connection set for two layers, no connections added" )
     .method( "fully_connect_layers_at", 				&NN::fully_connect_layers_at,					"Add connection set that fully connects two layers with connections" )
     .method( "add_single_connection",					&NN::add_single_connection,						"Add a connection to a set that already connects two layers" )
+    .method( "remove_single_connection",				&NN::remove_single_connection,					"Remove a connection from a set" )
     .method( "component_ids",   						&NN::component_ids, 	      					"Vector of topology component ids" )
     .method( "input_at",        						&NN::input_at,     								"Input vector to specified topology index" )
     .method( "encode_at",       						&NN::encode_at, 	      						"Trigger encode for specified topology index" )
