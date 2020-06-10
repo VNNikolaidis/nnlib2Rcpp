@@ -395,6 +395,22 @@ public:
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// Get weight for given connection.
+
+	DATA get_weight_at(int pos, int connection)
+	{
+		return m_nn.get_weight_at_component(pos-1,connection-1);
+	}
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// Get weight for given connection.
+
+	bool set_weight_at(int pos, int connection, DATA value)
+	{
+		return m_nn.set_weight_at_component(pos-1,connection-1,value);
+	}
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 	void print()
 	{
@@ -440,6 +456,8 @@ RCPP_MODULE(class_NN) {
     .method( "get_output_from",     					&NN::get_output_from,    						"Output vector from specified topology index" )
     .method( "get_input_at",     						&NN::get_input_at,		   						"Get input (pe variable value or connection input) in specified topology index" )
     .method( "get_weights_at",     						&NN::get_weights_at,	   						"Get connection weights (connection variable value) in specified topology index" )
+    .method( "get_weight_at",     						&NN::get_weight_at,	   							"Get connection weight for given connection in specified topology index" )
+    .method( "set_weight_at",     						&NN::set_weight_at,	   							"Set connection weight for given connection in specified topology index" )
     .method( "print",     								&NN::print,         							"Print internal NN state" )
     .method( "outline",     							&NN::outline,         							"Print an outline of the NN" )
 ;

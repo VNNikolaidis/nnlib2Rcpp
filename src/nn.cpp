@@ -904,6 +904,26 @@ bool nn::get_weights_at_component (int index, DATA * buffer, int dimension)
  }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// patch. Returns 0 if not successful
+
+DATA nn::get_weight_at_component(int index, int connection_number)
+{
+  connection_set PTR p_cs = get_connection_set_at(index);
+  if(p_cs==NULL) {warning("Invalid connection set"); return 0;}
+  return p_cs->get_connection_weight(connection_number);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// patch
+
+bool nn::set_weight_at_component(int index, int connection_number, DATA weight)
+{
+  connection_set PTR p_cs = get_connection_set_at(index);
+  if(p_cs==NULL) {warning("Invalid connection set"); return 0;}
+  return p_cs->set_connection_weight(connection_number, weight);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // patch: avoid using, nn should set m_nn_is_ready flag itself, once its setup is completed
 
 void nn::change_is_ready_flag(bool new_state)

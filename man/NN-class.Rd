@@ -243,6 +243,21 @@ plot(iris_data, pch=recalled_ids)
     }
     }
 
+ \item{\code{get_weight_at( pos, connection )}:}{Get the current weight of a connection in component (\code{connection_set}) at specified topology index. If successful, returns weight, otherwise 0. Parameters are:
+    \itemize{
+    \item{\code{pos}}{: integer, position in topology of component to use.}
+    \item{\code{connection}}{: connection to use.}
+    }
+    }
+
+ \item{\code{set_weight_at( pos, connection, value )}:}{Set the weight of a connection in component (\code{connection_set}) at specified topology index. If successful, returns TRUE. Parameters are:
+    \itemize{
+    \item{\code{pos}}{: integer, position in topology of component to use.}
+    \item{\code{connection}}{: connection to use.}
+    \item{\code{value}}{: new weight for connection.}
+    }
+    }
+
 \item{\code{print( )}:}{Print internal NN state, including all components in topology.}
 
 \item{\code{outline( )}:}{Print a summary description of all components in topology.}
