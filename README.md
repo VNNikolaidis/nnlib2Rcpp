@@ -36,4 +36,4 @@ Future goals:
 - to add "NN"-compatible neural network components. 
 - to parallelize components.
 
-Let me know if interested to contribute, or want to add your implementations to the package.
+Let me know if interested to contribute, or want to add your neural network components to the package.
