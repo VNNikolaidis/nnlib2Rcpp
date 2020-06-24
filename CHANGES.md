@@ -26,5 +26,14 @@ Changes to nnlib2Rcpp version 0.1.3 (from 0.1.2)
 
 ---
 
+Changes to nnlib2Rcpp version 0.1.4 (from 0.1.3)
+-	(checked on Linux Mint 19.3 with R 3.6.3)
+-	(checked with R 4.0.0 and RTools40 (produces 1 extra NOTE).
+-	includes new nnlib2 v.0.2.0.
+-	added module "NN" which allows creation and control of custom NNs from R using predefined components. It also provides fixed method for adding user-defined NN components which can be used in the module.
+
+---
+
 Changes to nnlib2Rcpp version 0.1.5 (from 0.1.4)
--	added some methods to module "NN"
+-	added some methods to module "NN" (get_weight_at, set_weight_at)
+
