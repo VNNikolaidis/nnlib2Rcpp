@@ -36,4 +36,5 @@ Changes to nnlib2Rcpp version 0.1.4 (from 0.1.3)
 
 Changes to nnlib2Rcpp version 0.1.5 (from 0.1.4)
 -	added some methods to module "NN" (get_weight_at, set_weight_at)
+-	added some methods to module "NN" (set_misc_values_at)
 

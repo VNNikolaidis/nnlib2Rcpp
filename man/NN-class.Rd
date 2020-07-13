@@ -258,6 +258,13 @@ plot(iris_data, pch=recalled_ids)
     }
     }
 
+ \item{\code{set_misc_values_at( pos, data_in )}:}{Set the values in the \code{misc} data register that \code{pe} and \code{connection} objects maintain, for objects at specified topology index. If successful, returns TRUE. Parameters are:
+    \itemize{
+    \item{\code{pos}}{: integer, position in topology of component to use.}
+    \item{\code{data_in}}{: NumericVector, data to be used for new values in \code{misc} registers (sizes must match).}
+    }
+    }
+
 \item{\code{print( )}:}{Print internal NN state, including all components in topology.}
 
 \item{\code{outline( )}:}{Print a summary description of all components in topology.}

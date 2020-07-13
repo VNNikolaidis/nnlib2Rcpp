@@ -36,6 +36,7 @@ public:
 	virtual pe REF destin_pe(int c)  = 0;
 	virtual DATA get_connection_weight(int connection) = 0;
 	virtual bool set_connection_weight(int connection, DATA value) = 0;
+	virtual bool set_misc(DATA * data, int dimension) = 0;
 	virtual	bool setup (layer PTR source_layer, layer PTR destin_layer, bool PTR error_flag_to_use, bool fully_connect_layers = false) = 0;
 	virtual	bool setup (string name, layer PTR source_layer, layer PTR destin_layer, bool PTR error_flag_to_use, bool fully_connect_layers = false) = 0;
     virtual	bool setup (string name, layer PTR source_layer, layer PTR destin_layer, bool PTR error_flag_to_use, bool fully_connect_layers, DATA min_random_weight, DATA max_random_weight) = 0;
@@ -86,6 +87,9 @@ class Connection_Set : public connection_set
  void set_connection_weights (DATA value);
  void set_connection_weights_random(DATA min_random_value, DATA max_random_value);
  bool set_connection_weight (const int source_pe, const int destin_pe, const DATA new_weight);
+
+ // set values in misc internal register variable (found in connections)
+ bool set_misc(DATA * data, int dimension);
 
  string description ();
  void draw ();
@@ -588,6 +592,26 @@ template <class CONNECTION_TYPE>
 bool Connection_Set<CONNECTION_TYPE>::has_destin_layer()
 {
 return (mp_destin_layer != NULL);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// set misc variable in connections
+
+template <class CONNECTION_TYPE>
+bool Connection_Set<CONNECTION_TYPE>::set_misc(DATA * data, int dimension)
+{
+	if (NOT no_error()) return false;
+	if (data == NULL) return false;
+	if (dimension NEQL size())
+	{ warning ("Incompatible vector dimension (number of connections vs vector length)");
+		return false; }
+	if(NOT connections.goto_first()) return false;
+	for (int i = 0; i < dimension; i++)
+		{
+		connections.current().misc = data[i];                    // sets data to respective connection misc
+		if(NOT connections.goto_next()) i=dimension;
+		}
+	return true;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

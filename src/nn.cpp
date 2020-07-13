@@ -924,6 +924,18 @@ bool nn::set_weight_at_component(int index, int connection_number, DATA weight)
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// patch
+
+bool nn::set_misc_at_component(int index, DATA * data, int dimension)
+{
+  layer PTR p_lay = get_layer_at(index);
+  if (p_lay != NULL) return p_lay->set_misc(data,dimension);
+  connection_set PTR p_cs = get_connection_set_at(index);
+  if (p_cs != NULL) return p_cs->set_misc(data,dimension);
+  return false;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // patch: avoid using, nn should set m_nn_is_ready flag itself, once its setup is completed
 
 void nn::change_is_ready_flag(bool new_state)

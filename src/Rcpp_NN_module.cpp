@@ -293,7 +293,6 @@ public:
 		return false;
 	}
 
-
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// Trigger encode for component at specified topology index (R to Cpp index converted)
 
@@ -411,6 +410,15 @@ public:
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// Set "misc" register values for PEs in given layer (R to Cpp index converted)
+
+	bool set_misc_values_at(int pos, NumericVector data_in)
+	{
+		double * fpdata_in  = REAL(data_in);                    // my (lame?) way to interface with R, cont.)
+		return m_nn.set_misc_at_component(pos-1,fpdata_in,data_in.length());
+	}
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 	void print()
 	{
@@ -458,7 +466,8 @@ RCPP_MODULE(class_NN) {
     .method( "get_weights_at",     						&NN::get_weights_at,	   						"Get connection weights (connection variable value) in specified topology index" )
     .method( "get_weight_at",     						&NN::get_weight_at,	   							"Get connection weight for given connection in specified topology index" )
     .method( "set_weight_at",     						&NN::set_weight_at,	   							"Set connection weight for given connection in specified topology index" )
-    .method( "print",     								&NN::print,         							"Print internal NN state" )
+	.method( "set_misc_values_at",     					&NN::set_misc_values_at,	   					"Set misc register values in elements in specified topology index" )
+	.method( "print",     								&NN::print,         							"Print internal NN state" )
     .method( "outline",     							&NN::outline,         							"Print an outline of the NN" )
 ;
 }

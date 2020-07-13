@@ -137,8 +137,8 @@ class nn : public component, public data_receiver, public data_provider, public 
  bool get_weights_at_component (int index, DATA * buffer, int dimension);
  DATA get_weight_at_component(int index, int connection_number);        // returns 0 if not successful
  bool set_weight_at_component(int index, int connection_number, DATA weight);
+ bool set_misc_at_component(int index, DATA * data, int dimension);
  void change_is_ready_flag(bool new_state);                             // avoid using, nn should set m_nn_is_ready flag itself, once its setup is completed
-
  };
 
 }   // end of namespace nnlib2
