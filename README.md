@@ -31,7 +31,10 @@ The nnlib2 used in this package is a collection of C++ classes and templates for
 ---
 
 For creating new NN components and models see also: 
-https://r-posts.com/creating-custom-neural-networks-with-nnlib2rcpp/   ( https://wp.me/p8rgs6-sh )
+
+https://r-posts.com/creating-custom-neural-networks-with-nnlib2rcpp/
+
+( https://wp.me/p8rgs6-sh )
 
 ---
 
