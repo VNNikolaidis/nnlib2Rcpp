@@ -134,14 +134,14 @@ plot(iris_data, pch=recalled_ids)
 
     \item{\code{add_layer( name, size )}:}{Setup a new \code{layer} component (a layer of processing nodes) and append it to the NN topology. Parameters are:
     \itemize{
-    \item{\code{name}}{: string, containing name (that also Specifies type) of new layer. Names of predefined layers currently include \code{'pe'}(same as \code{'generic'}), \code{'pass-through'}, \code{'which-max'}, \code{'MAM'}, \code{'LVQ-input'}, \code{'LVQ-output'}, \code{'BP-hidden'}, \code{'BP-output'} (additional names for user-defined components may be used, see note below.)}
+    \item{\code{name}}{: string, containing name (that also Specifies type) of new layer. Names of predefined layers currently include \code{'pe'}(same as \code{'generic'}), \code{'pass-through'}, \code{'which-max'}, \code{'MAM'}, \code{'LVQ-input'}, \code{'LVQ-output'}, \code{'BP-hidden'}, \code{'BP-output'}, \code{'perceptron'} (additional names for user-defined components may be used, see note below.)}
     \item{\code{size}}{: integer, layer size i.e. number of \code{pe} (Processing Elements or nodes) to create in the layer.}
     }
     }
 
     \item{\code{add_connection_set( name )}:}{Create a new empty \code{connection_set} component (a set of connections between two layers). It does not connect any layers nor contain any connections between specific layer nodes. The set is appended to the NN topology. Parameters are:
     \itemize{
-    \item{\code{name}}{: string, containing name (that also specifies type) of new empty connection set. Names of predefined connection sets currently include \code{'generic', 'pass-through'}(which does not multiply weights), \code{'wpass-through'}(which does multiply weights), \code{'MAM'}, \code{'LVQ'}, \code{'BP'} (additional names for user-defined components may be used, see note below).}
+    \item{\code{name}}{: string, containing name (that also specifies type) of new empty connection set. Names of predefined connection sets currently include \code{'generic', 'pass-through'}(which does not multiply weights), \code{'wpass-through'}(which does multiply weights), \code{'MAM'}, \code{'LVQ'}, \code{'BP'}, \code{'perceptron'} (additional names for user-defined components may be used, see note below).}
     }
     }
 
