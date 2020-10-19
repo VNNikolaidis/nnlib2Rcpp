@@ -6,7 +6,7 @@ An R package providing access to Neural Networks created using nnlib2.
 A collection of Artificial Neural Networks (NNs or ANNs or ANSs) created using the 'nnlib2' C++ library.
 
 Currently includes predefined versions of BP, Autoencoder, MAM, LVQ (supervised and unsupervised). 
-All NNs are created using nnlib2 (a C++ library for implementing NNs) and interfaced with R via RCpp.
+All NNs are created using 'nnlib2' (a C++ library of classes for implementing NNs) and interfaced with R via RCpp.
 
 The package also provides the NN R module (Class "NN") which allows creation and control of custom NNs configurations from R using NN components (predefined or user-defined) created using 'nnlib2'. To add new user-defined NN components (layers, nodes, connection and sets of connections) see the "NN" component documentation (type ?NN in R). Note: this process requires some familiarity with C++.
 
@@ -36,7 +36,7 @@ citation("nnlib2Rcpp")
 
 ---
 
-The ‘nnlib’ library used (and included) in this package is a collection of C++ classes and templates for creating NNs. For an example of NN implementation see the MAM related code. This library is also available as a standalone project, in GitHub repository (https://github.com/VNNikolaidis/nnlib2). For a (simplified) class-diagram of significant nnlib2 classes and templates see: https://github.com/VNNikolaidis/nnlib2/blob/master/misc/diagram%20of%20main%20classes.png
+The ‘nnlib’ library used (and included) in this package is a collection of C++ classes and templates for creating NNs. This library is also available as a standalone project, in GitHub repository (https://github.com/VNNikolaidis/nnlib2). For a (simplified) class-diagram of significant nnlib2 classes and templates see: https://github.com/VNNikolaidis/nnlib2/blob/master/misc/diagram%20of%20main%20classes.png
 
 ---
 
@@ -45,6 +45,8 @@ For creating new NN components and models in nnlib2 and nnlib2Rcpp see also:
 https://r-posts.com/creating-custom-neural-networks-with-nnlib2rcpp/
 
 ( https://wp.me/p8rgs6-sh )
+
+The included Matrix Associative Memory (MAM) related code is also a good example due to the model's simplicity.
 
 ---
 
