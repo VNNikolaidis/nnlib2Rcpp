@@ -8,7 +8,7 @@ A collection of Artificial Neural Networks (NNs or ANNs or ANSs) created using t
 Currently includes predefined versions of BP, Autoencoder, MAM, LVQ (supervised and unsupervised). 
 All NNs are created using 'nnlib2' (a C++ library of classes for implementing NNs) and interfaced with R via RCpp.
 
-The package also provides the NN R module (Class "NN") which allows creation and control of custom NNs configurations from R using NN components (predefined or user-defined) created using 'nnlib2'. To add new user-defined NN components (layers, nodes, connection and sets of connections) see the "NN" component documentation (type ?NN in R). Note: this process requires some familiarity with C++.
+The package also provides the NN R module (Class "NN") which allows creation and control of custom NNs configurations from R using NN components (predefined or user-defined) created using 'nnlib2'. To add new user-defined NN components (layers, nodes, connections, sets of connections etc) see the "NN" component documentation (type ?NN in R). Note: this process requires some familiarity with C++.
 
 ---
 
