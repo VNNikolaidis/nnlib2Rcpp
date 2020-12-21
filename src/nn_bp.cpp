@@ -250,9 +250,10 @@ bool bp_nn::setup(int input_dimension, int output_dimension)
  bp_connection_set * new_connection_set;
  int cparam;
 
+ reset(false);
+
  if(no_error())
   {
-  reset();
   if(parameters.number_of_items() < 1)
    {
    error (NN_SYSTEM_ERR,"Additional parameters required for BP");
