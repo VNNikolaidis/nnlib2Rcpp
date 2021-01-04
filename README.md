@@ -28,6 +28,12 @@ For copyright information see LICENSE.md file or DESCRIPTION+LICENSE files (as i
 
 ---
 
+Once installed, package help (including examples) can be viewed using the following R command
+
+    help(package='nnlib2Rcpp')
+
+---
+
 For information on citing this package use the following R command for information:
 
     citation("nnlib2Rcpp")
