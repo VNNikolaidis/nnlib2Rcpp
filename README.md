@@ -14,17 +14,15 @@ The package also provides the NN R module (Class "NN") which allows creation and
 
 To install:
 
-(a) From CRAN Repository: The CRAN (stable) version of this package can be installed the usual way, i.e. by the following R command:
+(a) From CRAN Repository: The CRAN (stable) version of this package can be installed the usual way, i.e. by invoking the following R command:
 
-install.packages("nnlib2Rcpp") 
+    install.packages("nnlib2Rcpp") 
 
 (b) From GitHub: To add the GitHub (latest) version of this package to your R installation, use the following R commands:
 
-library(devtools) 
+    library(devtools) 
+    install_github("VNNikolaidis/nnlib2Rcpp")
 
-install_github("VNNikolaidis/nnlib2Rcpp")
-
----
 
 For copyright information see LICENSE.md file or DESCRIPTION+LICENSE files (as imposed by R package format).
 
