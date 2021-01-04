@@ -23,9 +23,6 @@ To install:
     library(devtools) 
     install_github("VNNikolaidis/nnlib2Rcpp")
 
-
-For copyright information see LICENSE.md file or DESCRIPTION+LICENSE files (as imposed by package format for CRAN submissions).
-
 ---
 
 Once installed, package help (including examples) can be viewed using the following R command
@@ -37,6 +34,10 @@ Once installed, package help (including examples) can be viewed using the follow
 For information on citing this package use the following R command for information:
 
     citation("nnlib2Rcpp")
+
+---
+
+For copyright information see LICENSE.md file or DESCRIPTION+LICENSE files (as imposed by package format for CRAN submissions).
 
 ---
 
