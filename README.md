@@ -23,13 +23,9 @@ To install:
     library(devtools) 
     install_github("VNNikolaidis/nnlib2Rcpp")
 
----
-
 Once installed, package help (including examples) can be viewed using the following R command
 
     help(package='nnlib2Rcpp')
-
----
 
 For information on citing this package use the following R command for information:
 
