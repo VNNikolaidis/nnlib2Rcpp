@@ -24,13 +24,13 @@ To install:
     install_github("VNNikolaidis/nnlib2Rcpp")
 
 
-For copyright information see LICENSE.md file or DESCRIPTION+LICENSE files (as imposed by R package format).
+For copyright information see LICENSE.md file or DESCRIPTION+LICENSE files (as imposed by package format for CRAN submissions).
 
 ---
 
 For information on citing this package use the following R command for information:
 
-citation("nnlib2Rcpp")
+    citation("nnlib2Rcpp")
 
 ---
 
