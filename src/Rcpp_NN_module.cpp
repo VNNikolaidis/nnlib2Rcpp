@@ -156,7 +156,6 @@ public:
 	NN()
 	{
 		TEXTOUT << "NN module created, now add components.\n";
-		TEXTOUT << "(Note: NN is under development (beta).)\n";
 		m_nn.reset();
 	}
 
