@@ -28,6 +28,7 @@ Once installed, for package help (including documentation and examples for each 
     help(package='nnlib2Rcpp')
 
 A reference manual in PDF format (for the last version in CRAN) can be found here:
+
 https://cran.r-project.org/web/packages/nnlib2Rcpp/nnlib2Rcpp.pdf
 
 For information on citing this package use the following R command for information:
