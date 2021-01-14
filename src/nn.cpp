@@ -60,10 +60,12 @@ bool nn::set_additional_parameters(double param1,  ...)
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-void nn::reset()
+void nn::reset(bool clear_additional_parameters)
  {
  m_nn_is_ready = false;
- parameters.reset();
+
+ if(clear_additional_parameters) parameters.reset();
+
  topology.set_error_flag(my_error_flag());
 
  reset_error();

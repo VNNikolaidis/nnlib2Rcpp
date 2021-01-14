@@ -14,33 +14,36 @@ The package also provides the NN R module (Class "NN") which allows creation and
 
 To install:
 
-(a) From CRAN Repository: The CRAN (stable) version of this package can be installed the usual way, i.e. by the following R command:
+(a) From CRAN Repository: The CRAN (stable) version of this package can be installed the usual way, i.e. by invoking the following R command:
 
-install.packages("nnlib2Rcpp") 
+    install.packages("nnlib2Rcpp") 
 
 (b) From GitHub: To add the GitHub (latest) version of this package to your R installation, use the following R commands:
 
-library(devtools) 
+    library(devtools) 
+    install_github("VNNikolaidis/nnlib2Rcpp")
 
-install_github("VNNikolaidis/nnlib2Rcpp")
+Once installed, for package help (including documentation and examples for each function or class provided by nnlib2Rcpp) use the following R command:
 
----
+    help(package='nnlib2Rcpp')
 
-For copyright information see LICENSE.md file or DESCRIPTION+LICENSE files (as imposed by R package format).
+A reference manual in PDF format (for the last version in CRAN) can be found here:
 
----
+https://cran.r-project.org/web/packages/nnlib2Rcpp/nnlib2Rcpp.pdf
 
 For information on citing this package use the following R command for information:
 
-citation("nnlib2Rcpp")
+    citation("nnlib2Rcpp")
 
 ---
 
-The ‘nnlib’ library used (and included) in this package is a collection of C++ classes and templates for creating NNs. This library is also available as a standalone project, in GitHub repository (https://github.com/VNNikolaidis/nnlib2). For a (simplified) class-diagram of significant nnlib2 classes and templates see: https://github.com/VNNikolaidis/nnlib2/blob/master/misc/diagram%20of%20main%20classes.png
+For copyright information see LICENSE.md file or DESCRIPTION+LICENSE files (as imposed by package format for CRAN submissions).
 
 ---
 
-For creating new NN components and models in nnlib2 and nnlib2Rcpp see also: 
+The ‘nnlib2’ library used (and included) in this package is a collection of C++ classes and templates for creating NNs. This library is also available as a standalone project, in GitHub repository (https://github.com/VNNikolaidis/nnlib2). For a (simplified) class-diagram of significant nnlib2 classes and templates see: https://github.com/VNNikolaidis/nnlib2/blob/master/misc/diagram%20of%20main%20classes.png
+
+For implementing new NN components and models in nnlib2 that can be used in nnlib2Rcpp, see also: 
 
 https://r-posts.com/creating-custom-neural-networks-with-nnlib2rcpp/
 
