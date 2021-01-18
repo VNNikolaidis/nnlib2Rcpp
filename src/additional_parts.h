@@ -43,18 +43,18 @@ public:
 typedef Connection_Set< perceptron_connection > perceptron_connection_set;
 
 //--------------------------------------------------------------------------------------------
-// example (for R-Journal article): a pe that adds 10 to the sum of inputs
+// example: a (useless) pe that just adds 10 to the sum of its inputs when recalling data
 
-class rjournal_pe : public pe
+class JustAdd10_pe : public pe
 {
 public:
 void recall() {	pe::recall(); output = output + 10; }
 };
 
-typedef Layer < rjournal_pe > rjournal_layer;
+typedef Layer < JustAdd10_pe > JustAdd10_layer;
 
 //--------------------------------------------------------------------------------------------
-// minimalistic examples of pe and layer creation:
+// minimal examples of pe and layer definitions:
 //--------------------------------------------------------------------------------------------
 
 class example_pe : public pe {};
@@ -68,7 +68,7 @@ class example_pe_layer_2: public Layer<example_pe>
  };
 
 //--------------------------------------------------------------------------------------------
-// minimalistic examples of connection and connection_set creation:
+// minimal examples of connection and connection_set definitions:
 //--------------------------------------------------------------------------------------------
 
 class example_connection: public connection {};
@@ -88,7 +88,7 @@ class example_connection_set_2: public Connection_Set<example_connection>
 
         layer PTR generate_custom_layer(string name, int size)
 {
-	if(name == "rjournal")          return new rjournal_layer (name,size);
+	if(name == "JustAdd10")          return new JustAdd10_layer (name,size);
         if(name == "perceptron")        return new perceptron_layer(name,size);
 
 	if(name == "example_layer_0")   return new Layer<example_pe> (name, size);

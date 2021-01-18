@@ -36,7 +36,7 @@ public:
 // define MAM components (layers containing generic pes and connections_sets of mam_connections)
 
 typedef Layer<pe> mam_layer;								// not used below, MAM layers are generic
-typedef Connection_Set<mam_connection> mam_connection_set;  // not used below, MAM connection sets simply consist of MAM connections
+typedef Connection_Set<mam_connection> mam_connection_set;  // MAM connection sets simply consist of MAM connections
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // define the actual MAM nn class here:
@@ -74,11 +74,10 @@ public:
 		// setup connections for all layer+connection_set+layer sequences, fully connecting them
 		connect_consecutive_layers();
 
-//		set_component_for_input(0);				// optional (as it is the first layer)
-//		set_component_for_output(2);			// optional (as it is the last layer)
+//		set_component_for_input(0);				// optional (not needed, by default it is the first layer component, here component #0)
+//		set_component_for_output(2);			// optional (not needed, by default it is the last  layer component, here component#2)
 
 		return no_error();
-
 		}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
