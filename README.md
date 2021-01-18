@@ -27,7 +27,7 @@ Once installed, for package help (including documentation and examples for each 
 
     help(package='nnlib2Rcpp')
 
-More instructions on using nnlib2 and nnlib2Rcpp can be found in file "manual.pdf" of the repository, i.e. here:
+More instructions on using 'nnlib2' and 'nnlib2Rcpp' can be found in file "manual.pdf" of the repository, i.e. here:
 
 https://github.com/VNNikolaidis/nnlib2Rcpp/blob/master/manual.pdf
 
