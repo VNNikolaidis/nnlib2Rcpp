@@ -27,6 +27,14 @@ Once installed, for package help (including documentation and examples for each 
 
     help(package='nnlib2Rcpp')
 
+More instructions on using nnlib2 and nnlib2Rcpp can be found in file "manual.pdf" of the repository, i.e. here:
+
+https://github.com/VNNikolaidis/nnlib2Rcpp/blob/master/manual.pdf
+
+A reference manual of the package commands (PDF format, for the package version on CRAN), can be found here:
+
+https://cran.r-project.org/web/packages/nnlib2Rcpp/nnlib2Rcpp.pdf
+
 A reference manual in PDF format (for the last version in CRAN) can be found here:
 
 https://cran.r-project.org/web/packages/nnlib2Rcpp/nnlib2Rcpp.pdf
