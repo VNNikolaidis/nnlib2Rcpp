@@ -219,6 +219,24 @@ plot(iris_data, pch=recalled_ids)
     }
     }
 
+ \item{\code{encode_dataset_unsupervised( data, pos, fwd, epochs )}:}{Encode a dataset using unsupervised training. A faster method to encode a data set. All the components in the NN topology will perform 'encode' in specified direction. Returns TRUE if successful. Parameters are:
+    \itemize{
+    \item{\code{data}}{: numeric matrix, containing input vectors as rows.}
+    \item{\code{pos}}{: integer, position in topology of component to receive input vectors.}
+    \item{\code{fwd}}{: logical, indicates direction, TRUE to recall forwards (first-to-last component), FALSE to recall backwards (last-to-first component).}
+    \item{\code{epochs}}{: integer, number of training epochs (encoding repetitions of the entire dataset).}
+    }
+    }
+
+ \item{\code{recall_dataset( data_in, input_pos, output_pos, fwd )}:}{Recall (map, retrieve output for) a dataset. A faster method to recall an entire data set. All the components in the NN topology will perform 'recall' in specified direction. Returns numeric matrix containing corresponding output. Parameters are:
+    \itemize{
+    \item{\code{data_in}}{: numeric matrix, containing input vectors as rows.}
+    \item{\code{input_pos}}{: integer, position in topology of component to receive input vectors.}
+    \item{\code{output_pos}}{: integer, position in topology of component to produce output.}
+    \item{\code{fwd}}{: logical, indicates encoding direction, TRUE to encode forwards (first-to-last component), FALSE to encode backwards (last-to-first component).}
+    }
+    }
+
  \item{\code{recall_all( fwd )}:}{Trigger the recall (mapping, data retrieval) operation of all the components in the NN topology. Returns TRUE if successful. Parameters are:
     \itemize{
     \item{\code{fwd}}{: logical, set to TRUE to recall forwards (first-to-last component), FALSE to recall backwards (last-to-first component).}

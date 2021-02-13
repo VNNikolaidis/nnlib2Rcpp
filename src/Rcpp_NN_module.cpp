@@ -170,12 +170,14 @@ public:
 		layer PTR p = generate_layer(name, size, 0);
 		if(p!=NULL)
 			{
-			m_nn.add_layer(p);
-			TEXTOUT << "Topology changed:\n";
-			outline();
-			return true;
+			if(m_nn.add_layer(p))
+				{
+				TEXTOUT << "Topology changed:\n";
+				outline();
+				return true;
+				}
+			delete p;
 			}
-
 		m_nn.change_is_ready_flag(false);
 		TEXTOUT << "Note: Adding layer failed.\n";
 		return false;
@@ -194,10 +196,13 @@ public:
         connection_set PTR p = generate_connection_set(type, 0);
         if(p!=NULL)
          {
-         m_nn.add_connection_set(p);
-         TEXTOUT << "Topology changed:\n";
-         outline();
-         return true;
+         if(m_nn.add_connection_set(p))
+        	{
+        	TEXTOUT << "Topology changed:\n";
+        	outline();
+        	return true;
+        	}
+         delete p;
          }
 
 		m_nn.change_is_ready_flag(false);
@@ -323,6 +328,105 @@ public:
 	{
 		return m_nn.call_component_recall_all(fwd);
 	}
+
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// Encode multiple input vectors stored in data set
+
+	bool encode_dataset_unsupervised
+						  (NumericMatrix data,
+                           int pos,							// input component position
+            			   bool fwd = true,
+            			   int epochs = 1000
+						  )
+	{
+		if((data.rows()<=0))
+			{
+			error(NN_DATAST_ERR,"Cannot perform unsupervised training, dataset empty");
+			return false;
+			}
+
+		int num_training_cases=data.rows();
+
+		TEXTOUT << "Encoding (unsupervised)...\n";
+
+		for(int i=0;i<epochs;i++)
+			{
+			if(!m_nn.is_ready())
+				{
+				error(NN_DATAST_ERR,"Training failed");
+				return false;
+				}
+
+			for(int r=0;r<num_training_cases;r++)
+				{
+				if(NOT input_at(pos, data( r , _ ) ))
+					{
+					error(NN_INTEGR_ERR,"Training failed");
+					return false;
+					}
+				encode_all(fwd);
+				}
+			if(i%1000==0) checkUserInterrupt();					// (RCpp function to check if user pressed cancel)
+			}
+
+		TEXTOUT << "Finished.\n";
+		return true;
+		}
+
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// Decode multiple input vectors stored in data set and get output.
+
+	NumericMatrix recall_dataset(NumericMatrix data_in,
+                            	int input_pos,				// input component position
+                            	int output_pos,				// output component position
+                            	bool fwd = true
+                            	)
+	{
+		NumericMatrix data_out;
+
+		if((input_pos<1) OR (input_pos>size()) OR
+           (output_pos<1) OR (output_pos>size()))
+			{
+			error(NN_INTEGR_ERR,"Invalid component position");
+			return data_out;
+			}
+
+		int in_component_size = sizes()[input_pos-1];
+		int out_component_size = sizes()[output_pos-1];
+		int num_cases = data_in.rows();
+
+		if((num_cases<=0))
+			{
+			error(NN_DATAST_ERR,"Cannot recall (decode or map) empty dataset");
+			return data_out;
+			}
+
+		if((in_component_size!=data_in.cols()) OR
+           (out_component_size<=0))
+			{
+			error(NN_DATAST_ERR,"Invalid or incompatible component sizes");
+			return data_out;
+			}
+
+		data_out= NumericMatrix(num_cases,out_component_size);
+
+		for(int r=0;r<num_cases;r++)
+			{
+			if(NOT input_at(input_pos, data_in( r , _ ) ))
+				{
+				error(NN_INTEGR_ERR,"Recall failed");
+				return data_out;
+				}
+			recall_all(fwd);
+			NumericVector v_out = get_output_from(output_pos);
+			data_out( r , _ ) = v_out;                          //a lame way to interface with R. Copy result vector back to matrix. Remember, NumericMatrix stores data row-first, as R does.
+			}
+
+	return data_out;
+	}
+
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// get output (R to Cpp index converted)
@@ -460,6 +564,8 @@ RCPP_MODULE(class_NN) {
     .method( "recall_at",       						&NN::recall_at, 	      						"Trigger recall for specified topology index" )
     .method( "encode_all",      						&NN::encode_all, 	   							"Trigger encode for entire topology" )
     .method( "recall_all",     							&NN::recall_all,	   							"Trigger recall for entire topology" )
+    .method( "encode_dataset_unsupervised",     		&NN::encode_dataset_unsupervised,	   			"Encode a data set using unsupervised training" )
+    .method( "recall_dataset",     						&NN::recall_dataset,				   			"Recall (i.e decode,map) a data set" )
     .method( "get_output_from",     					&NN::get_output_from,    						"Output vector from specified topology index" )
     .method( "get_input_at",     						&NN::get_input_at,		   						"Get input (pe variable value or connection input) in specified topology index" )
     .method( "get_weights_at",     						&NN::get_weights_at,	   						"Get connection weights (connection variable value) in specified topology index" )

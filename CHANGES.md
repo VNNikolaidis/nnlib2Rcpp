@@ -38,3 +38,10 @@ Changes to nnlib2Rcpp version 0.1.5 (from 0.1.4)
 -	added some methods to module "NN" (get_weight_at, set_weight_at)
 -	added some methods to module "NN" (set_misc_values_at)
 
+---
+
+Changes to nnlib2Rcpp version 0.1.6 (from 0.1.5)
+-	added manual.pdf
+-	added method to module "NN" (encode_dataset_unsupervised) for faster unsupervised encoding.
+-	added method to module "NN" (recall_dataset) to decode/map/retrieve output for entire input dataset.
+-	some other minor changes
