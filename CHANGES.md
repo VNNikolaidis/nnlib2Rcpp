@@ -42,6 +42,8 @@ Changes to nnlib2Rcpp version 0.1.5 (from 0.1.4)
 
 Changes to nnlib2Rcpp version 0.1.6 (from 0.1.5)
 -	added manual.pdf
--	added method to module "NN" (encode_dataset_unsupervised) for faster unsupervised encoding.
 -	added method to module "NN" (recall_dataset) to decode/map/retrieve output for entire input dataset.
+-	added method to module "NN" (encode_dataset_unsupervised) for faster unsupervised training.
+-	added method to module "NN" (encode_datasets_supervised) for faster supervised training.
+-	added method to module "NN" (get_output_at).
 -	some other minor changes

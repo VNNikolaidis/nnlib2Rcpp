@@ -176,6 +176,7 @@ public:
 				outline();
 				return true;
 				}
+			warning("Deleting orphan (?) layer");
 			delete p;
 			}
 		m_nn.change_is_ready_flag(false);
@@ -202,6 +203,7 @@ public:
         	outline();
         	return true;
         	}
+         warning("Deleting orphan (?) connection set");
          delete p;
          }
 
@@ -336,11 +338,11 @@ public:
 	bool encode_dataset_unsupervised
 						  (NumericMatrix data,
                            int pos,							// input component position
-            			   bool fwd = true,
-            			   int epochs = 1000
+            			   int epochs = 1000,				// training epochs (presentations of all data)
+            			   bool fwd = true					// processing direction (order) for components in NN
 						  )
 	{
-		if((data.rows()<=0))
+		if(data.rows()<=0)
 			{
 			error(NN_DATAST_ERR,"Cannot perform unsupervised training, dataset empty");
 			return false;
@@ -352,7 +354,7 @@ public:
 
 		for(int i=0;i<epochs;i++)
 			{
-			if(!m_nn.is_ready())
+			if(NOT m_nn.is_ready())
 				{
 				error(NN_DATAST_ERR,"Training failed");
 				return false;
@@ -367,13 +369,71 @@ public:
 					}
 				encode_all(fwd);
 				}
-			if(i%1000==0) checkUserInterrupt();					// (RCpp function to check if user pressed cancel)
+			if(i%100==0) checkUserInterrupt();					// (RCpp function to check if user pressed cancel)
 			}
 
 		TEXTOUT << "Finished.\n";
 		return true;
 		}
 
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// Encode multiple (i,j) vector pairs stored in two corresponding data sets
+
+	bool encode_datasets_supervised
+	(NumericMatrix i_data,				// data set, each row is a vector i of vector-pair (i,j)
+	 int i_pos,							// position (in topology) of component to receive i.
+	 bool i_to_misc,					// vector i will be sent to 'input' if FALSE, to internal 'misc' register if TRUE.
+	 NumericMatrix j_data,				// data set, each row is the corresponding vector j of vector-pair (i,j)
+	 int j_pos,							// position (in topology) of component to receive j.
+	 bool j_to_misc,					// vector j will be sent to 'input' if FALSE, to internal 'misc' register if TRUE.
+     int epochs = 1000,					// training epochs (presentations of all data)
+     bool fwd = true					// processing direction (order) for components in NN
+	)
+	{
+		if( (i_data.rows()<=0) OR
+            (j_data.rows()<=0) OR
+            (i_data.rows()!=j_data.rows()) )
+		{
+			error(NN_DATAST_ERR,"Cannot perform supervised training, invalid dataset size(s)");
+			return false;
+		}
+
+		int num_training_pairs=i_data.rows();
+
+		TEXTOUT << "Encoding (supervised)...\n";
+
+		for(int e=0;e<epochs;e++)
+		{
+			if(NOT m_nn.is_ready())
+			{
+				error(NN_DATAST_ERR,"Training failed");
+				return false;
+			}
+
+			bool i_data_sent, j_data_sent = false;
+
+			for(int r=0;r<num_training_pairs;r++)
+			{
+				if(i_to_misc)	i_data_sent = set_misc_values_at(i_pos, i_data( r , _ ));
+				else			i_data_sent = input_at(i_pos, i_data( r , _ ));
+
+				if(j_to_misc)	j_data_sent = set_misc_values_at(j_pos, j_data( r , _ ));
+				else			j_data_sent = input_at(j_pos, j_data( r , _ ));
+
+				if(NOT(i_data_sent AND j_data_sent))
+					{
+					error(NN_INTEGR_ERR,"Error sending the data to NN, training failed");
+					return false;
+					}
+
+				encode_all(fwd);
+			}
+			if(e%100==0) checkUserInterrupt();					// (RCpp function to check if user pressed cancel)
+		}
+
+		TEXTOUT << "Finished.\n";
+		return true;
+	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// Decode multiple input vectors stored in data set and get output.
@@ -381,7 +441,7 @@ public:
 	NumericMatrix recall_dataset(NumericMatrix data_in,
                             	int input_pos,				// input component position
                             	int output_pos,				// output component position
-                            	bool fwd = true
+                            	bool fwd = true				// processing direction (order) for components in NN
                             	)
 	{
 		NumericMatrix data_out;
@@ -444,6 +504,14 @@ public:
 			}
 		return data_out;
 	 }
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// get output (same as above)
+
+	NumericVector get_output_at(int pos)
+	{
+	return get_output_from(pos);
+	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// get input (pe variable or connection input) (R to Cpp index converted)
@@ -565,8 +633,10 @@ RCPP_MODULE(class_NN) {
     .method( "encode_all",      						&NN::encode_all, 	   							"Trigger encode for entire topology" )
     .method( "recall_all",     							&NN::recall_all,	   							"Trigger recall for entire topology" )
     .method( "encode_dataset_unsupervised",     		&NN::encode_dataset_unsupervised,	   			"Encode a data set using unsupervised training" )
+    .method( "encode_datasets_supervised",     			&NN::encode_datasets_supervised,	   			"Encode multiple (i,j) vector pairs using supervised training" )
     .method( "recall_dataset",     						&NN::recall_dataset,				   			"Recall (i.e decode,map) a data set" )
     .method( "get_output_from",     					&NN::get_output_from,    						"Output vector from specified topology index" )
+    .method( "get_output_at",	     					&NN::get_output_at,    							"Output vector from specified topology index" )
     .method( "get_input_at",     						&NN::get_input_at,		   						"Get input (pe variable value or connection input) in specified topology index" )
     .method( "get_weights_at",     						&NN::get_weights_at,	   						"Get connection weights (connection variable value) in specified topology index" )
     .method( "get_weight_at",     						&NN::get_weight_at,	   							"Get connection weight for given connection in specified topology index" )
