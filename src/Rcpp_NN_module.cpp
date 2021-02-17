@@ -382,11 +382,10 @@ public:
 	bool encode_datasets_supervised
 	(NumericMatrix i_data,				// data set, each row is a vector i of vector-pair (i,j)
 	 int i_pos,							// position (in topology) of component to receive i.
-	 bool i_to_misc,					// vector i will be sent to 'input' if FALSE, to internal 'misc' register if TRUE.
 	 NumericMatrix j_data,				// data set, each row is the corresponding vector j of vector-pair (i,j)
 	 int j_pos,							// position (in topology) of component to receive j.
-	 bool j_to_misc,					// vector j will be sent to 'input' if FALSE, to internal 'misc' register if TRUE.
-     int epochs = 1000,					// training epochs (presentations of all data)
+	 int j_destination_selector = 0,	// vector j will be sent to pe internal registers: 'input' if 0, to 'output' if 1, 'misc' if 2.
+	 int epochs = 1000,					// training epochs (presentations of all data)
      bool fwd = true					// processing direction (order) for components in NN
 	)
 	{
@@ -410,15 +409,16 @@ public:
 				return false;
 			}
 
-			bool i_data_sent, j_data_sent = false;
+			bool i_data_sent = false;
+			bool j_data_sent = false;
 
 			for(int r=0;r<num_training_pairs;r++)
 			{
-				if(i_to_misc)	i_data_sent = set_misc_values_at(i_pos, i_data( r , _ ));
-				else			i_data_sent = input_at(i_pos, i_data( r , _ ));
+				i_data_sent = input_at(i_pos, i_data( r , _ ));
 
-				if(j_to_misc)	j_data_sent = set_misc_values_at(j_pos, j_data( r , _ ));
-				else			j_data_sent = input_at(j_pos, j_data( r , _ ));
+				if(j_destination_selector==0) j_data_sent = input_at(j_pos, j_data( r , _ ));
+				if(j_destination_selector==1) j_data_sent = set_output_at(j_pos, j_data( r , _ ));
+				if(j_destination_selector==2) j_data_sent = set_misc_values_at(j_pos, j_data( r , _ ));
 
 				if(NOT(i_data_sent AND j_data_sent))
 					{
@@ -581,12 +581,21 @@ public:
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	// Set "misc" register values for PEs in given layer (R to Cpp index converted)
+	// Set "misc" register values for PEs in given component (R to Cpp index converted)
 
 	bool set_misc_values_at(int pos, NumericVector data_in)
 	{
 		double * fpdata_in  = REAL(data_in);                    // my (lame?) way to interface with R, cont.)
 		return m_nn.set_misc_at_component(pos-1,fpdata_in,data_in.length());
+	}
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// Set "output" register values for PEs in given layer (R to Cpp index converted)
+
+	bool set_output_at(int pos, NumericVector data_in)
+	{
+		double * fpdata_in  = REAL(data_in);                    // my (lame?) way to interface with R, cont.)
+		return m_nn.set_output_at_component(pos-1,fpdata_in,data_in.length());
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -642,8 +651,9 @@ RCPP_MODULE(class_NN) {
     .method( "get_weight_at",     						&NN::get_weight_at,	   							"Get connection weight for given connection in specified topology index" )
     .method( "set_weight_at",     						&NN::set_weight_at,	   							"Set connection weight for given connection in specified topology index" )
 	.method( "set_misc_values_at",     					&NN::set_misc_values_at,	   					"Set misc register values in elements in specified topology index" )
+	.method( "set_output_at",     						&NN::set_output_at,	   							"Set output values in specified topology index" )
 	.method( "print",     								&NN::print,         							"Print internal NN state" )
-    .method( "outline",     							&NN::outline,         							"Print an outline of the NN" )
+    .method( "outline",     							&NN::outline,         							"Outline of the NN topology" )
 ;
 }
 

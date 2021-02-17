@@ -38,6 +38,7 @@ class layer : public data_io_component, public error_flag_client                
         virtual void from_stream(std::istream REF s) = 0;                                   // read layer from stream
         virtual void to_stream(std::ostream REF s) = 0;                                     // write layer to stream
         virtual bool set_misc(DATA * data, int dimension) = 0;
+        virtual bool set_output(DATA * data, int dimension) = 0;
     };
 
 /*-----------------------------------------------------------------------*/
@@ -75,8 +76,10 @@ class Layer : public layer
  bool send_input_to(int index, DATA d);                                 // overides virtual method in data_receiver, sets value to corresponding pe input sets this input to respective pe input (and also appends to pe's list of input values)
  DATA get_output_from (int index);                                      // overides virtual method in data_provider, gets value from corresponding pe output
 
- // set values in misc internal register variable (found in pes)
+ // set values in misc internal register variables in layer pes
  bool set_misc(DATA * data, int dimension);
+ // overrides current output registers in layer pes, with the provided data values
+ bool set_output(DATA * data, int dimension);
 
  void encode();                                                         // (virtual in component) may be overiden by derived classes with specific layer functiobality.
  void recall();                                                         // (virtual in component) may be overiden by derived classes with specific layer functiobality.
@@ -299,6 +302,22 @@ bool Layer<PE_TYPE>::set_misc(DATA * data, int dimension)
         pes[i].misc = data[i];                    // sets data to respective pe misc
     return true;
     }
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// set output variable in pes (overiding current output values)
+
+template <class PE_TYPE>
+bool Layer<PE_TYPE>::set_output(DATA * data, int dimension)
+{
+    if (NOT no_error()) return false;
+    if (data == NULL) return false;
+    if (dimension NEQL size())
+    { warning ("Incompatible vector dimension (length)");
+        return false; }
+    for (int i = 0; i < dimension; i++)
+        pes[i].output = data[i];                    // sets data to respective pe output
+    return true;
+}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // copies inputs to outputs, also zeros inputs

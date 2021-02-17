@@ -106,8 +106,8 @@ m$fully_connect_layers_at(1, 2, "MAM", 0, 0)
 # encode pairs in NN:
 
 m$encode_datasets_supervised(
-	iris_data,1,FALSE,
-	iris_species,3,FALSE,
+	iris_data,1,
+	iris_species,3,0,
 	1,TRUE)
 
 # (2.C) Recall iris species from NN:
@@ -227,14 +227,13 @@ plot(iris_data, pch=recalled_ids)
     }
     }
 
- \item{\code{encode_datasets_supervised( i_data, i_pos, i_to_misc, j_data, j_pos, j_to_misc, epochs, fwd )}:}{Encode multiple (i,j) vector pairs stored in two corresponding data sets, using supervised training. A faster method to encode the data. All the components in the NN topology will perform 'encode' in specified direction. Returns TRUE if successful. Parameters are:
+ \item{\code{encode_datasets_supervised( i_data, i_pos, j_data, j_pos, j_destination_register, epochs, fwd )}:}{Encode multiple (i,j) vector pairs stored in two corresponding data sets, using supervised training. A faster method to encode the data. All the components in the NN topology will perform 'encode' in specified direction. Returns TRUE if successful. Parameters are:
     \itemize{
     \item{\code{i_data}}{: numeric matrix, data set, each row is a vector i of vector-pair (i,j).}
     \item{\code{i_pos}}{: integer, position in topology of component to receive i vectors.}
-    \item{\code{i_to_misc}}{: logical, if FALSE vector i will be sent to 'input', if TRUE i will be sent to internal 'misc' register (some implementations may use 'misc' as an alternative way to transfer data to nodes etc).}
     \item{\code{j_data}}{: numeric matrix, data set, each row is a corresponding vector j of vector-pair (i,j).}
     \item{\code{j_pos}}{: integer, position in topology of component to receive j vectors.}
-    \item{\code{j_to_misc}}{: logical, if FALSE vector j will be sent to 'input', if TRUE j will be sent to internal 'misc' register (some implementations may use 'misc' as an alternative way to transfer data to nodes etc).}
+    \item{\code{j_destination_selector}}{: integer, selects which internal node (pe) registers will receive vector j, i.e. if 0 internal node register '\code{input}' will be used (j will become the layer's input), if 1 register '\code{output}' will be used (j will become the layer's output), if 2 register '\code{misc}' will be used (implementations may use this as an alternative way to transfer data to nodes without altering current input or output).}
     \item{\code{epochs}}{: integer, number of training epochs (encoding repetitions of the entire data).}
     \item{\code{fwd}}{: logical, indicates direction, TRUE to trigger encoding forwards (first-to-last component), FALSE to encode backwards (last-to-first component).}
     }
@@ -291,6 +290,13 @@ plot(iris_data, pch=recalled_ids)
     }
 
  \item{\code{set_misc_values_at( pos, data_in )}:}{Set the values in the \code{misc} data register that \code{pe} and \code{connection} objects maintain, for objects at specified topology index. If successful, returns TRUE. Parameters are:
+    \itemize{
+    \item{\code{pos}}{: integer, position in topology of component to use.}
+    \item{\code{data_in}}{: NumericVector, data to be used for new values in \code{misc} registers (sizes must match).}
+    }
+    }
+
+ \item{\code{set_output_at( pos, data_in )}:}{Set the values in the \code{output} data register that \code{pe} objects maintain, for \code{layer} at specified topology index (currenly only \code{layer} components are supported). If successful, returns TRUE. Parameters are:
     \itemize{
     \item{\code{pos}}{: integer, position in topology of component to use.}
     \item{\code{data_in}}{: NumericVector, data to be used for new values in \code{misc} registers (sizes must match).}

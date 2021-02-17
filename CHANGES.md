@@ -29,7 +29,7 @@ Changes to nnlib2Rcpp version 0.1.3 (from 0.1.2)
 Changes to nnlib2Rcpp version 0.1.4 (from 0.1.3)
 -	(checked on Linux Mint 19.3 with R 3.6.3)
 -	(checked with R 4.0.0 and RTools40 (produces 1 extra NOTE).
--	includes new nnlib2 v.0.2.0.
+-	includes nnlib2 v.0.2.0.
 -	added module "NN" which allows creation and control of custom NNs from R using predefined components. It also provides fixed method for adding user-defined NN components which can be used in the module.
 
 ---
@@ -45,5 +45,7 @@ Changes to nnlib2Rcpp version 0.1.6 (from 0.1.5)
 -	added method to module "NN" (recall_dataset) to decode/map/retrieve output for entire input dataset.
 -	added method to module "NN" (encode_dataset_unsupervised) for faster unsupervised training.
 -	added method to module "NN" (encode_datasets_supervised) for faster supervised training.
+-	includes nnlib2 v.0.2.4
 -	added method to module "NN" (get_output_at).
--	some other minor changes
+-	added method to module "NN" (set_output_at).
+-	other minor changes

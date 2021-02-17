@@ -17,7 +17,7 @@
 #ifndef VNN_H
 #define VNN_H
 
-#define NN_VERSION "nnlib2 v.0.2.3 (Dizzy Duck-20YLE) (c)2019 Vasilis N. Nikolaidis"
+#define NN_VERSION "nnlib2 v.0.2.4 (20YLE) (c)2019 Vasilis N. Nikolaidis"
 
 /*-----------------------------------------------------------------------*/
 

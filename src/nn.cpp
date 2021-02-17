@@ -938,6 +938,17 @@ bool nn::set_misc_at_component(int index, DATA * data, int dimension)
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// patch, currently only works only for layers
+// overrides current pe output registers with the provided data values
+
+bool nn::set_output_at_component(int index, DATA * data, int dimension)
+{
+  layer PTR p_lay = get_layer_at(index);
+  if (p_lay != NULL) return p_lay->set_output(data,dimension);
+  return false;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // patch: avoid using, nn should set m_nn_is_ready flag itself, once its setup is completed
 
 void nn::change_is_ready_flag(bool new_state)
