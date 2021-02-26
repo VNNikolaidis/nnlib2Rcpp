@@ -49,9 +49,9 @@ https://r-posts.com/creating-custom-neural-networks-with-nnlib2rcpp/
 
 ( https://wp.me/p8rgs6-sh )
 
-More instructions on using 'nnlib2' and 'nnlib2Rcpp' can also be found in file "manual.pdf" of the repository, i.e. here:
+More instructions on using 'nnlib2' and 'nnlib2Rcpp' can also be found in the package vingette, also found in PDF format here:
 
-https://github.com/VNNikolaidis/nnlib2Rcpp/blob/master/manual.pdf
+https://github.com/VNNikolaidis/nnlib2Rcpp/blob/master/doc/manual.pdf
 
 ---
 

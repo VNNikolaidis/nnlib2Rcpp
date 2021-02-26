@@ -11,4 +11,7 @@ Imports: Rcpp , methods
 License: MIT + file LICENSE
 Authors@R: person(given = "Vasilis", family = "Nikolaidis", email = "v.nikolaidis@us.uop.gr", role = c("aut", "cph", "cre"), comment = c(ORCID = "0000-0003-1471-8788"))
 URL: https://github.com/VNNikolaidis/nnlib2Rcpp
+BugReports: https://github.com/VNNikolaidis/nnlib2Rcpp/issues
 Encoding: UTF-8
+Suggests: R.rsp
+VignetteBuilder: R.rsp

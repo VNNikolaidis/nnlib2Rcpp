@@ -1,4 +1,5 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^.*\.md$
-^.*\.pdf$
+^doc$
+^Meta$

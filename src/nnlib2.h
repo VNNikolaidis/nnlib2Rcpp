@@ -2,11 +2,9 @@
 //		(c)2019  Vasilis.N.Nikolaidis   	  All rights reserved.
 //		-----------------------------------------------------------
 //		nnlib2.h								Version (see below)
-//		Definitions  		    20YLE => 20 Years Later Edition :-)
-//											Based on nnlib (C) 1998
+//		Definitions  		    	loosely based on nnlib (C) 1998
 //		-----------------------------------------------------------
-//		this is the main definitions file for nnlib2, a Neural Net
-//		library which originates from code written decades ago.
+//		this is the main definitions file for any nnlib2 project
 //		-----------------------------------------------------------
 
 // Note  : editor tab size set to 4
@@ -17,7 +15,7 @@
 #ifndef VNN_H
 #define VNN_H
 
-#define NN_VERSION "nnlib2 v.0.2.4 (20YLE) (c)2019 Vasilis N. Nikolaidis"
+#define NN_VERSION "nnlib2 v.0.2.4 (c)2019 Vasilis N. Nikolaidis"
 
 /*-----------------------------------------------------------------------*/
 
