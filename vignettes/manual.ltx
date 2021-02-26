@@ -39,7 +39,7 @@
 {\Large \center The \pkg{nnlib2} C++ library and \pkg{nnlib2Rcpp} R package for Artificial Neural Networks.\par}
 {\center Vasilis N. Nikolaidis\par}
 {\tiny \center ORCID: 0000-0003-1471-8788 , email: vnnikolaidis@gmail.com\par}
-{\tiny \center Revision: 0.4.3\par}
+{\tiny \center Revision: 0.4.4\par}
 
 %% -- Introduction -------------------------------------------------------------
 
@@ -627,12 +627,9 @@ Finally, locate the \fct{generate\_custom\_connection\_set}  in \code{additional
 \begin{verbatim}
 if(name == "MEX")   return new MEX_connection_set(name);
 \end{verbatim}
-This will create a set of \class{MEX\_connection}s when the "MEX" is specified. The \code{name} parameter is simply a label for the set (more below). 
-\item
-Build the package. In RStudio, select \code{Build / Install and Restart} menu option. Once finished your new part definition will be available in the package.  From now on you can directly go to (c) below where your new parts (along with other available components) can be combined in R to form NNs. 
-\end{enumerate}
-\textit{
-A side-note: the above steps are similar to those needed for defining new processing elements or (\class{pe}s , nodes) and \class{layer}s of such nodes. Below is a simple example where a new type of \class{pe} and a \code{layer} containing such nodes is defined (new names used also start with \code{MEX\_}, for Manual EXample):
+This will create a set of \class{MEX\_connection}s when the text "MEX" is specified as parameter to \class{NN}  methods such as \code{add\_connection\_set}. Note: the \code{name} passed as parameter in the right side of the above simply copies it (i.e. "MEX") as the name of the new set (this is a label used only for display purposes and can be changed at any time). 
+
+\textit{[A side-note: the above steps are similar to those needed for defining new nodes (or processing elements , \code{pe}s) and \code{layer}s of such nodes. Below is a simple example where a new type of \class{pe} and a \class{layer} containing such nodes is defined (new names used also start with \code{MEX\_}, for Manual EXample):
 }
 \begin{verbatim}
 class MEX_pe : public pe
@@ -656,6 +653,11 @@ There is a corresponding \fct{generate\_custom\_layer} function  in \code{additi
 \begin{verbatim}
  if(name == "MEX")   return new MEX_layer(name, size);
 \end{verbatim}
+\textit{
+Thus a layer of this specific type will be used when the text \code{"MEX"} is passed as parameter to \class{NN} methods such as \code{add\_layer}.]}
+\item
+Build the package. In RStudio, select \code{Build / Install and Restart} menu option. Once finished your new part definition will be available in the package.  From now on you can directly go to (c) below where your new parts (along with other available components) can be combined in R to form NNs. 
+\end{enumerate}
 (c) Use your NN parts in R. As mentioned earlier, you only do (a) and (b) once to 'install' your user-defined type in your version of the package. From now on you can bypass them and directly go to R to use your new parts (along with other available components) in a NN. You can now create NNs in R that employ your newly defined parts (along with others already available in the package). This is done using \class{NN} R objects (type \code{?NN} for more information, or see earlier section). An example using the \code{iris} data set and the \code{MEX\_} types created in (b) above. Output is shown in Figure~\ref{figure:nNNMEX}:
 \begin{figure}[htbp]
   \centering
