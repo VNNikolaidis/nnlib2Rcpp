@@ -3,3 +3,4 @@
 ^.*\.md$
 ^doc$
 ^Meta$
+^paper

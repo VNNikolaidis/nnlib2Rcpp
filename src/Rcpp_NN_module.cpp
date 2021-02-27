@@ -418,7 +418,7 @@ public:
 
 				if(j_destination_selector==0) j_data_sent = input_at(j_pos, j_data( r , _ ));
 				if(j_destination_selector==1) j_data_sent = set_output_at(j_pos, j_data( r , _ ));
-				if(j_destination_selector==2) j_data_sent = set_misc_at(j_pos, j_data( r , _ ));
+				if(j_destination_selector==2) j_data_sent = set_misc_values_at(j_pos, j_data( r , _ ));
 
 				if(NOT(i_data_sent AND j_data_sent))
 					{
@@ -583,7 +583,7 @@ public:
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// Set "misc" register values for PEs in given component (R to Cpp index converted)
 
-	bool set_misc_at(int pos, NumericVector data_in)
+	bool set_misc_values_at(int pos, NumericVector data_in)
 	{
 		double * fpdata_in  = REAL(data_in);                    // my (lame?) way to interface with R, cont.)
 		return m_nn.set_misc_at_component(pos-1,fpdata_in,data_in.length());
@@ -650,7 +650,7 @@ RCPP_MODULE(class_NN) {
     .method( "get_weights_at",     						&NN::get_weights_at,	   						"Get connection weights (connection variable value) in specified topology index" )
     .method( "get_weight_at",     						&NN::get_weight_at,	   							"Get connection weight for given connection in specified topology index" )
     .method( "set_weight_at",     						&NN::set_weight_at,	   							"Set connection weight for given connection in specified topology index" )
-	.method( "set_misc_at",     						&NN::set_misc_at,	   							"Set misc registers of elements in specified topology index" )
+	.method( "set_misc_values_at",     					&NN::set_misc_values_at,	   					"Set misc registers of elements in specified topology index" )
 	.method( "set_output_at",     						&NN::set_output_at,	   							"Set output values in specified topology index" )
 	.method( "print",     								&NN::print,         							"Print internal NN state" )
     .method( "outline",     							&NN::outline,         							"Outline of the NN topology" )
