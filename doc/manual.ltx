@@ -39,7 +39,7 @@
 {\Large \center The \pkg{nnlib2} C++ library and \pkg{nnlib2Rcpp} R package for Artificial Neural Networks.\par}
 {\center Vasilis N. Nikolaidis\par}
 {\tiny \center ORCID: 0000-0003-1471-8788 , email: vnnikolaidis@gmail.com\par}
-{\tiny \center Revision: 0.4.4\par}
+{\tiny \center Revision: 0.4.5\par}
 
 %% -- Introduction -------------------------------------------------------------
 
@@ -667,6 +667,7 @@ Build the package. In RStudio, select \code{Build / Install and Restart} menu op
 \end{figure}
 \begin{verbatim}
 library(nnlib2Rcpp)
+
 set.seed(123456)
 
 # scale and shuffle iris data
@@ -686,7 +687,6 @@ ann$add_layer("generic",4)
 ann$add_connection_set("MEX")
 ann$add_layer("MEX",4)
 ann$create_connections_in_sets(-.5,.5)
-
 
 # (optional) show the NN topology
 ann$outline()
