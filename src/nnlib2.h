@@ -29,6 +29,8 @@
 /*-----------------------------------------------------------------------*/
 
 #ifdef NNLIB2_FOR_RCPP
+#define STRICT_R_HEADERS
+#include <float.h>
 #include <Rcpp.h>
 // [[Rcpp::plugins("cpp11")]]
 using namespace Rcpp;
