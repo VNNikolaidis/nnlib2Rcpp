@@ -49,3 +49,8 @@ Changes to nnlib2Rcpp version 0.1.6 (from 0.1.5)
 -	added method to module "NN" (set_output_at).
 -	added package vingette
 -	other minor changes
+
+---
+
+Changes to nnlib2Rcpp version 0.1.7 (from 0.1.6)
+-	Minor source changes (only affect source).
