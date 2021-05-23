@@ -68,4 +68,6 @@ We invite anyone to provide feedback, suggestions, report issues or problems, an
 
 Please use the issues option in GitHub or email (vnnikolaidis AT gmail.com) if interested to contribute.
 
+---
+
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4780957.svg)](https://doi.org/10.5281/zenodo.4780957)
