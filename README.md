@@ -53,7 +53,7 @@ More instructions on using 'nnlib2' and 'nnlib2Rcpp' can also be found in the pa
 
 https://github.com/VNNikolaidis/nnlib2Rcpp/blob/master/doc/manual.pdf
 
-Link to related paper:
+Link to related paper in the Journal of Open Source Software:
 
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.02876/status.svg)](https://doi.org/10.21105/joss.02876)
 
