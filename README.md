@@ -67,3 +67,5 @@ Let me know if interested to contribute, or want to add your neural network comp
 We invite anyone to provide feedback, suggestions, report issues or problems, and/or contribute to this software. Possible improvements and contributions include (but are not limited to) implementation of additional neural network models using nnlib2 classes and templates (and thus new neural network components compatible with "NN" module in nnlib2Rcpp), parallelism (possibly via OpenMP), replacement of custom data structures with STL containers, performance enhancements etc.
 
 Please use the issues option in GitHub or email (vnnikolaidis AT gmail.com) if interested to contribute.
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4780957.svg)](https://doi.org/10.5281/zenodo.4780957)
