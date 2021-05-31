@@ -55,9 +55,7 @@ The ‘nnlib2’ library used (and included) in this package is a collection of 
 
 For implementing new NN components and models in nnlib2 that can be used in nnlib2Rcpp, see also: 
 
-https://r-posts.com/creating-custom-neural-networks-with-nnlib2rcpp/
-
-( https://wp.me/p8rgs6-sh )
+https://r-posts.com/creating-custom-neural-networks-with-nnlib2rcpp/ ( permalink: https://wp.me/p8rgs6-sh )
 
 As mentioned earlier, more instructions on using 'nnlib2' and 'nnlib2Rcpp' can be found in the package vingette, also available in PDF format here:
 
