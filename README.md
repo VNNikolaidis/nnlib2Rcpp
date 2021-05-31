@@ -27,13 +27,19 @@ Once installed, for package help (including documentation and examples for each 
 
     help(package='nnlib2Rcpp')
 
+while the package vingette (containing information on adding custom components) can be viewed using the following R command:
+
+    vignette("manual", package='nnlib2Rcpp')
+
+The package vingette is also available in PDF format here:
+
+https://github.com/VNNikolaidis/nnlib2Rcpp/blob/master/doc/manual.pdf
+
 A reference manual in PDF format (for the last version in CRAN) can be found here:
 
 https://cran.r-project.org/web/packages/nnlib2Rcpp/nnlib2Rcpp.pdf
 
-The package vingette contains information on adding custom components and is also available in PDF format here:
-
-https://github.com/VNNikolaidis/nnlib2Rcpp/blob/master/doc/manual.pdf
+---
 
 For information on citing this package use the following R command for information:
 
@@ -53,14 +59,13 @@ https://r-posts.com/creating-custom-neural-networks-with-nnlib2rcpp/
 
 ( https://wp.me/p8rgs6-sh )
 
-More instructions on using 'nnlib2' and 'nnlib2Rcpp' can be found in the package vingette, also available in PDF format here:
+As mentioned earlier, more instructions on using 'nnlib2' and 'nnlib2Rcpp' can be found in the package vingette, also available in PDF format here:
 
 https://github.com/VNNikolaidis/nnlib2Rcpp/blob/master/doc/manual.pdf
 
 Link to related paper in the Journal of Open Source Software:
 
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.02876/status.svg)](https://doi.org/10.21105/joss.02876)
-
 
 ---
 
