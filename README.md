@@ -1,4 +1,4 @@
-# nnlib2Rcpp [![](https://cranlogs.r-pkg.org/badges/nnlib2Rcpp)](https://cran.r-project.org/package=nnlib2Rcpp)
+# nnlib2Rcpp
 An R package providing access to Neural Networks created using nnlib2. 
 
 ---
@@ -79,4 +79,5 @@ Please use the issues option in GitHub or email (vnnikolaidis AT gmail.com) if i
 
 ---
 
+[![](https://cranlogs.r-pkg.org/badges/nnlib2Rcpp)](https://cran.r-project.org/package=nnlib2Rcpp)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4780957.svg)](https://doi.org/10.5281/zenodo.4780957)
