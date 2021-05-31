@@ -1,4 +1,4 @@
-# nnlib2Rcpp
+# nnlib2Rcpp [![](https://cranlogs.r-pkg.org/badges/nnlib2Rcpp)](https://cran.r-project.org/package=nnlib2Rcpp)
 An R package providing access to Neural Networks created using nnlib2. 
 
 ---
@@ -31,6 +31,10 @@ A reference manual in PDF format (for the last version in CRAN) can be found her
 
 https://cran.r-project.org/web/packages/nnlib2Rcpp/nnlib2Rcpp.pdf
 
+The package vingette contains information on adding custom components and is also available in PDF format here:
+
+https://github.com/VNNikolaidis/nnlib2Rcpp/blob/master/doc/manual.pdf
+
 For information on citing this package use the following R command for information:
 
     citation("nnlib2Rcpp")
@@ -49,7 +53,7 @@ https://r-posts.com/creating-custom-neural-networks-with-nnlib2rcpp/
 
 ( https://wp.me/p8rgs6-sh )
 
-More instructions on using 'nnlib2' and 'nnlib2Rcpp' can also be found in the package vingette, also found in PDF format here:
+More instructions on using 'nnlib2' and 'nnlib2Rcpp' can be found in the package vingette, also available in PDF format here:
 
 https://github.com/VNNikolaidis/nnlib2Rcpp/blob/master/doc/manual.pdf
 
