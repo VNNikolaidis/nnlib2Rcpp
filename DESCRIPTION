@@ -1,7 +1,7 @@
 Package: nnlib2Rcpp
 Type: Package
 Title: A Collection of Neural Networks
-Version: 0.1.7
+Version: 0.1.8
 Author: Vasilis Nikolaidis [aut, cph, cre] (<https://orcid.org/0000-0003-1471-8788>)
 Maintainer: Vasilis Nikolaidis <vnikolaidis@us.uop.gr>
 Description: Contains versions of Autoencoder, BP, LVQ, MAM NN and a module to define custom neural networks.

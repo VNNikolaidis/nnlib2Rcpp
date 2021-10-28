@@ -53,4 +53,10 @@ Changes to nnlib2Rcpp version 0.1.6 (from 0.1.5)
 ---
 
 Changes to nnlib2Rcpp version 0.1.7 (from 0.1.6)
--	Minor source changes (only affect source).
+-	minor changes (only affect source).
+
+---
+
+Changes to nnlib2Rcpp version 0.1.8 (from 0.1.7)
+-	minor documentation changes.
+-	other minor changes
