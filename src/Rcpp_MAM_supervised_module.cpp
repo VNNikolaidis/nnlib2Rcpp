@@ -149,6 +149,14 @@ public:
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+  void show()
+  {
+	TEXTOUT << "Matrix Associative Memory NN (Class MAM):\n";
+	print();
+  }
+
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 };
 
 //--------------------------------------------------------------------------------
@@ -161,6 +169,7 @@ RCPP_MODULE(class_MAM) {
   .method( "train_single",&MAM::train_single,  "Encode a single input-output vector pair in current MAM NN" )
   .method( "recall",      &MAM::recall,        "Get output for a dataset using MAM NN" )
   .method( "print",       &MAM::print,         "Print MAM NN details" )
+  .method( "show",        &MAM::show,          "Print MAM NN details" )
   .method( "load",        &MAM::load_from_file,"Load MAM" )
   .method( "save",        &MAM::save_to_file,  "Save MAM" )
   ;

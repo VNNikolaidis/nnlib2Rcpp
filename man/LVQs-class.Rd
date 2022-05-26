@@ -77,6 +77,8 @@ plot(iris_s, pch=lvq_recalled_class_ids, main="LVQ recalled clusters (module)")
 
     \item{\code{print()}:}{ print NN structure. }
 
+    \item{\code{show()}:}{ print NN structure. }
+
     \item{\code{load(filename)}:}{ retrieve the NN from specified file. }
 
     \item{\code{save(filename)}:}{ save the NN to specified file. }

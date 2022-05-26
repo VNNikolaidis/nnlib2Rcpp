@@ -60,3 +60,10 @@ Changes to nnlib2Rcpp version 0.1.7 (from 0.1.6)
 Changes to nnlib2Rcpp version 0.1.8 (from 0.1.7)
 -	minor documentation changes.
 -	other minor changes
+
+---
+
+Changes to nnlib2Rcpp version 0.1.9 (from 0.1.8)
+-	documentation changes (clarify hidden_layer_size).
+-	added show() to modules NN,MAM,LVQs and BP (to handle R's print generic function).
+-	other minor changes

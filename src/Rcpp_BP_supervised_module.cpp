@@ -187,6 +187,14 @@ public:
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+  void show()
+  {
+	TEXTOUT << "Plain Backpropagation NN (Class BP):\n";
+  	print();
+  }
+
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 };
 
 //--------------------------------------------------------------------------------
@@ -201,6 +209,7 @@ RCPP_MODULE(class_BP) {
   .method( "setup",           &BP::setup,           "Setup the BP NN" )
   .method( "recall",          &BP::recall,          "Get output for a dataset using BP NN" )
   .method( "print",           &BP::print,           "Print BP NN details" )
+  .method( "show",            &BP::show,            "Print BP NN details" )
   .method( "load",            &BP::load_from_file,  "Load BP" )
   .method( "save",            &BP::save_to_file,    "Save BP" )
   ;

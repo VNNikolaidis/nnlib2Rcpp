@@ -101,7 +101,7 @@ plot(iris_s, pch=bp_classification, main="Iris classified by a partialy trained 
     \item{\code{learning_rate}}{: a number (preferably greater than 0 and less than 1) used in training.}
     \item{\code{training_epochs}}{: number of training epochs, aka single presentation iterations of all training data pairs to the NN during training.}
     \item{\code{hidden_layers}}{: number of hidden layers to be created between input and output layers.}
-    \item{\code{hidden_layer_size}}{: number of nodes (processing elements or PEs) in the hidden layers (all hidden layers are of the same length in this model).}
+    \item{\code{hidden_layer_size}}{: number of nodes (processing elements or PEs) in each of the hidden layers (all hidden layers are of the same length in this implementation of BP).}
     }
     Note: to encode additional input-output vector pairs in an existing BP, use \code{train_single} or \code{train_multiple} methods (see below).
     }
@@ -114,7 +114,7 @@ plot(iris_s, pch=bp_classification, main="Iris classified by a partialy trained 
     \item{\code{output_dim}}{: integer length of output vectors.}
     \item{\code{learning_rate}}{: a number (preferably greater than 0 and less than 1) used in training.}
     \item{\code{hidden_layers}}{: number of hidden layers to be created between input and output layers.}
-    \item{\code{hidden_layer_size}}{: number of nodes (processing elements or PEs) in the hidden layers (all hidden layers are of the same length in this model).}
+    \item{\code{hidden_layer_size}}{: number of nodes (processing elements or PEs) in each of the hidden layers (all hidden layers are of the same length in this implementation of BP).}
     }
     }
 
@@ -123,6 +123,8 @@ plot(iris_s, pch=bp_classification, main="Iris classified by a partialy trained 
     \item{\code{train_multiple (data_in, data_out, training_epochs)}:}{ Encode multiple input-output vector pairs stored in corresponding datasets. Performs multiple iterations in epochs (see \code{encode}). Vector sizes should be compatible to the current NN (as resulted from the \code{encode} or \code{setup} methods). Returns error level indicator value.}
 
     \item{\code{print()}:}{ print NN structure. }
+
+    \item{\code{show()}:}{ print NN structure. }
 
     \item{\code{load(filename)}:}{ retrieve the NN from specified file. }
 

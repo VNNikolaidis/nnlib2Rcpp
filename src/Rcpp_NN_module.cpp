@@ -609,6 +609,16 @@ public:
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+	void show()
+	{
+		TEXTOUT << "User-defined NN type (Class NN):\n\n";
+		outline();
+		TEXTOUT << "\n";
+		print();
+	}
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 	void outline()
 	{
 		TEXTOUT << "------Network outline (BEGIN)--------\n";
@@ -653,7 +663,8 @@ RCPP_MODULE(class_NN) {
 	.method( "set_misc_values_at",     					&NN::set_misc_values_at,	   					"Set misc registers of elements in specified topology index" )
 	.method( "set_output_at",     						&NN::set_output_at,	   							"Set output values in specified topology index" )
 	.method( "print",     								&NN::print,         							"Print internal NN state" )
-    .method( "outline",     							&NN::outline,         							"Outline of the NN topology" )
+	.method( "show",     								&NN::show,         							"Print internal NN state" )
+	.method( "outline",     							&NN::outline,         							"Outline of the NN topology" )
 ;
 }
 

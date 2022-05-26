@@ -23,7 +23,7 @@ Autoencoder(
 data to be autoencoded, a numeric matrix, (2d, cases in rows, variables in columns).  It is recommended to be in [0 1] range.
 }
   \item{desired_new_dimension}{
-number of new variables to be produced (effectively the size of the special hidden layer that outputs the new variable values, thus the dimension of the output vector space).
+number of new variables to be produced. This is effectively the size (length) of the special hidden layer that outputs the new variable values, thus the dimension of the output vector space.
 }
   \item{number_of_training_epochs}{
 number of training epochs, aka presentations of all training data to ANN during training.
@@ -34,9 +34,7 @@ the learning rate parameter of the Back-Propagation (BP) NN.
   \item{num_hidden_layers}{
 number of hidden layers on each side of the special layer.
 }
-  \item{hidden_layer_size}{
-number of nodes (Processing Elements or PEs) in each hidden layer
-}
+  \item{hidden_layer_size}{number of nodes (processing elements or PEs) in each of the hidden layers. In this implementation of Autoencoder all hidden layers are of the same length (defined here), except for the special hidden layer (whose size is defined by \code{desired_new_dimension} above).}
   \item{show_nn}{
 boolean, option to display the (trained) ANN internal structure.
 }

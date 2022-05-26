@@ -164,6 +164,14 @@ public:
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+  void show()
+  {
+    TEXTOUT << "Learning Vector Quantizer NN (Class LVQs):\n";
+    print();
+  }
+
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 };
 
 //--------------------------------------------------------------------------------
@@ -175,6 +183,7 @@ RCPP_MODULE(class_LVQs) {
   .method( "encode",    &LVQs::encode,        "Encode input and output (classification) for a dataset using LVQ NN" )
   .method( "recall",    &LVQs::recall,        "Get output (classification) for a dataset using LVQ NN" )
   .method( "print",     &LVQs::print,         "Print LVQ NN details" )
+  .method( "show",      &LVQs::show,          "Print LVQ NN details" )
   .method( "load",      &LVQs::load_from_file,"Load LVQ" )
   .method( "save",      &LVQs::save_to_file,  "Save LVQ" )
   ;

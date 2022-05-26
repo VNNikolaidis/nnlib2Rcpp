@@ -303,9 +303,11 @@ plot(iris_data, pch=recalled_ids)
     }
     }
 
-\item{\code{print( )}:}{Print internal NN state, including all components in topology.}
+\item{\code{outline()}:}{Print a summary description of all components in topology.}
 
-\item{\code{outline( )}:}{Print a summary description of all components in topology.}
+\item{\code{print()}:}{Print internal NN state, including all components in topology.}
+
+\item{\code{show()}:}{Print summary description and  internal NN state.}
 
  }
 

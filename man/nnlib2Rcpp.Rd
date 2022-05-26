@@ -5,8 +5,9 @@
 
 \title{A collection of Neural Networks and tools to create custom models}
 \description{
-This package contains a collection of ready-to-use Neural Networks (NN), i.e. versions of Autoencoder, Back-Propagation, Learning Vector Quantization and Matrix Associative Memory NN.
-It also provides a module (NN module) to define and control custom neural networks created from user-defined nnlib2 NN components. More information and examples for each of the above can be found in its help documentation (see below).
+This package provides a module (NN module) to define and control custom neural networks created from user-defined nnlib2 NN components (written in C++).
+
+It also contains a small collection of ready-to-use Neural Networks (NN), i.e. versions of Autoencoder, Back-Propagation, Learning Vector Quantization and Matrix Associative Memory NN. More information and examples for each of the above can be found in its documentation (see below).
 }
 
 \section{Ready-to-use Neural Networks:}{
@@ -28,7 +29,7 @@ It also provides a module (NN module) to define and control custom neural networ
 \item{
 Nikolaidis, V. N., (2021). The nnlib2 library and nnlib2Rcpp R package for implementing neural networks. Journal of Open Source Software, 6(61), 2876, \doi{10.21105/joss.02876}.}
 
-References for the ready-to-use NN models (can be found in related help content):
+References for the ready-to-use NN models (can also be found in related documentation):
 \itemize{
 \item{
 Kohonen, T (1988). Self-Organization and Associative Memory, Springer-Verlag.; Simpson, P. K. (1991). Artificial neural systems: Foundations, paradigms, applications, and implementations. New York: Pergamon Press.}

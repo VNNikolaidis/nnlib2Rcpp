@@ -85,6 +85,8 @@ print(mam_recalled_cluster_ids)
 
     \item{\code{print()}:}{ print NN structure. }
 
+    \item{\code{show()}:}{ print NN structure. }
+
     \item{\code{load(filename)}:}{ retrieve the NN from specified file. }
 
     \item{\code{save(filename)}:}{ save the NN to specified file. }
