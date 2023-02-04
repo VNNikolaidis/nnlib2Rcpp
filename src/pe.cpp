@@ -44,7 +44,7 @@ void pe::reset()
  }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// directly add (arithmeticaly) the value to current pe input (summation function)
+// directly add (arithmetically) the value to current pe input (summation function)
 
 DATA pe::add_to_input(DATA value)
  {

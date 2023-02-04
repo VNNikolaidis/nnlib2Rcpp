@@ -26,11 +26,10 @@ protected:
 
 	nn    m_nn;					// the internal NN
 
-
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// generate layer for further use later (note: name is also used as type selector)
 
-	layer PTR generate_layer(string name, int size, DATA optional_parameter=0)
+	layer PTR generate_layer(string name, int size, DATA optional_parameter=DATA_MIN)
 		{
 		if( name == "pe" ) 				return new pe_layer(name,size);
 		if( name == "generic_d" ) 		return new pe_layer(name,size);
@@ -61,7 +60,11 @@ protected:
 		 								bp::bp_comput_layer PTR pl = new bp::bp_comput_layer;
 		 								pl->setup(name,size);
 		 								pl->randomize_biases(-1,1);
-		 								pl->set_learning_rate(0.6);
+		 								DATA bp_learnrate = 0.6;
+		 								if(optional_parameter!=DATA_MIN)
+		 									bp_learnrate = optional_parameter;
+		 								pl->set_learning_rate(bp_learnrate);
+		 								TEXTOUT << "(This " << name << " layer uses learning rate = " << bp_learnrate << ")\n";
 		 								return pl;
 		 								}
 
@@ -70,11 +73,15 @@ protected:
 		 								bp::bp_output_layer PTR pl = new bp::bp_output_layer;
 		 								pl->setup(name,size);
 		 								pl->randomize_biases(-1,1);
-		 								pl->set_learning_rate(0.6);
+		 								DATA bp_learnrate = 0.6;
+		 								if(optional_parameter!=DATA_MIN)
+		 									bp_learnrate = optional_parameter;
+		 								pl->set_learning_rate(bp_learnrate);
+		 								TEXTOUT << "(This " << name << " layer uses learning rate = " << bp_learnrate << ")\n";
 		 								return pl;
 		 								}
 
-		layer PTR pl = generate_custom_layer(name,size);
+		layer PTR pl = generate_custom_layer(name,size,optional_parameter);
 		if(pl != NULL) return pl;
 
 		warning("Unknown layer type");
@@ -84,7 +91,7 @@ protected:
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// generate connection set for further use later (note: name is also used as type)
 
-	connection_set PTR generate_connection_set(string name="", DATA optional_parameter=0)
+	connection_set PTR generate_connection_set(string name, DATA optional_parameter = DATA_MIN )
 	    {
 		if( name == "generic" )			return new Connection_Set<connection>(name);
 
@@ -99,8 +106,12 @@ protected:
 										lvq::lvq_connection_set PTR pc = new lvq::lvq_connection_set;
 										if(pc!=NULL)
 											{
-											pc->set_iteration_number(100);
-											pc->name() = name;
+											DATA LVQ_iteration = 100;
+											if(optional_parameter!=DATA_MIN)
+												LVQ_iteration = optional_parameter;
+											 pc->set_iteration_number(LVQ_iteration);
+											 TEXTOUT << "(This " << name << " connection set uses iteration parameter = " << LVQ_iteration << ")\n";
+											 pc->name() = name;
 											}
 										return pc;
 										}
@@ -111,12 +122,16 @@ protected:
 		 								if(pc!=NULL)
 		 									{
 		 									pc->name() = name;
-		 									pc->set_learning_rate(0.6);
+		 									DATA bp_learnrate = 0.6;
+		 									if(optional_parameter!=DATA_MIN)
+		 										bp_learnrate = optional_parameter;
+		 									pc->set_learning_rate(bp_learnrate);
+		 									TEXTOUT << "(This " << name << " connection set uses learning rate = " << bp_learnrate << ")\n";
 		 									}
 		 								return pc;
 		 								}
 
-		connection_set PTR pc = generate_custom_connection_set(name);
+		connection_set PTR pc = generate_custom_connection_set(name,optional_parameter);
 		if(pc!=NULL) return pc;
 
 		warning("Unknown connection set type");
@@ -127,11 +142,17 @@ protected:
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// Connect two layers (note: connection_set_name is also used as type)
 
-	bool add_connection_set_for(int source_pos, int destin_pos, string connection_set_name="", bool fully_connect=true, DATA min_random_weight = 0, DATA max_random_weight = 0)
+	bool add_connection_set_for(int source_pos,
+                             int destin_pos,
+                             string connection_set_name,
+                             bool fully_connect,
+                             DATA min_random_weight,
+                             DATA max_random_weight,
+                             DATA optional_parameter = DATA_MIN )
 	{
 		TEXTOUT << "Adding set of " << connection_set_name << " connections to topology.\n";
 
-		connection_set PTR p = generate_connection_set(connection_set_name, 0);
+		connection_set PTR p = generate_connection_set(connection_set_name, optional_parameter);
 
 		if (p == NULL) return false;
 
@@ -161,13 +182,16 @@ public:
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// (note: name is also used as type)
+	// Some redundancy to add optional parameters:
+	// (add_layer ----> add_layer_0xp, add_layer_1xp)
+	// see https://lists.r-forge.r-project.org/pipermail/rcpp-devel/2010-November/001326.html
 
-	bool add_layer(string name,int size)
+	bool add_layer_1xp(string name, int size, DATA optional_parameter)
 	{
 		m_nn.change_is_ready_flag(true);
 		TEXTOUT << "Adding layer of " << name << " PEs to topology.\n";
 
-		layer PTR p = generate_layer(name, size, 0);
+		layer PTR p = generate_layer(name, size, optional_parameter);
 		if(p!=NULL)
 			{
 			if(m_nn.add_layer(p))
@@ -185,16 +209,27 @@ public:
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	// add connection set to topology (disconnected and empty) (note: type is also used as name)
 
-	bool add_connection_set(string type)
+	bool add_layer_0xp(string name, int size)
+	{
+		return add_layer_1xp(name,size,DATA_MIN);
+	}
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// add connection set to topology (disconnected and empty)
+	// (note: name is also used as type)
+	// Some redundancy to add optional parameters:
+	// (add_connection_set ----> add_connection_set_0xp, add_connection_set_1xp)
+	// see https://lists.r-forge.r-project.org/pipermail/rcpp-devel/2010-November/001326.html
+
+	bool add_connection_set_1xp(string name, DATA optional_parameter)
 	{
 		m_nn.change_is_ready_flag(false);
 
-		TEXTOUT << "Adding (empty) set of " << type << " connections to topology.\n";
-		TEXTOUT << "(once topology is complete, use create_connections() to fill it).\n";
+		TEXTOUT << "Adding (empty) set of " << name << " connections to topology.\n";
+		TEXTOUT << "(once topology is complete, use create_connections_in_sets to fill it with connections).\n";
 
-        connection_set PTR p = generate_connection_set(type, 0);
+        connection_set PTR p = generate_connection_set(name, optional_parameter);
         if(p!=NULL)
          {
          if(m_nn.add_connection_set(p))
@@ -213,33 +248,94 @@ public:
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+	bool add_connection_set_0xp(string name, DATA optional_parameter)
+	{
+		return add_connection_set_1xp(name,DATA_MIN);
+	}
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// connect and create full connections in empty connection sets (between consecutive layers)
 
-	bool create_connections_in_sets(DATA min_random_weight=0, DATA max_random_weight=0)
+	bool create_connections_in_sets(DATA min_random_weight, DATA max_random_weight)
 	{
 		if(m_nn.connect_consecutive_layers(true,true,min_random_weight,max_random_weight))
 		{
-			TEXTOUT << "Connections added, now can now encode data.\n";
+			TEXTOUT << "Connections added, you can now encode data.\n";
 			return true;
 		}
 		return false;
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	// Setup connection set for two layers (note: connection_set_name is also used as type),
+	// Setup connection set for two layers (note: connection set name is also used as type),
 	// no connections added
+	// Some redundancy to add optional parameters:
+	// (connect_layers_at ----> connect_layers_at_0xp, connect_layers_at_1xp)
+	// see https://lists.r-forge.r-project.org/pipermail/rcpp-devel/2010-November/001326.html
 
-	bool connect_layers_at(int source_pos, int destin_pos, string name)
+	bool connect_layers_at_1xp(	int source_pos,
+                        		int destin_pos,
+                        		string name,
+                        		DATA optional_parameter)
 	{
-		return add_connection_set_for(source_pos,destin_pos,name,false,0,0);
+		return add_connection_set_for(source_pos,
+                                     destin_pos,
+                                     name,
+                                     false,
+                                     0,0,
+                                     optional_parameter);
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	// Fully connect two layers (note: connection_set_name is also used as type)
 
-	bool fully_connect_layers_at(int source_pos, int destin_pos, string name, DATA min_random_weight = 0, DATA max_random_weight = 0)
+	bool connect_layers_at_0xp(	int source_pos,
+                             int destin_pos,
+                             string name)
 	{
-		return add_connection_set_for(source_pos,destin_pos,name,true,min_random_weight,max_random_weight);
+		return add_connection_set_for(source_pos,
+                                destin_pos,
+                                name,
+                                false,
+                                0,0);
+	}
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// Fully connect two layers (note: connection set  name is also used as type)
+	// Some redundancy to add optional parameters:
+	// (fully_connect_layers_at ----> fully_connect_layers_at_0xp, fully_connect_layers_at_1xp)
+	// see https://lists.r-forge.r-project.org/pipermail/rcpp-devel/2010-November/001326.html
+
+	bool fully_connect_layers_at_1xp(	int source_pos,
+                                		int destin_pos,
+                            			string name,
+                            			DATA min_random_weight,
+                            			DATA max_random_weight,
+                            			DATA optional_parameter)
+	{
+		return add_connection_set_for(	source_pos,
+                                 destin_pos,
+                                 name,
+                                 true,
+                                 min_random_weight,
+                                 max_random_weight,
+                                 optional_parameter);
+	}
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+	bool fully_connect_layers_at_0xp(	int source_pos,
+                                		int destin_pos,
+                                		string name,
+                                		DATA min_random_weight,
+                                		DATA max_random_weight)
+	{
+		return add_connection_set_for(	source_pos,
+                                		destin_pos,
+                                		name,
+                                		true,
+                                		min_random_weight,
+                                		max_random_weight);
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -256,7 +352,7 @@ public:
 
 	bool remove_single_connection(int pos, int con)
 	{
-		return m_nn.remove_connection(pos-1,con-1);
+		return m_nn.remove_connection(pos-1,con);
 	}
 
 
@@ -569,15 +665,15 @@ public:
 
 	DATA get_weight_at(int pos, int connection)
 	{
-		return m_nn.get_weight_at_component(pos-1,connection-1);
+		return m_nn.get_weight_at_component(pos-1,connection);
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	// Get weight for given connection.
+	// Set weight at given connection.
 
 	bool set_weight_at(int pos, int connection, DATA value)
 	{
-		return m_nn.set_weight_at_component(pos-1,connection-1,value);
+		return m_nn.set_weight_at_component(pos-1,connection,value);
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -596,6 +692,61 @@ public:
 	{
 		double * fpdata_in  = REAL(data_in);                    // my (lame?) way to interface with R, cont.)
 		return m_nn.set_output_at_component(pos-1,fpdata_in,data_in.length());
+	}
+
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// Get "bias" register values (pe variable) from layer
+
+	NumericVector get_biases_at(int pos)
+	{
+		NumericVector data_out;
+
+		component PTR pc;
+		pc = m_nn.component_from_topology_index(pos-1);
+		if(pc==NULL) return data_out;
+		if(pc->type()!=cmpnt_layer)
+		{
+			warning("Not a layer");
+			return data_out;
+		}
+
+		int num_items = pc->size();
+		if(num_items>0)
+		{
+			data_out= NumericVector(num_items);
+			double * fpdata_out = REAL(data_out);                   // my (lame?) way to interface with R, cont.)
+			if(NOT m_nn.get_biases_at_component(pos-1,fpdata_out, num_items))
+				warning("Cannot retreive biases");
+		}
+
+		return data_out;
+	}
+
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// Get "bias" register for given pe.
+
+	DATA get_bias_at(int pos, int pe)
+	{
+		return m_nn.get_bias_at_component(pos-1,pe);
+	}
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// Set "bias" register values for PEs in given layer (R to Cpp index converted)
+
+	bool set_biases_at(int pos, NumericVector data_in)
+	{
+		double * fpdata_in  = REAL(data_in);                    // my (lame?) way to interface with R, cont.)
+		return m_nn.set_biases_at_component(pos-1,fpdata_in,data_in.length());
+	}
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// Set "bias" at given PE.
+
+	bool set_bias_at(int pos, int pe, DATA value)
+	{
+		return m_nn.set_bias_at_component(pos-1,pe,value);
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -631,40 +782,57 @@ public:
 };
 
 //--------------------------------------------------------------------------------
+// Some redundancy was needed below to allow for optional parameters (the way Rcpp currently supports it):
+// (add_layer				----> add_layer_0xp, add_layer_1xp)
+// (add_connection_set		----> add_connection_set_0xp, add_connection_set_1xp)
+// (fully_connect_layers_at	----> fully_connect_layers_at_0xp, fully_connect_layers_at_1xp)
+// (connect_layers_at		----> connect_layers_at_0xp, connect_layers_at_1xp)
+// see:
+//		https://lists.r-forge.r-project.org/pipermail/rcpp-devel/2010-November/001326.html
+//		2.2.4. Exposing methods using Rcpp modules https://cloud.r-project.org/web/packages/Rcpp/vignettes/Rcpp-modules.pdf
+//		https://lists.r-forge.r-project.org/pipermail/rcpp-devel/2010-November/001326.html
 
 RCPP_MODULE(class_NN) {
 	class_<NN>( "NN" )
 	.constructor()
 // 	.constructor<NumericMatrix,IntegerVector,int>()
-    .method( "size",         							&NN::size, 		      							"Number of components in NN topology" )
-    .method( "sizes",         							&NN::sizes, 		      						"Sizes of components in NN topology" )
-    .method( "add_layer", 								&NN::add_layer,     							"Append layer component to topology" )
-    .method( "add_connection_set", 						&NN::add_connection_set,  						"Append set of connections to topology (disconnected and empty of connections)" )
-    .method( "create_connections_in_sets", 				&NN::create_connections_in_sets,				"Create connections to fully connect consequent layers" )
-    .method( "connect_layers_at",						&NN::connect_layers_at,							"Add connection set for two layers, no connections added" )
-    .method( "fully_connect_layers_at", 				&NN::fully_connect_layers_at,					"Add connection set that fully connects two layers with connections" )
-    .method( "add_single_connection",					&NN::add_single_connection,						"Add a connection to a set that already connects two layers" )
-    .method( "remove_single_connection",				&NN::remove_single_connection,					"Remove a connection from a set" )
-    .method( "component_ids",   						&NN::component_ids, 	      					"Vector of topology component ids" )
-    .method( "input_at",        						&NN::input_at,     								"Input vector to specified topology index" )
-    .method( "encode_at",       						&NN::encode_at, 	      						"Trigger encode for specified topology index" )
-    .method( "recall_at",       						&NN::recall_at, 	      						"Trigger recall for specified topology index" )
-    .method( "encode_all",      						&NN::encode_all, 	   							"Trigger encode for entire topology" )
-    .method( "recall_all",     							&NN::recall_all,	   							"Trigger recall for entire topology" )
-    .method( "encode_dataset_unsupervised",     		&NN::encode_dataset_unsupervised,	   			"Encode a data set using unsupervised training" )
-    .method( "encode_datasets_supervised",     			&NN::encode_datasets_supervised,	   			"Encode multiple (i,j) vector pairs using supervised training" )
-    .method( "recall_dataset",     						&NN::recall_dataset,				   			"Recall (i.e decode,map) a data set" )
-    .method( "get_output_from",     					&NN::get_output_from,    						"Output vector from specified topology index" )
-    .method( "get_output_at",	     					&NN::get_output_at,    							"Output vector from specified topology index" )
-    .method( "get_input_at",     						&NN::get_input_at,		   						"Get input (pe variable value or connection input) in specified topology index" )
-    .method( "get_weights_at",     						&NN::get_weights_at,	   						"Get connection weights (connection variable value) in specified topology index" )
-    .method( "get_weight_at",     						&NN::get_weight_at,	   							"Get connection weight for given connection in specified topology index" )
-    .method( "set_weight_at",     						&NN::set_weight_at,	   							"Set connection weight for given connection in specified topology index" )
-	.method( "set_misc_values_at",     					&NN::set_misc_values_at,	   					"Set misc registers of elements in specified topology index" )
-	.method( "set_output_at",     						&NN::set_output_at,	   							"Set output values in specified topology index" )
-	.method( "print",     								&NN::print,         							"Print internal NN state" )
-	.method( "show",     								&NN::show,         							"Print internal NN state" )
-	.method( "outline",     							&NN::outline,         							"Outline of the NN topology" )
+    .method( "size",         							&NN::size, 		      												"Number of components in NN topology" )
+    .method( "sizes",         							&NN::sizes, 		      											"Sizes of components in NN topology" )
+    .method( "add_layer",				(bool (NN::*)(string,int))(&NN::add_layer_0xp), 									"Append layer component to topology" )
+	.method( "add_layer",				(bool (NN::*)(string,int,DATA))(&NN::add_layer_1xp),								"Append layer component to topology" )
+	.method( "add_connection_set",		(bool (NN::*)(string))(&NN::add_connection_set_0xp),  								"Append set of connections to topology (disconnected and empty of connections)" )
+	.method( "add_connection_set",		(bool (NN::*)(string,DATA))(&NN::add_connection_set_1xp),  								"Append set of connections to topology (disconnected and empty of connections)" )
+    .method( "connect_layers_at",		(bool (NN::*)(int,int,string))(&NN::connect_layers_at_0xp),							"Add connection set for two layers, no connections added" )
+    .method( "connect_layers_at",		(bool (NN::*)(int,int,string,DATA))(&NN::connect_layers_at_1xp),					"Add connection set for two layers, no connections added" )
+    .method( "fully_connect_layers_at",	(bool (NN::*)(int,int,string,DATA,DATA))(&NN::fully_connect_layers_at_0xp),			"Add connection set that fully connects two layers with connections" )
+    .method( "fully_connect_layers_at",	(bool (NN::*)(int,int,string,DATA,DATA,DATA))(&NN::fully_connect_layers_at_1xp),	"Add connection set that fully connects two layers with connections" )
+    .method( "create_connections_in_sets", 				&NN::create_connections_in_sets,									"Create connections to fully connect consequent layers" )
+    .method( "add_single_connection",					&NN::add_single_connection,											"Add a connection to a set that already connects two layers" )
+    .method( "remove_single_connection",				&NN::remove_single_connection,										"Remove a connection from a set" )
+    .method( "component_ids",   						&NN::component_ids, 	      										"Vector of topology component ids" )
+    .method( "input_at",        						&NN::input_at,     													"Input vector to specified topology index" )
+    .method( "encode_at",       						&NN::encode_at, 	      											"Trigger encode for specified topology index" )
+    .method( "recall_at",       						&NN::recall_at, 	      											"Trigger recall for specified topology index" )
+    .method( "encode_all",      						&NN::encode_all, 	   												"Trigger encode for entire topology" )
+    .method( "recall_all",     							&NN::recall_all,	   												"Trigger recall for entire topology" )
+    .method( "encode_dataset_unsupervised",     		&NN::encode_dataset_unsupervised,	   								"Encode a data set using unsupervised training" )
+    .method( "encode_datasets_supervised",     			&NN::encode_datasets_supervised,	   								"Encode multiple (i,j) vector pairs using supervised training" )
+    .method( "recall_dataset",     						&NN::recall_dataset,				   								"Recall (i.e decode,map) a data set" )
+    .method( "get_output_from",     					&NN::get_output_from,    											"Output vector from specified topology index" )
+    .method( "get_output_at",	     					&NN::get_output_at,    												"Output vector from specified topology index" )
+    .method( "get_input_at",     						&NN::get_input_at,		   											"Get input (pe variable value or connection input) in specified topology index" )
+    .method( "get_weights_at",     						&NN::get_weights_at,	   											"Get connection weights (connection variable value) in specified topology index" )
+    .method( "get_weight_at",     						&NN::get_weight_at,	   												"Get connection weight for given connection in specified topology index" )
+    .method( "set_weight_at",     						&NN::set_weight_at,	   												"Set connection weight for given connection in specified topology index" )
+	.method( "set_misc_values_at",     					&NN::set_misc_values_at,	   										"Set misc registers of elements in specified topology index" )
+	.method( "set_output_at",     						&NN::set_output_at,	   												"Set output values in specified topology index" )
+	.method( "get_biases_at",     						&NN::get_biases_at,	   												"Get bias values in layer at specified topology index" )
+	.method( "get_bias_at",     						&NN::get_bias_at,	   												"Get bias value for given PE in layer at specified topology index" )
+	.method( "set_biases_at",     						&NN::set_biases_at,	   												"Set bias values in layer at specified topology index" )
+	.method( "set_bias_at",     						&NN::set_bias_at,	   												"Set bias value for given PE in layer at specified topology index" )
+	.method( "print",     								&NN::print,         												"Print internal NN state" )
+	.method( "show",     								&NN::show,         													"Print internal NN state" )
+	.method( "outline",     							&NN::outline,         												"Outline of the NN topology" )
 ;
 }
 

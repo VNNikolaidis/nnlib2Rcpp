@@ -127,7 +127,7 @@ class nn : public component, public data_receiver, public data_provider, public 
  component * component_from_id(int id);                                 // returns a pointer to component with given id in topology, NULL if not available
  component * component_from_topology_index(int index);                  // returns a pointer to the "index"-th component in topology, NULL if not available
 
- // some patches that may be useful, especialy for interactive use:
+ // some patches that may be useful for interactive use (s.a. in nnlib2Rcpp R package):
 
  layer PTR get_layer_at(int index);                                     // NULL if not found or not layer
  connection_set PTR get_connection_set_at(int index);                   // NULL if not found or not connection_set
@@ -139,6 +139,10 @@ class nn : public component, public data_receiver, public data_provider, public 
  bool set_weight_at_component(int index, int connection_number, DATA weight);
  bool set_misc_at_component(int index, DATA * data, int dimension);
  bool set_output_at_component(int index, DATA * data, int dimension);   // currently only works only for layers
+ bool get_biases_at_component(int index, DATA * buffer, int dimension); // only works only for layers
+ DATA get_bias_at_component(int index, int pe_number);					// only works only for layers
+ bool set_biases_at_component(int index, DATA * data, int dimension);   // only works only for layers
+ bool set_bias_at_component(int index, int pe_number, DATA value);		// only works only for layers
  void change_is_ready_flag(bool new_state);                             // avoid using, nn should set m_nn_is_ready flag itself, once its setup is completed
  };
 

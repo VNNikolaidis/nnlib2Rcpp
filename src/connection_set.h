@@ -304,9 +304,9 @@ template <class CONNECTION_TYPE>
 DATA Connection_Set<CONNECTION_TYPE>::get_connection_weight (int connection)
 {
  if(connection<0)
- 	{warning("Invalid connection"); return 0;}
+ 	{warning("Invalid connection (numbering starts with 0)"); return 0;}
  if(connection>=connections.size())
- 	{warning("Invalid connection"); return 0;}
+ 	{warning("Invalid connection (numbering starts with 0)"); return 0;}
 return connections[connection].weight();
 }
 
@@ -316,9 +316,9 @@ template <class CONNECTION_TYPE>
 bool Connection_Set<CONNECTION_TYPE>::set_connection_weight (int connection, DATA value)
 {
 if(connection<0)
-	{warning("Invalid connection"); return false;}
+	{warning("Invalid connection (numbering starts with 0)"); return false;}
 if(connection>=connections.size())
-	{warning("Invalid connection"); return false;}
+	{warning("Invalid connection (numbering starts with 0)"); return false;}
 connections[connection].weight()=value;
 return true;
 }
@@ -522,6 +522,7 @@ while(connections.goto_next());
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // a dummy layer, useless return value if actual are invalid
+
 static pe_layer dummy_layer;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

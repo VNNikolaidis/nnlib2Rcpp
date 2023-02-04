@@ -16,8 +16,8 @@ Changes to nnlib2Rcpp version 0.1.2 (from 0.1.1)
 -	removed redundant BP functions. All BP functionality is now implemented in BP module class (safer and more convenient for supervised methods).
 -	removed redundant Supervised-LVQ functions. All Supervised-LVQ functionality is now implemented in LVQs module class (safer and more convenient for supervised methods). Unsupervised-LVQ is still implemented as a function (LVQu).
 -	removed MAM functions. All MAM functionality is now implemented in MAM module class (safer and more convenient for supervised methods).
--	Minor changes in nnlib2 (now uses nnlib2 v.0.1.5)
--	Fixed LICENCE file (was incompatible with CRAN)
+-	Minor changes in nnlib2 (now uses nnlib2 v.0.1.5).
+-	Fixed LICENCE file (was incompatible with CRAN).
 
 ---
 
@@ -34,9 +34,9 @@ Changes to nnlib2Rcpp version 0.1.4 (from 0.1.3)
 
 ---
 
-Changes to nnlib2Rcpp version 0.1.5 (from 0.1.4)
--	added some methods to module "NN" (get_weight_at, set_weight_at)
--	added some methods to module "NN" (set_misc_values_at)
+Changes to nnlib2Rcpp version 0.1.5 (from 0.1.4).
+-	added some methods to module "NN" (get_weight_at, set_weight_at).
+-	added some methods to module "NN" (set_misc_values_at).
 
 ---
 
@@ -47,8 +47,8 @@ Changes to nnlib2Rcpp version 0.1.6 (from 0.1.5)
 -	includes nnlib2 v.0.2.4
 -	added method to module "NN" (get_output_at).
 -	added method to module "NN" (set_output_at).
--	added package vingette
--	other minor changes
+-	added package vingette.
+-	other minor changes.
 
 ---
 
@@ -59,11 +59,21 @@ Changes to nnlib2Rcpp version 0.1.7 (from 0.1.6)
 
 Changes to nnlib2Rcpp version 0.1.8 (from 0.1.7)
 -	minor documentation changes.
--	other minor changes
+-	other minor changes.
 
 ---
 
 Changes to nnlib2Rcpp version 0.1.9 (from 0.1.8)
 -	documentation changes (clarify hidden_layer_size).
 -	added show() to modules NN,MAM,LVQs and BP (to handle R's print generic function).
--	other minor changes
+-	other minor changes.
+
+---
+
+Changes to nnlib2Rcpp version 0.1.10 (from 0.1.9)
+-	NN method add_layer now accepts additional optional parameter (double) to be used by specific layer implementations (for example, BP layers interpret it is as the learning rate). More optional parameters may be added in future versions.
+-	NN methods add_connection_set, connect_layers_at and fully_connect_layers_at now accept additional optional parameter (double) to be used by specific connection set implementations (for example, BP connection sets interpret it is as the learning rate). More optional parameters may be added in future versions.
+-	includes nnlib2 v.0.2.6 (added functionality to directly get/set biases in layer processing elements (PEs)).
+-	changes in NN module to support get/set biases (added functions: set_biases_at, set_bias_at, get_biases_at, get_bias_at).
+-	numbers specifying PE and connections in NN module functions now start from 0 (was 1, changed to agree with those shown when NN is printed. This affects functions: get_weight_at, set_weight_at and remove_single_connection).
+-	other minor changes.

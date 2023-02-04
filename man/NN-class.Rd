@@ -131,16 +131,18 @@ plot(iris_data, pch=recalled_ids)
 \section{Methods}{
   \describe{
 
-    \item{\code{add_layer( name, size )}:}{Setup a new \code{layer} component (a layer of processing nodes) and append it to the NN topology. Parameters are:
+    \item{\code{add_layer( name, size, p )}:}{Setup a new \code{layer} component (a layer of processing nodes) and append it to the NN topology. Parameters are:
     \itemize{
     \item{\code{name}}{: string, containing name (that also Specifies type) of new layer. Names of predefined layers currently include \code{'pe'}(same as \code{'generic'}), \code{'pass-through'}, \code{'which-max'}, \code{'MAM'}, \code{'LVQ-input'}, \code{'LVQ-output'}, \code{'BP-hidden'}, \code{'BP-output'}, \code{'perceptron'} (additional names for user-defined components may be used, see note below.)}
     \item{\code{size}}{: integer, layer size i.e. number of \code{pe} (Processing Elements or nodes) to create in the layer.}
+    \item{\code{p}}{: (optional) double, parameter to be used by specific layer implementations (for example, BP layer implementations \code{'BP-hidden'} and \code{'BP-output'} interpret it is as the layer's learning rate). Note: more optional parameters may be added in future versions.}
     }
     }
 
-    \item{\code{add_connection_set( name )}:}{Create a new empty \code{connection_set} component (a set of connections between two layers). It does not connect any layers nor contain any connections between specific layer nodes. The set is appended to the NN topology. Parameters are:
+    \item{\code{add_connection_set( name, p )}:}{Create a new empty \code{connection_set} component (a set of connections between two layers). It does not connect any layers nor contain any connections between specific layer nodes. The set is appended to the NN topology. Parameters are:
     \itemize{
     \item{\code{name}}{: string, containing name (that also specifies type) of new empty connection set. Names of predefined connection sets currently include \code{'generic', 'pass-through'}(which does not multiply weights), \code{'wpass-through'}(which does multiply weights), \code{'MAM'}, \code{'LVQ'}, \code{'BP'}, \code{'perceptron'} (additional names for user-defined components may be used, see note below).}
+    \item{\code{p}}{: (optional) double, parameter to be used by specific connection set implementations (for example, \code{'BP'} connection sets interpret it is as the learning rate to be used when adjusting weights, \code{'LVQ'} connection sets use it to count iterations for decreasing weight adjustments, etc). Note: more optional parameters may be added in future versions.}
     }
     }
 
@@ -151,21 +153,23 @@ plot(iris_data, pch=recalled_ids)
     }
     }
 
-    \item{\code{connect_layers_at( source_pos, destin_pos, name )}:}{Insert a new empty \code{connection_set} component (a set of connections between two layers) between the layers at specified topology positions, and prepare it to connect them. No actual connections between any layer nodes are created. Parameters are:
+    \item{\code{connect_layers_at( source_pos, destin_pos, name, p )}:}{Insert a new empty \code{connection_set} component (a set of connections between two layers) between the layers at specified topology positions, and prepare it to connect them. No actual connections between any layer nodes are created. Parameters are:
     \itemize{
     \item{\code{source_pos}}{: integer, position in topology of source layer.}
     \item{\code{destin_pos}}{: integer, position in topology of destination layer.}
     \item{\code{name}}{: string, containing name (that also specifies type) of new connection set (see above).}
+    \item{\code{p}}{: (optional) double, parameter to be used by specific connection set implementations (for example, \code{'BP'} connection sets interpret it is as the learning rate to be used when adjusting weights, \code{'LVQ'} connection sets use it to count iterations for decreasing weight adjustments, etc). Note: more optional parameters may be added in future versions.}
     }
     }
 
-    \item{\code{fully_connect_layers_at( source_pos, destin_pos, name, min_random_weight, max_random_weight )}:}{Same as \code{connect_layers_at} but also fills the new \code{connection_set} with connections between the nodes of the two layers, fully connecting the layers (n x m connections are created, with n and m the number of nodes at each layer respectively). Parameters are:
+    \item{\code{fully_connect_layers_at( source_pos, destin_pos, name, min_random_weight, max_random_weight, p )}:}{Same as \code{connect_layers_at} but also fills the new \code{connection_set} with connections between the nodes of the two layers, fully connecting the layers (n x m connections are created, with n and m the number of nodes at each layer respectively). Parameters are:
     \itemize{
     \item{\code{source_pos}}{: integer, position in topology of source layer.}
     \item{\code{destin_pos}}{: integer, position in topology of destination layer.}
     \item{\code{name}}{: string, containing name (that also specifies type) of new connection set (see above).}
     \item{\code{min_random_weight}}{: double, minimum value for random initial connection weights.}
     \item{\code{max_random_weight}}{: double, maximum value for random initial connection weights.}
+    \item{\code{p}}{: (optional) double, parameter to be used by specific connection set implementations (for example, \code{'BP'} connection sets interpret it is as the learning rate to be used when adjusting weights, \code{'LVQ'} connection sets use it to count iterations for decreasing weight adjustments, etc). Note: more optional parameters may be added in future versions.}
     }
     }
 
@@ -183,7 +187,7 @@ plot(iris_data, pch=recalled_ids)
    Remove a connection from a \code{connection_set}. Parameters are:
     \itemize{
     \item{\code{pos}}{: integer, position in topology of \code{connection_set}.}
-	\item{\code{con}}{: integer, connection to remove.}
+	\item{\code{con}}{: integer, connection to remove (note: numbering starts from 0).}
     }
     }
 
@@ -274,17 +278,17 @@ plot(iris_data, pch=recalled_ids)
     }
     }
 
- \item{\code{get_weight_at( pos, connection )}:}{Get the current weight of a connection in component (\code{connection_set}) at specified topology index. If successful, returns weight, otherwise 0. Parameters are:
+ \item{\code{get_weight_at( pos, connection )}:}{Get the current weight of a connection in component (\code{connection_set}) at specified topology index. If successful, returns weight, otherwise 0 (note: this might change in future versions). Parameters are:
     \itemize{
     \item{\code{pos}}{: integer, position in topology of component to use.}
-    \item{\code{connection}}{: connection to use.}
+    \item{\code{connection}}{: integer, connection to use (note: numbering starts from 0).}
     }
     }
 
  \item{\code{set_weight_at( pos, connection, value )}:}{Set the weight of a connection in component (\code{connection_set}) at specified topology index. If successful, returns TRUE. Parameters are:
     \itemize{
     \item{\code{pos}}{: integer, position in topology of component to use.}
-    \item{\code{connection}}{: connection to use.}
+    \item{\code{connection}}{: integer, connection to use (note: numbering starts from 0).}
     \item{\code{value}}{: new weight for connection.}
     }
     }
@@ -302,6 +306,35 @@ plot(iris_data, pch=recalled_ids)
     \item{\code{data_in}}{: NumericVector, data to be used for new values in \code{misc} registers (sizes must match).}
     }
     }
+
+ \item{\code{get_biases_at( pos )}:}{Get the values in the \code{bias} register that \code{pe} (Processing Elements or nodes) maintain, for \code{layer} at specified topology index (only \code{layer} components are supported). If successful, returns NumericVector of bias values. Parameters are:
+    \itemize{
+    \item{\code{pos}}{: integer, position in topology of component to use.}
+    }
+    }
+
+ \item{\code{get_bias_at( pos, pe )}:}{Get the bias of a \code{pe} (Processing Element or node) in component (\code{layer}) at specified topology index. If successful, returns bias otherwise 0 (note: this might change in future versions). Parameters are:
+    \itemize{
+    \item{\code{pos}}{: integer, position in topology of component to use.}
+    \item{\code{pe}}{: integer, Processing Element (node) in \code{layer} to use (note: numbering starts from 0).}
+    }
+    }
+
+ \item{\code{set_biases_at( pos, data_in )}:}{Set the values in the \code{bias} register that \code{pe} (Processing Elements or nodes) maintain, for \code{layer} at specified topology index (only \code{layer} components are supported). If successful, returns TRUE. Parameters are:
+    \itemize{
+    \item{\code{pos}}{: integer, position in topology of component to use.}
+    \item{\code{data_in}}{: NumericVector, data to be used for new values in \code{bias} registers (sizes must match).}
+    }
+    }
+
+ \item{\code{set_bias_at( pos, pe, value )}:}{Set the bias of a \code{pe} (Processing Element or node) in component (\code{layer}) at specified topology index. If successful, returns TRUE. Parameters are:
+    \itemize{
+    \item{\code{pos}}{: integer, position in topology of component to use.}
+    \item{\code{pe}}{: integer, Processing Element (node) in \code{layer} to use (note: numbering starts from 0).}
+    \item{\code{value}}{: new value for bias at the specified \code{pe}.}
+    }
+    }
+
 
 \item{\code{outline()}:}{Print a summary description of all components in topology.}
 

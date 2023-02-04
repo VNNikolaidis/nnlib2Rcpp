@@ -921,7 +921,7 @@ DATA nn::get_weight_at_component(int index, int connection_number)
 bool nn::set_weight_at_component(int index, int connection_number, DATA weight)
 {
   connection_set PTR p_cs = get_connection_set_at(index);
-  if(p_cs==NULL) {warning("Invalid connection set"); return 0;}
+  if(p_cs==NULL) {warning("Invalid connection set"); return false;}
   return p_cs->set_connection_weight(connection_number, weight);
 }
 
@@ -939,13 +939,56 @@ bool nn::set_misc_at_component(int index, DATA * data, int dimension)
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // patch, currently only works only for layers
-// overrides current pe output registers with the provided data values
+// overwrites current pe output registers with the provided data values
 
 bool nn::set_output_at_component(int index, DATA * data, int dimension)
 {
   layer PTR p_lay = get_layer_at(index);
   if (p_lay != NULL) return p_lay->set_output(data,dimension);
   return false;
+}
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// patch, only works only for layers. Returns false if not successful
+
+bool nn::get_biases_at_component (int index, DATA * buffer, int dimension)
+{
+	layer PTR p_lay = get_layer_at(index);
+	if(p_lay==NULL) {warning("Invalid layer"); return false;}
+	return p_lay->get_biases(buffer,dimension);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// patch, only works only for layers. Returns 0 if not successful
+
+DATA nn::get_bias_at_component(int index, int pe)
+{
+	layer PTR p_lay = get_layer_at(index);
+	if(p_lay==NULL) {warning("Invalid layer"); return false;}
+	return p_lay->get_bias_from(pe);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// patch, only works only for layers
+// overwrites current pe bias registers with the provided data values
+
+bool nn::set_biases_at_component(int index, DATA * data, int dimension)
+{
+	layer PTR p_lay = get_layer_at(index);
+	if (p_lay != NULL) return p_lay->set_biases(data,dimension);
+	return false;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// patch, only works only for layers
+// overwrites current pe bias register with the provided data values
+
+bool nn::set_bias_at_component(int index, int pe_number, DATA value)
+{
+	layer PTR p_lay = get_layer_at(index);
+	if (p_lay != NULL) return p_lay->set_bias_at(pe_number, value);
+	return false;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

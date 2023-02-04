@@ -137,7 +137,7 @@ class example_connection_set_2: public Connection_Set<example_connection>
 // given the name, it should return a pointer to a newly created layer
 //------------------------------------------------------------------------------
 
-layer PTR generate_custom_layer(string name, int size)
+layer PTR generate_custom_layer(string name, int size, DATA optional_parameter=DATA_MIN)
 {
 	if(name == "JustAdd10")         return new JustAdd10_layer (name,size);
     if(name == "perceptron")        return new perceptron_layer(name,size);
@@ -155,7 +155,7 @@ return NULL;
 // given the name, it should return a pointer to a newly created connection_set
 //------------------------------------------------------------------------------
 
-connection_set PTR generate_custom_connection_set(string name)
+connection_set PTR generate_custom_connection_set(string name, DATA optional_parameter=DATA_MIN)
 {
 	if(name == "perceptron")                return new perceptron_connection_set(name);
 	if(name == "MEX")						return new MEX_connection_set(name);
