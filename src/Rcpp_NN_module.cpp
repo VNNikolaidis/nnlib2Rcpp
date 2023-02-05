@@ -30,7 +30,7 @@ protected:
 	// generate layer for further use later (note: name is also used as type selector)
 
 	layer PTR generate_layer(string name, int size, DATA optional_parameter=DATA_MIN)
-		{
+	{
 		if( name == "pe" ) 				return new pe_layer(name,size);
 		if( name == "generic_d" ) 		return new pe_layer(name,size);
 		if( name == "generic" )  		return new Layer<pe>(name,size);
@@ -42,57 +42,57 @@ protected:
 		if( name == "MAM" )				return new mam::mam_layer(name,size);
 
 		if( name == "LVQ-input" )		{
-										TEXTOUT << "(Note: "<< name << " layer implementation is outdated - expect limited functionality.)\n";
-										lvq::lvq_input_layer PTR pl = new lvq::lvq_input_layer;
-										pl->setup(name,size);
-										return pl;
-										}
+			TEXTOUT << "(Note: "<< name << " layer implementation is outdated - expect limited functionality.)\n";
+			lvq::lvq_input_layer PTR pl = new lvq::lvq_input_layer;
+			pl->setup(name,size);
+			return pl;
+		}
 
 		if( name == "LVQ-output" )		{
-										TEXTOUT << "(Note: "<< name << " layer implementation is outdated - expect limited functionality.)\n";
-										lvq::lvq_output_layer PTR pl = new lvq::lvq_output_layer;
-										pl->setup(name,size,1);
-										return pl;
-										}
+			TEXTOUT << "(Note: "<< name << " layer implementation is outdated - expect limited functionality.)\n";
+			lvq::lvq_output_layer PTR pl = new lvq::lvq_output_layer;
+			pl->setup(name,size,1);
+			return pl;
+		}
 
-		 if( name == "BP-hidden" )		{
-										 TEXTOUT << "Note: current "<< name << " layer implementation is outdated - expect limited functionality.\n";
-		 								bp::bp_comput_layer PTR pl = new bp::bp_comput_layer;
-		 								pl->setup(name,size);
-		 								pl->randomize_biases(-1,1);
-		 								DATA bp_learnrate = 0.6;
-		 								if(optional_parameter!=DATA_MIN)
-		 									bp_learnrate = optional_parameter;
-		 								pl->set_learning_rate(bp_learnrate);
-		 								TEXTOUT << "(This " << name << " layer uses learning rate = " << bp_learnrate << ")\n";
-		 								return pl;
-		 								}
+		if( name == "BP-hidden" )		{
+			TEXTOUT << "Note: current "<< name << " layer implementation is outdated - expect limited functionality.\n";
+			bp::bp_comput_layer PTR pl = new bp::bp_comput_layer;
+			pl->setup(name,size);
+			pl->randomize_biases(-1,1);
+			DATA bp_learnrate = 0.6;
+			if(optional_parameter!=DATA_MIN)
+				bp_learnrate = optional_parameter;
+			pl->set_learning_rate(bp_learnrate);
+			TEXTOUT << "(This " << name << " layer uses learning rate = " << bp_learnrate << ")\n";
+			return pl;
+		}
 
-		 if( name == "BP-output" )		{
-		 								TEXTOUT << "Note: current "<< name << " layer implementation is outdated - expect limited functionality.\n";
-		 								bp::bp_output_layer PTR pl = new bp::bp_output_layer;
-		 								pl->setup(name,size);
-		 								pl->randomize_biases(-1,1);
-		 								DATA bp_learnrate = 0.6;
-		 								if(optional_parameter!=DATA_MIN)
-		 									bp_learnrate = optional_parameter;
-		 								pl->set_learning_rate(bp_learnrate);
-		 								TEXTOUT << "(This " << name << " layer uses learning rate = " << bp_learnrate << ")\n";
-		 								return pl;
-		 								}
+		if( name == "BP-output" )		{
+			TEXTOUT << "Note: current "<< name << " layer implementation is outdated - expect limited functionality.\n";
+			bp::bp_output_layer PTR pl = new bp::bp_output_layer;
+			pl->setup(name,size);
+			pl->randomize_biases(-1,1);
+			DATA bp_learnrate = 0.6;
+			if(optional_parameter!=DATA_MIN)
+				bp_learnrate = optional_parameter;
+			pl->set_learning_rate(bp_learnrate);
+			TEXTOUT << "(This " << name << " layer uses learning rate = " << bp_learnrate << ")\n";
+			return pl;
+		}
 
 		layer PTR pl = generate_custom_layer(name,size,optional_parameter);
 		if(pl != NULL) return pl;
 
 		warning("Unknown layer type");
 		return NULL;
-		}
+	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// generate connection set for further use later (note: name is also used as type)
 
 	connection_set PTR generate_connection_set(string name, DATA optional_parameter = DATA_MIN )
-	    {
+	{
 		if( name == "generic" )			return new Connection_Set<connection>(name);
 
 		if( name == "pass-through" )	return new Connection_Set<pass_through_connection>(name);
@@ -102,41 +102,41 @@ protected:
 		if( name == "MAM" )				return new mam::mam_connection_set(name);
 
 		if( name == "LVQ")				{
-										TEXTOUT << "(Note: "<< name << " connection set implementation is outdated - expect limited functionality.)\n";
-										lvq::lvq_connection_set PTR pc = new lvq::lvq_connection_set;
-										if(pc!=NULL)
-											{
-											DATA LVQ_iteration = 100;
-											if(optional_parameter!=DATA_MIN)
-												LVQ_iteration = optional_parameter;
-											 pc->set_iteration_number(LVQ_iteration);
-											 TEXTOUT << "(This " << name << " connection set uses iteration parameter = " << LVQ_iteration << ")\n";
-											 pc->name() = name;
-											}
-										return pc;
-										}
+			TEXTOUT << "(Note: "<< name << " connection set implementation is outdated - expect limited functionality.)\n";
+			lvq::lvq_connection_set PTR pc = new lvq::lvq_connection_set;
+			if(pc!=NULL)
+			{
+				DATA LVQ_iteration = 100;
+				if(optional_parameter!=DATA_MIN)
+					LVQ_iteration = optional_parameter;
+				pc->set_iteration_number(LVQ_iteration);
+				TEXTOUT << "(This " << name << " connection set uses iteration parameter = " << LVQ_iteration << ")\n";
+				pc->name() = name;
+			}
+			return pc;
+		}
 
-		 if( name == "BP" )				{
-		 								TEXTOUT << "(Note: "<< name << " connection set implementation is outdated - expect limited functionality.)\n";
-		 								bp::bp_connection_set PTR pc = new bp::bp_connection_set;
-		 								if(pc!=NULL)
-		 									{
-		 									pc->name() = name;
-		 									DATA bp_learnrate = 0.6;
-		 									if(optional_parameter!=DATA_MIN)
-		 										bp_learnrate = optional_parameter;
-		 									pc->set_learning_rate(bp_learnrate);
-		 									TEXTOUT << "(This " << name << " connection set uses learning rate = " << bp_learnrate << ")\n";
-		 									}
-		 								return pc;
-		 								}
+		if( name == "BP" )				{
+			TEXTOUT << "(Note: "<< name << " connection set implementation is outdated - expect limited functionality.)\n";
+			bp::bp_connection_set PTR pc = new bp::bp_connection_set;
+			if(pc!=NULL)
+			{
+				pc->name() = name;
+				DATA bp_learnrate = 0.6;
+				if(optional_parameter!=DATA_MIN)
+					bp_learnrate = optional_parameter;
+				pc->set_learning_rate(bp_learnrate);
+				TEXTOUT << "(This " << name << " connection set uses learning rate = " << bp_learnrate << ")\n";
+			}
+			return pc;
+		}
 
 		connection_set PTR pc = generate_custom_connection_set(name,optional_parameter);
 		if(pc!=NULL) return pc;
 
 		warning("Unknown connection set type");
 		return NULL;
-	    }
+	}
 
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -170,6 +170,14 @@ protected:
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+	void warning(string message)
+	{
+		Rcpp::warning("(NN module) "+message);
+	}
+
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 public:
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -193,16 +201,16 @@ public:
 
 		layer PTR p = generate_layer(name, size, optional_parameter);
 		if(p!=NULL)
-			{
+		{
 			if(m_nn.add_layer(p))
-				{
+			{
 				TEXTOUT << "Topology changed:\n";
 				outline();
 				return true;
-				}
+			}
 			warning("Deleting orphan (?) layer");
 			delete p;
-			}
+		}
 		m_nn.change_is_ready_flag(false);
 		TEXTOUT << "Note: Adding layer failed.\n";
 		return false;
@@ -229,18 +237,18 @@ public:
 		TEXTOUT << "Adding (empty) set of " << name << " connections to topology.\n";
 		TEXTOUT << "(once topology is complete, use create_connections_in_sets to fill it with connections).\n";
 
-        connection_set PTR p = generate_connection_set(name, optional_parameter);
-        if(p!=NULL)
-         {
-         if(m_nn.add_connection_set(p))
-        	{
-        	TEXTOUT << "Topology changed:\n";
-        	outline();
-        	return true;
-        	}
-         warning("Deleting orphan (?) connection set");
-         delete p;
-         }
+		connection_set PTR p = generate_connection_set(name, optional_parameter);
+		if(p!=NULL)
+		{
+			if(m_nn.add_connection_set(p))
+			{
+				TEXTOUT << "Topology changed:\n";
+				outline();
+				return true;
+			}
+			warning("Deleting orphan (?) connection set");
+			delete p;
+		}
 
 		m_nn.change_is_ready_flag(false);
 		TEXTOUT << "Note: Adding connection set failed.\n";
@@ -275,16 +283,16 @@ public:
 	// see https://lists.r-forge.r-project.org/pipermail/rcpp-devel/2010-November/001326.html
 
 	bool connect_layers_at_1xp(	int source_pos,
-                        		int destin_pos,
-                        		string name,
-                        		DATA optional_parameter)
+                             int destin_pos,
+                             string name,
+                             DATA optional_parameter)
 	{
 		return add_connection_set_for(source_pos,
-                                     destin_pos,
-                                     name,
-                                     false,
-                                     0,0,
-                                     optional_parameter);
+                                destin_pos,
+                                name,
+                                false,
+                                0,0,
+                                optional_parameter);
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -307,11 +315,11 @@ public:
 	// see https://lists.r-forge.r-project.org/pipermail/rcpp-devel/2010-November/001326.html
 
 	bool fully_connect_layers_at_1xp(	int source_pos,
-                                		int destin_pos,
-                            			string name,
-                            			DATA min_random_weight,
-                            			DATA max_random_weight,
-                            			DATA optional_parameter)
+                                   int destin_pos,
+                                   string name,
+                                   DATA min_random_weight,
+                                   DATA max_random_weight,
+                                   DATA optional_parameter)
 	{
 		return add_connection_set_for(	source_pos,
                                  destin_pos,
@@ -325,17 +333,17 @@ public:
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 	bool fully_connect_layers_at_0xp(	int source_pos,
-                                		int destin_pos,
-                                		string name,
-                                		DATA min_random_weight,
-                                		DATA max_random_weight)
+                                   int destin_pos,
+                                   string name,
+                                   DATA min_random_weight,
+                                   DATA max_random_weight)
 	{
 		return add_connection_set_for(	source_pos,
-                                		destin_pos,
-                                		name,
-                                		true,
-                                		min_random_weight,
-                                		max_random_weight);
+                                 destin_pos,
+                                 name,
+                                 true,
+                                 min_random_weight,
+                                 max_random_weight);
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -399,17 +407,17 @@ public:
 	// Trigger encode for component at specified topology index (R to Cpp index converted)
 
 	bool encode_at(int pos)
-	 {
-	 return m_nn.call_component_encode(pos-1);
-	 }
+	{
+		return m_nn.call_component_encode(pos-1);
+	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// Trigger recall for component at specified topology index (R to Cpp index converted)
 
 	bool recall_at(int pos)
-	 {
-	 return m_nn.call_component_recall(pos-1);
-	 }
+	{
+		return m_nn.call_component_recall(pos-1);
+	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// Trigger encode for all components, in fwd or bwd direction
@@ -432,62 +440,62 @@ public:
 	// Encode multiple input vectors stored in data set
 
 	bool encode_dataset_unsupervised
-						  (NumericMatrix data,
-                           int pos,							// input component position
-            			   int epochs = 1000,				// training epochs (presentations of all data)
-            			   bool fwd = true					// processing direction (order) for components in NN
-						  )
+	(NumericMatrix data,
+  int pos,							// input component position
+  int epochs = 1000,				// training epochs (presentations of all data)
+  bool fwd = true					// processing direction (order) for components in NN
+	)
 	{
 		if(data.rows()<=0)
-			{
+		{
 			error(NN_DATAST_ERR,"Cannot perform unsupervised training, dataset empty");
 			return false;
-			}
+		}
 
 		int num_training_cases=data.rows();
 
 		TEXTOUT << "Encoding (unsupervised)...\n";
 
 		for(int i=0;i<epochs;i++)
-			{
+		{
 			if(NOT m_nn.is_ready())
-				{
+			{
 				error(NN_DATAST_ERR,"Training failed");
 				return false;
-				}
+			}
 
 			for(int r=0;r<num_training_cases;r++)
-				{
+			{
 				if(NOT input_at(pos, data( r , _ ) ))
-					{
+				{
 					error(NN_INTEGR_ERR,"Training failed");
 					return false;
-					}
-				encode_all(fwd);
 				}
-			if(i%100==0) checkUserInterrupt();					// (RCpp function to check if user pressed cancel)
+				encode_all(fwd);
 			}
+			if(i%100==0) checkUserInterrupt();					// (RCpp function to check if user pressed cancel)
+		}
 
 		TEXTOUT << "Finished.\n";
 		return true;
-		}
+	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// Encode multiple (i,j) vector pairs stored in two corresponding data sets
 
 	bool encode_datasets_supervised
 	(NumericMatrix i_data,				// data set, each row is a vector i of vector-pair (i,j)
-	 int i_pos,							// position (in topology) of component to receive i.
-	 NumericMatrix j_data,				// data set, each row is the corresponding vector j of vector-pair (i,j)
-	 int j_pos,							// position (in topology) of component to receive j.
-	 int j_destination_selector = 0,	// vector j will be sent to pe internal registers: 'input' if 0, to 'output' if 1, 'misc' if 2.
-	 int epochs = 1000,					// training epochs (presentations of all data)
-     bool fwd = true					// processing direction (order) for components in NN
+  int i_pos,							// position (in topology) of component to receive i.
+  NumericMatrix j_data,				// data set, each row is the corresponding vector j of vector-pair (i,j)
+  int j_pos,							// position (in topology) of component to receive j.
+  int j_destination_selector = 0,	// vector j will be sent to pe internal registers: 'input' if 0, to 'output' if 1, 'misc' if 2.
+  int epochs = 1000,					// training epochs (presentations of all data)
+  bool fwd = true					// processing direction (order) for components in NN
 	)
 	{
 		if( (i_data.rows()<=0) OR
-            (j_data.rows()<=0) OR
-            (i_data.rows()!=j_data.rows()) )
+          (j_data.rows()<=0) OR
+          (i_data.rows()!=j_data.rows()) )
 		{
 			error(NN_DATAST_ERR,"Cannot perform supervised training, invalid dataset size(s)");
 			return false;
@@ -517,10 +525,10 @@ public:
 				if(j_destination_selector==2) j_data_sent = set_misc_values_at(j_pos, j_data( r , _ ));
 
 				if(NOT(i_data_sent AND j_data_sent))
-					{
+				{
 					error(NN_INTEGR_ERR,"Error sending the data to NN, training failed");
 					return false;
-					}
+				}
 
 				encode_all(fwd);
 			}
@@ -535,52 +543,52 @@ public:
 	// Decode multiple input vectors stored in data set and get output.
 
 	NumericMatrix recall_dataset(NumericMatrix data_in,
-                            	int input_pos,				// input component position
-                            	int output_pos,				// output component position
-                            	bool fwd = true				// processing direction (order) for components in NN
-                            	)
+                              int input_pos,				// input component position
+                              int output_pos,				// output component position
+                              bool fwd = true				// processing direction (order) for components in NN
+	)
 	{
 		NumericMatrix data_out;
 
 		if((input_pos<1) OR (input_pos>size()) OR
-           (output_pos<1) OR (output_pos>size()))
-			{
+         (output_pos<1) OR (output_pos>size()))
+		{
 			error(NN_INTEGR_ERR,"Invalid component position");
 			return data_out;
-			}
+		}
 
 		int in_component_size = sizes()[input_pos-1];
 		int out_component_size = sizes()[output_pos-1];
 		int num_cases = data_in.rows();
 
 		if((num_cases<=0))
-			{
+		{
 			error(NN_DATAST_ERR,"Cannot recall (decode or map) empty dataset");
 			return data_out;
-			}
+		}
 
 		if((in_component_size!=data_in.cols()) OR
-           (out_component_size<=0))
-			{
+         (out_component_size<=0))
+		{
 			error(NN_DATAST_ERR,"Invalid or incompatible component sizes");
 			return data_out;
-			}
+		}
 
 		data_out= NumericMatrix(num_cases,out_component_size);
 
 		for(int r=0;r<num_cases;r++)
-			{
+		{
 			if(NOT input_at(input_pos, data_in( r , _ ) ))
-				{
+			{
 				error(NN_INTEGR_ERR,"Recall failed");
 				return data_out;
-				}
+			}
 			recall_all(fwd);
 			NumericVector v_out = get_output_from(output_pos);
 			data_out( r , _ ) = v_out;                          //a lame way to interface with R. Copy result vector back to matrix. Remember, NumericMatrix stores data row-first, as R does.
-			}
+		}
 
-	return data_out;
+		return data_out;
 	}
 
 
@@ -588,25 +596,25 @@ public:
 	// get output (R to Cpp index converted)
 
 	NumericVector get_output_from(int pos)
-	 {
+	{
 		NumericVector data_out;
 		if(m_nn.set_component_for_output(pos-1))
-		if(m_nn.output_dimension()>0)
+			if(m_nn.output_dimension()>0)
 			{
-			data_out= NumericVector(m_nn.output_dimension());
-			double * fpdata_out = REAL(data_out);                   // my (lame?) way to interface with R, cont.)
-			if(NOT m_nn.output_data_to_vector(fpdata_out,data_out.length()))
-				warning("Cannot retreive output");
+				data_out= NumericVector(m_nn.output_dimension());
+				double * fpdata_out = REAL(data_out);                   // my (lame?) way to interface with R, cont.)
+				if(NOT m_nn.output_data_to_vector(fpdata_out,data_out.length()))
+					warning("Cannot retreive output");
 			}
 		return data_out;
-	 }
+	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// get output (same as above)
 
 	NumericVector get_output_at(int pos)
 	{
-	return get_output_from(pos);
+		return get_output_from(pos);
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -622,12 +630,12 @@ public:
 
 		int num_items = pc->size();
 		if(num_items>0)
-		 	{
-		 	data_out= NumericVector(num_items);
+		{
+			data_out= NumericVector(num_items);
 			double * fpdata_out = REAL(data_out);                   // my (lame?) way to interface with R, cont.)
 			if(NOT m_nn.get_input_data_at_component(pos-1,fpdata_out, num_items))
 				warning("Cannot retreive input");
-			}
+		}
 
 		return data_out;
 	}
@@ -643,10 +651,10 @@ public:
 		pc = m_nn.component_from_topology_index(pos-1);
 		if(pc==NULL) return data_out;
 		if(pc->type()!=cmpnt_connection_set)
-			{
-			warning("Not a connection set");
+		{
+			warning("Not a connection set.");
 			return data_out;
-			}
+		}
 
 		int num_items = pc->size();
 		if(num_items>0)
@@ -677,7 +685,30 @@ public:
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	// Set "misc" register values for PEs in given component (R to Cpp index converted)
+	// Get "misc" register values for PEs or connections in given component (R to Cpp index converted)
+
+	NumericVector get_misc_values_at(int pos)
+	{
+		NumericVector data_out;
+
+		component PTR pc;
+		pc = m_nn.component_from_topology_index(pos-1);
+		if(pc==NULL) return data_out;
+
+		int num_items = pc->size();
+		if(num_items>0)
+		{
+			data_out= NumericVector(num_items);
+			double * fpdata_out = REAL(data_out);                   // my (lame?) way to interface with R, cont.)
+			if(NOT m_nn.get_misc_at_component(pos-1,fpdata_out, num_items))
+				warning("Cannot retreive misc values");
+		}
+
+		return data_out;
+	}
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// Set "misc" register values for PEs or connections in given component (R to Cpp index converted)
 
 	bool set_misc_values_at(int pos, NumericVector data_in)
 	{
@@ -707,7 +738,7 @@ public:
 		if(pc==NULL) return data_out;
 		if(pc->type()!=cmpnt_layer)
 		{
-			warning("Not a layer");
+			warning("Not a layer.");
 			return data_out;
 		}
 
@@ -779,6 +810,47 @@ public:
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+	DataFrame get_topology_info()
+	{
+		DataFrame result;
+
+		if(m_nn.size()<=0)
+		{
+			warning("The NN is empty");
+			return result;
+		}
+
+		IntegerVector component_index = IntegerVector (m_nn.size(),NA_INTEGER);
+		IntegerVector component_types = IntegerVector (m_nn.size(),NA_INTEGER);
+		StringVector  component_descs = StringVector(m_nn.size(),"No Description");
+		StringVector  component_names = StringVector(m_nn.size(),"No Name");
+		IntegerVector component_sizes = IntegerVector  (m_nn.size(),NA_INTEGER);
+
+		for(int c=0;c<m_nn.size();c++)
+		{
+			component PTR pc = m_nn.component_from_topology_index(c);
+			if(pc!=NULL)
+			{
+				component_index [c]		= c+1;
+				component_types [c]		= pc->type();
+				component_descs [c]		= "Unknown";
+				if(m_nn.get_connection_set_at(c)!=NULL) component_descs[c] = "Connection Set";
+				if(m_nn.get_layer_at(c)!=NULL)			component_descs[c] = "PE Layer";
+				component_names [c]		= pc->name();
+				component_sizes [c]		= pc->size();
+			}
+		}
+
+		result = DataFrame::create(	Named("Index")		 = clone(component_index),
+                            		Named("Type")		 = clone(component_types),
+	                          		Named("Description") = clone(component_descs),
+    	                       		Named("Name")		 = clone(component_names),
+                            		Named("Size")		 = clone(component_sizes) );
+		return result;
+	}
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 };
 
 //--------------------------------------------------------------------------------
@@ -795,45 +867,47 @@ public:
 RCPP_MODULE(class_NN) {
 	class_<NN>( "NN" )
 	.constructor()
-// 	.constructor<NumericMatrix,IntegerVector,int>()
-    .method( "size",         							&NN::size, 		      												"Number of components in NN topology" )
-    .method( "sizes",         							&NN::sizes, 		      											"Sizes of components in NN topology" )
-    .method( "add_layer",				(bool (NN::*)(string,int))(&NN::add_layer_0xp), 									"Append layer component to topology" )
-	.method( "add_layer",				(bool (NN::*)(string,int,DATA))(&NN::add_layer_1xp),								"Append layer component to topology" )
-	.method( "add_connection_set",		(bool (NN::*)(string))(&NN::add_connection_set_0xp),  								"Append set of connections to topology (disconnected and empty of connections)" )
-	.method( "add_connection_set",		(bool (NN::*)(string,DATA))(&NN::add_connection_set_1xp),  								"Append set of connections to topology (disconnected and empty of connections)" )
-    .method( "connect_layers_at",		(bool (NN::*)(int,int,string))(&NN::connect_layers_at_0xp),							"Add connection set for two layers, no connections added" )
-    .method( "connect_layers_at",		(bool (NN::*)(int,int,string,DATA))(&NN::connect_layers_at_1xp),					"Add connection set for two layers, no connections added" )
-    .method( "fully_connect_layers_at",	(bool (NN::*)(int,int,string,DATA,DATA))(&NN::fully_connect_layers_at_0xp),			"Add connection set that fully connects two layers with connections" )
-    .method( "fully_connect_layers_at",	(bool (NN::*)(int,int,string,DATA,DATA,DATA))(&NN::fully_connect_layers_at_1xp),	"Add connection set that fully connects two layers with connections" )
-    .method( "create_connections_in_sets", 				&NN::create_connections_in_sets,									"Create connections to fully connect consequent layers" )
-    .method( "add_single_connection",					&NN::add_single_connection,											"Add a connection to a set that already connects two layers" )
-    .method( "remove_single_connection",				&NN::remove_single_connection,										"Remove a connection from a set" )
-    .method( "component_ids",   						&NN::component_ids, 	      										"Vector of topology component ids" )
-    .method( "input_at",        						&NN::input_at,     													"Input vector to specified topology index" )
-    .method( "encode_at",       						&NN::encode_at, 	      											"Trigger encode for specified topology index" )
-    .method( "recall_at",       						&NN::recall_at, 	      											"Trigger recall for specified topology index" )
-    .method( "encode_all",      						&NN::encode_all, 	   												"Trigger encode for entire topology" )
-    .method( "recall_all",     							&NN::recall_all,	   												"Trigger recall for entire topology" )
-    .method( "encode_dataset_unsupervised",     		&NN::encode_dataset_unsupervised,	   								"Encode a data set using unsupervised training" )
-    .method( "encode_datasets_supervised",     			&NN::encode_datasets_supervised,	   								"Encode multiple (i,j) vector pairs using supervised training" )
-    .method( "recall_dataset",     						&NN::recall_dataset,				   								"Recall (i.e decode,map) a data set" )
-    .method( "get_output_from",     					&NN::get_output_from,    											"Output vector from specified topology index" )
-    .method( "get_output_at",	     					&NN::get_output_at,    												"Output vector from specified topology index" )
-    .method( "get_input_at",     						&NN::get_input_at,		   											"Get input (pe variable value or connection input) in specified topology index" )
-    .method( "get_weights_at",     						&NN::get_weights_at,	   											"Get connection weights (connection variable value) in specified topology index" )
-    .method( "get_weight_at",     						&NN::get_weight_at,	   												"Get connection weight for given connection in specified topology index" )
-    .method( "set_weight_at",     						&NN::set_weight_at,	   												"Set connection weight for given connection in specified topology index" )
-	.method( "set_misc_values_at",     					&NN::set_misc_values_at,	   										"Set misc registers of elements in specified topology index" )
-	.method( "set_output_at",     						&NN::set_output_at,	   												"Set output values in specified topology index" )
-	.method( "get_biases_at",     						&NN::get_biases_at,	   												"Get bias values in layer at specified topology index" )
-	.method( "get_bias_at",     						&NN::get_bias_at,	   												"Get bias value for given PE in layer at specified topology index" )
-	.method( "set_biases_at",     						&NN::set_biases_at,	   												"Set bias values in layer at specified topology index" )
-	.method( "set_bias_at",     						&NN::set_bias_at,	   												"Set bias value for given PE in layer at specified topology index" )
-	.method( "print",     								&NN::print,         												"Print internal NN state" )
-	.method( "show",     								&NN::show,         													"Print internal NN state" )
-	.method( "outline",     							&NN::outline,         												"Outline of the NN topology" )
-;
+	// 	.constructor<NumericMatrix,IntegerVector,int>()
+     .method( "size",         							&NN::size, 		      												"Number of components in NN topology" )
+     .method( "sizes",         							&NN::sizes, 		      											"Sizes of components in NN topology" )
+     .method( "add_layer",				(bool (NN::*)(string,int))(&NN::add_layer_0xp), 									"Append layer component to topology" )
+     .method( "add_layer",				(bool (NN::*)(string,int,DATA))(&NN::add_layer_1xp),								"Append layer component to topology" )
+     .method( "add_connection_set",		(bool (NN::*)(string))(&NN::add_connection_set_0xp),  								"Append set of connections to topology (disconnected and empty of connections)" )
+     .method( "add_connection_set",		(bool (NN::*)(string,DATA))(&NN::add_connection_set_1xp),  								"Append set of connections to topology (disconnected and empty of connections)" )
+     .method( "connect_layers_at",		(bool (NN::*)(int,int,string))(&NN::connect_layers_at_0xp),							"Add connection set for two layers, no connections added" )
+     .method( "connect_layers_at",		(bool (NN::*)(int,int,string,DATA))(&NN::connect_layers_at_1xp),					"Add connection set for two layers, no connections added" )
+     .method( "fully_connect_layers_at",	(bool (NN::*)(int,int,string,DATA,DATA))(&NN::fully_connect_layers_at_0xp),			"Add connection set that fully connects two layers with connections" )
+     .method( "fully_connect_layers_at",	(bool (NN::*)(int,int,string,DATA,DATA,DATA))(&NN::fully_connect_layers_at_1xp),	"Add connection set that fully connects two layers with connections" )
+     .method( "create_connections_in_sets", 			&NN::create_connections_in_sets,									"Create connections to fully connect consequent layers" )
+     .method( "add_single_connection",					&NN::add_single_connection,											"Add a connection to a set that already connects two layers" )
+     .method( "remove_single_connection",				&NN::remove_single_connection,										"Remove a connection from a set" )
+     .method( "component_ids",   						&NN::component_ids, 	      										"Vector of topology component ids" )
+     .method( "input_at",        						&NN::input_at,     													"Input vector to specified topology index" )
+     .method( "encode_at",       						&NN::encode_at, 	      											"Trigger encode for specified topology index" )
+     .method( "recall_at",       						&NN::recall_at, 	      											"Trigger recall for specified topology index" )
+     .method( "encode_all",      						&NN::encode_all, 	   												"Trigger encode for entire topology" )
+     .method( "recall_all",     						&NN::recall_all,	   												"Trigger recall for entire topology" )
+     .method( "encode_dataset_unsupervised",     		&NN::encode_dataset_unsupervised,	   								"Encode a data set using unsupervised training" )
+     .method( "encode_datasets_supervised",     		&NN::encode_datasets_supervised,	   								"Encode multiple (i,j) vector pairs using supervised training" )
+     .method( "recall_dataset",     					&NN::recall_dataset,				   								"Recall (i.e decode,map) a data set" )
+     .method( "get_output_from",     					&NN::get_output_from,    											"Output vector from specified topology index" )
+     .method( "get_output_at",	     					&NN::get_output_at,    												"Output vector from specified topology index" )
+     .method( "get_input_at",     						&NN::get_input_at,		   											"Get input (pe variable value or connection input) in specified topology index" )
+     .method( "get_weights_at",     					&NN::get_weights_at,	   											"Get connection weights (connection variable value) in specified topology index" )
+     .method( "get_weight_at",     						&NN::get_weight_at,	   												"Get connection weight for given connection in specified topology index" )
+     .method( "set_weight_at",     						&NN::set_weight_at,	   												"Set connection weight for given connection in specified topology index" )
+     .method( "get_misc_values_at",     				&NN::get_misc_values_at,	   										"Get misc registers of elements in specified topology index" )
+     .method( "set_misc_values_at",     				&NN::set_misc_values_at,	   										"Set misc registers of elements in specified topology index" )
+     .method( "set_output_at",     						&NN::set_output_at,	   												"Set output values in specified topology index" )
+     .method( "get_biases_at",     						&NN::get_biases_at,	   												"Get bias values in layer at specified topology index" )
+     .method( "get_bias_at",     						&NN::get_bias_at,	   												"Get bias value for given PE in layer at specified topology index" )
+     .method( "set_biases_at",     						&NN::set_biases_at,	   												"Set bias values in layer at specified topology index" )
+     .method( "set_bias_at",     						&NN::set_bias_at,	   												"Set bias value for given PE in layer at specified topology index" )
+     .method( "print",     								&NN::print,         												"Print internal NN state" )
+     .method( "show",     								&NN::show,         													"Print internal NN state" )
+     .method( "outline",     							&NN::outline,         												"Show outline of the NN topology" )
+     .method( "get_topology_info", 						&NN::get_topology_info,         										"Get NN topology information" )
+	;
 }
 
 //--------------------------------------------------------------------------------

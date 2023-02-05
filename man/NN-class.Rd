@@ -258,7 +258,7 @@ plot(iris_data, pch=recalled_ids)
     }
     }
 
- \item{\code{get_output_from( pos )}:}{Get the current output of the component at specified topology index. If successful, returns NumericVector of output values. Parameters are:
+ \item{\code{get_output_from( pos )}:}{Get the current output of the component at specified topology index. If successful, returns NumericVector of output values (otherwise vector of zero length). Parameters are:
     \itemize{
     \item{\code{pos}}{: integer, position in topology of component to use.}
     }
@@ -266,13 +266,13 @@ plot(iris_data, pch=recalled_ids)
 
 \item{\code{get_output_at( pos )}:}{Same as \code{get_output_from}, see above.}
 
- \item{\code{get_input_at( pos )}:}{Get the current input of the component at specified topology index (depends on the implementation: for layers, this may be valid after the \code{pe}s (nodes) have performed their \code{input_function} on incoming values; \code{pe}s have an overridable \code{input_function} that collects all incoming values and produces a single value for further processing which is stored at an internal \code{input} register (whose value is retrieved here); by default \code{input_function} performs summation. If successful, returns NumericVector of final \code{input} values. Parameters are:
+ \item{\code{get_input_at( pos )}:}{Get the current input of the component at specified topology index (depends on the implementation: for layers, this may be valid after the \code{pe}s (nodes) have performed their \code{input_function} on incoming values; \code{pe}s have an overridable \code{input_function} that collects all incoming values and produces a single value for further processing which is stored at an internal \code{input} register (whose value is retrieved here); by default \code{input_function} performs summation. If successful, returns NumericVector of final \code{input} values (otherwise vector of zero length). Parameters are:
     \itemize{
     \item{\code{pos}}{: integer, position in topology of component to use.}
     }
     }
 
- \item{\code{get_weights_at( pos )}:}{Get the current weights of the component (\code{connection_set}) at specified topology index. If successful, returns NumericVector of connection weights. Parameters are:
+ \item{\code{get_weights_at( pos )}:}{Get the current weights of the component (\code{connection_set}) at specified topology index. If successful, returns NumericVector of connection weights (otherwise vector of zero length). Parameters are:
     \itemize{
     \item{\code{pos}}{: integer, position in topology of component to use.}
     }
@@ -293,6 +293,12 @@ plot(iris_data, pch=recalled_ids)
     }
     }
 
+ \item{\code{get_misc_values_at( pos )}:}{Get the values in the \code{misc} data register that \code{pe} and \code{connection} objects maintain, for objects at specified topology index. If successful, returns NumericVector of the values (otherwise vector of zero length). Parameters are:
+    \itemize{
+    \item{\code{pos}}{: integer, position in topology of component to use.}
+    }
+    }
+
  \item{\code{set_misc_values_at( pos, data_in )}:}{Set the values in the \code{misc} data register that \code{pe} and \code{connection} objects maintain, for objects at specified topology index. If successful, returns TRUE. Parameters are:
     \itemize{
     \item{\code{pos}}{: integer, position in topology of component to use.}
@@ -307,7 +313,7 @@ plot(iris_data, pch=recalled_ids)
     }
     }
 
- \item{\code{get_biases_at( pos )}:}{Get the values in the \code{bias} register that \code{pe} (Processing Elements or nodes) maintain, for \code{layer} at specified topology index (only \code{layer} components are supported). If successful, returns NumericVector of bias values. Parameters are:
+ \item{\code{get_biases_at( pos )}:}{Get the values in the \code{bias} register that \code{pe} (Processing Elements or nodes) maintain, for \code{layer} at specified topology index (only \code{layer} components are supported). If successful, returns NumericVector of bias values (otherwise vector of zero length). Parameters are:
     \itemize{
     \item{\code{pos}}{: integer, position in topology of component to use.}
     }
@@ -341,6 +347,8 @@ plot(iris_data, pch=recalled_ids)
 \item{\code{print()}:}{Print internal NN state, including all components in topology.}
 
 \item{\code{show()}:}{Print summary description and  internal NN state.}
+
+\item{\code{get_topology_info()}:}{Returns \code{data.frame} with topology information.}
 
  }
 

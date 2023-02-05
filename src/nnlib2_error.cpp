@@ -100,12 +100,20 @@ switch(i)
 
 m1 = message + " (" + m1 + ")";
 
+bool displayed = false;
+
 #ifdef NNLIB2_FOR_MFC_UI
 const char * msg_str = m1.c_str();
 MessageBox(get_active_window_handle(),msg_str,"NN-Library Error",MB_OK|MB_ICONERROR|MB_APPLMODAL);
-#else
-TEXTOUT << "* ERROR: "<< m1 << "\n";
+displayed = true;
 #endif
+
+#ifdef NNLIB2_FOR_RCPP
+Rcpp::stop("nnlib2: "+m1);
+displayed = true;
+#endif
+
+if(!displayed) TEXTOUT << "* ERROR: "<< m1 << "\n";
 
 if (p_error_flag NEQL NULL)
  {
@@ -128,9 +136,16 @@ void warning(string message)
 #ifdef NNLIB2_FOR_MFC_UI
 	const char * msg_str = message.c_str();
     MessageBox(get_active_window_handle(),msg_str,"Neural Network Library Warning",MB_APPLMODAL|MB_OK|MB_ICONEXCLAMATION );
-#else
-    TEXTOUT << "*** WARNING: "<< message << "\n";
+	return;
 #endif
+
+#ifdef NNLIB2_FOR_RCPP
+	TEXTOUT << "Warning: "<< message << "\n";
+	Rcpp::warning("nnlib2: "+message);
+	return;
+#endif
+
+TEXTOUT << "* WARNING: "<< message << "\n";
 }
 
 void warning_modal(string message)
@@ -139,7 +154,7 @@ void warning_modal(string message)
 	const char * msg_str = message.c_str();
     MessageBox(get_active_window_handle(),msg_str,"Neural Network Library Warning",MB_SYSTEMMODAL|MB_OK|MB_ICONEXCLAMATION );
 #else
-    TEXTOUT << "*** WARNING: "<< message << "\n";
+    warning(message);
 #endif
 }
 

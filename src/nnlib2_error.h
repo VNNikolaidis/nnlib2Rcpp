@@ -72,7 +72,9 @@ class error_flag_client
   {
   bool retval = nnlib2::error(i,message, mp_error_flag);
   if(mp_error_flag == &m_local_error_flag)
-   warning("Note:'error_flag_client' uses local error flag.");
+  {
+   warning("(note: local error flag was raised).");
+  }
   return retval;
   };
 

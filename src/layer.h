@@ -37,11 +37,12 @@ public:
 	virtual string item_description(int item) = 0;
 	virtual void from_stream(std::istream REF s) = 0;                                   // read layer from stream
 	virtual void to_stream(std::ostream REF s) = 0;                                     // write layer to stream
-	virtual bool set_misc(DATA * data, int dimension) = 0;
 	virtual bool set_output(DATA * data, int dimension) = 0;
 	virtual bool set_biases(DATA * data, int dimension) = 0;							// added for nnlib2Rcpp 0.1.10
 	virtual bool set_bias_at(int index, DATA d) = 0;									// added for nnlib2Rcpp 0.1.10
 	virtual bool get_biases(DATA * buffer, int dimension) = 0;							// added for nnlib2Rcpp 0.1.10
+	virtual bool get_misc(DATA * buffer, int dimension) = 0;							// added for nnlib2Rcpp 0.1.11
+	virtual bool set_misc(DATA * data, int dimension) = 0;
 	virtual DATA get_bias_from(int index) = 0;											// added for nnlib2Rcpp 0.1.10
 };
 
@@ -80,7 +81,9 @@ public:
 	bool send_input_to(int index, DATA d);                                 // overides virtual method in data_receiver, sets value to corresponding pe input sets this input to respective pe input (and also appends to pe's list of input values)
 	DATA get_output_from (int index);                                      // overides virtual method in data_provider, gets value from corresponding pe output
 
+	bool get_misc(DATA * buffer, int dimension);						   // added for nnlib2Rcpp 0.1.11
 	bool set_misc(DATA * data, int dimension);							   // set values in misc internal register variables in layer pes
+
 	bool set_output(DATA * data, int dimension);						   // overwrites current output registers in layer pes, with the provided data values
 
 	bool set_biases(DATA * data, int dimension);						   // overwrites current bias registers in layer pes, with the provided data values
@@ -292,6 +295,22 @@ DATA Layer<PE_TYPE>::get_output_from(int index)
 	if (index < 0) return false;
 	if (index >= size()) { error(NN_INTEGR_ERR, "Cannot access PE at this index position"); return false; }
 	return(pes[index].output);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// get misc variable values from pes
+
+template <class PE_TYPE>
+bool Layer<PE_TYPE>::get_misc(DATA * buffer, int dimension)
+{
+	if (NOT no_error()) return false;
+	if (buffer == NULL) return false;
+	if (dimension NEQL size())
+	{ warning ("Incompatible vector dimension (number of PEs vs vector length)");
+		return false; }
+	for (int i = 0; i < dimension; i++)
+		buffer[i] = pes[i].misc;                    // gets respective pe misc
+	return true;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

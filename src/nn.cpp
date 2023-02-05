@@ -928,6 +928,18 @@ bool nn::set_weight_at_component(int index, int connection_number, DATA weight)
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // patch
 
+bool nn::get_misc_at_component(int index, DATA * buffer, int dimension)
+{
+	layer PTR p_lay = get_layer_at(index);
+	if (p_lay != NULL) return p_lay->get_misc(buffer,dimension);
+	connection_set PTR p_cs = get_connection_set_at(index);
+	if (p_cs != NULL) return p_cs->get_misc(buffer,dimension);
+	return false;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// patch
+
 bool nn::set_misc_at_component(int index, DATA * data, int dimension)
 {
   layer PTR p_lay = get_layer_at(index);

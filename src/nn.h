@@ -137,6 +137,7 @@ class nn : public component, public data_receiver, public data_provider, public 
  bool get_weights_at_component (int index, DATA * buffer, int dimension);
  DATA get_weight_at_component(int index, int connection_number);        // returns 0 if not successful
  bool set_weight_at_component(int index, int connection_number, DATA weight);
+ bool get_misc_at_component(int index, DATA * buffer, int dimension);
  bool set_misc_at_component(int index, DATA * data, int dimension);
  bool set_output_at_component(int index, DATA * data, int dimension);   // currently only works only for layers
  bool get_biases_at_component(int index, DATA * buffer, int dimension); // only works only for layers

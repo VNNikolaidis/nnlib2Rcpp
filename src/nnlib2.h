@@ -1,5 +1,5 @@
 //		----------------------------------------------------------
-//		(c)2023  Vasilis.N.Nikolaidis   	  All rights reserved.
+//		(c) 2023  Vasilis.N.Nikolaidis   	   All rights reserved.
 //		-----------------------------------------------------------
 //		nnlib2.h								Version (see below)
 //		Definitions  		    	loosely based on nnlib (C) 1998
@@ -15,7 +15,7 @@
 #ifndef VNN_H
 #define VNN_H
 
-#define NN_VERSION "nnlib2 v.0.2.6 (c)2023 Vasilis N. Nikolaidis"
+#define NN_VERSION "nnlib2 v.0.2.7 (c) 2023 Vasilis N. Nikolaidis"
 
 /*-----------------------------------------------------------------------*/
 

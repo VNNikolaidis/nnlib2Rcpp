@@ -77,3 +77,11 @@ Changes to nnlib2Rcpp version 0.1.10 (from 0.1.9)
 -	changes in NN module to support get/set biases (added functions: set_biases_at, set_bias_at, get_biases_at, get_bias_at).
 -	numbers specifying PE and connections in NN module functions now start from 0 (was 1, changed to agree with those shown when NN is printed. This affects functions: get_weight_at, set_weight_at and remove_single_connection).
 -	other minor changes.
+
+---
+
+Changes to nnlib2Rcpp version 0.1.11 (from 0.1.10)
+-	modified handling of errors and warnings.
+-	added method to module "NN" (get_misc_values_at)
+-	added method to module "NN" (get_topology_info, returns data.frame with NN topology information).
+-	(Note: v.0.1.11 is not yet released to CRAN)
