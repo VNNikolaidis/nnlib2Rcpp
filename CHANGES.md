@@ -85,4 +85,5 @@ Changes to nnlib2Rcpp version 0.1.11 (from 0.1.10)
 -	added method to module "NN" (get_misc_values_at)
 -	added method to module "NN" (get_topology_info, returns data.frame with NN topology information).
 -	added "softmax", "bp-hidden-softmax" and "bp-output-softmax" layer types.
+-	added documentation describing the names of available NN components (NN_component_names.Rd) 
 -	(Note: v.0.1.11 is not yet released to CRAN)

@@ -27,14 +27,14 @@ This R module maintains a generic neural network that can be manipulated using t
     \itemize{
   \item Any new component type or class definition can be added to a single header file called "\code{additional_parts.h}" (which is included in the package source). All new components to be employed by the \code{NN} module must be defined in this file (or be accessible from functions in this file).
   \item New \code{layer}, \code{connection_set}, \code{pe} or \code{connection} definitions must comply (at least loosely) to the \pkg{nnlib2} base class hierarchy and structure and follow the related guidelines. Note: some minimal examples of class and type definitions can be found in the "\code{additional_parts.h}" file itself.
-  \item A textual name must be assigned to any new \code{layer} or \code{connection_set}, to be used as parameter in \code{NN} module methods that require a name to create a component. This can be as simple as a single line of code where given the textual name the corresponding component object is created and returned. This code must be added (as appropriate) to either \code{generate_custom_layer()} or \code{generate_custom_connection_set()} functions found in the same "\code{additional_parts.h}" header file. Note: example entries can be found in these functions at the "\code{additional_parts.h}" file.
+  \item A textual name must be assigned to any new \code{layer} or \code{connection_set}, to be used as parameter in \code{NN} module methods that require a name to create a component. This can be as simple as a single line of code where given the textual name the corresponding component object is created and returned. This code must be added (as appropriate) to either \code{generate_custom_layer()} or \code{generate_custom_connection_set()} functions found in the same "\code{additional_parts.h}" header file. Note: example entries can be found in these functions at the "\code{additional_parts.h}" file. Some of the available names are listed in \link{NN_component_names}.
 }
 More information on expanding the library with new types of NN components (nodes, layers, connections etc) and models, can be found in the package's  vignette as well as the related \href{https://github.com/VNNikolaidis/nnlib2Rcpp}{repository on Github}). Please consider submitting any useful components you create, to enrich  future versions of the package.
 }
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
-\seealso{\code{\link{BP}}, \code{\link{LVQs}}, \code{\link{MAM}}.}
+\seealso{\code{\link{BP}}, \code{\link{LVQs}}, \code{\link{MAM}}, {\link{NN_component_names}.}}
 
 \examples{
 # Example 1:
@@ -133,7 +133,7 @@ plot(iris_data, pch=recalled_ids)
 
     \item{\code{add_layer( name, size, p )}:}{Setup a new \code{layer} component (a layer of processing nodes) and append it to the NN topology. Parameters are:
     \itemize{
-    \item{\code{name}}{: string, containing name (that also Specifies type) of new layer. Names of predefined layers currently include \code{'pe'}(same as \code{'generic'}), \code{'pass-through'}, \code{'which-max'}, \code{'MAM'}, \code{'LVQ-input'}, \code{'LVQ-output'}, \code{'BP-hidden'}, \code{'BP-output'}, \code{'perceptron'} (additional names for user-defined components may be used, see note below.)}
+    \item{\code{name}}{: string, containing name (that also Specifies type) of new layer. Names of predefined layers currently include \code{'pe'}(same as \code{'generic'}), \code{'pass-through'}, \code{'which-max'}, \code{'MAM'}, \code{'LVQ-input'}, \code{'LVQ-output'}, \code{'BP-hidden'}, \code{'BP-output'}, \code{'perceptron'} (Some of the available names are listed in \link{NN_component_names}, additional names for user-defined components may be added, see note.)}
     \item{\code{size}}{: integer, layer size i.e. number of \code{pe} (Processing Elements or nodes) to create in the layer.}
     \item{\code{p}}{: (optional) double, parameter to be used by specific layer implementations (for example, BP layer implementations \code{'BP-hidden'} and \code{'BP-output'} interpret it is as the layer's learning rate). Note: more optional parameters may be added in future versions.}
     }
@@ -141,7 +141,7 @@ plot(iris_data, pch=recalled_ids)
 
     \item{\code{add_connection_set( name, p )}:}{Create a new empty \code{connection_set} component (a set of connections between two layers). It does not connect any layers nor contain any connections between specific layer nodes. The set is appended to the NN topology. Parameters are:
     \itemize{
-    \item{\code{name}}{: string, containing name (that also specifies type) of new empty connection set. Names of predefined connection sets currently include \code{'generic', 'pass-through'}(which does not multiply weights), \code{'wpass-through'}(which does multiply weights), \code{'MAM'}, \code{'LVQ'}, \code{'BP'}, \code{'perceptron'} (additional names for user-defined components may be used, see note below).}
+    \item{\code{name}}{: string, containing name (that also specifies type) of new empty connection set. Names of predefined connection sets currently include \code{'generic', 'pass-through'}(which does not multiply weights), \code{'wpass-through'}(which does multiply weights), \code{'MAM'}, \code{'LVQ'}, \code{'BP'}, \code{'perceptron'} (Some of the available names are listed in \link{NN_component_names}, additional names for user-defined components may be added, see note.).}
     \item{\code{p}}{: (optional) double, parameter to be used by specific connection set implementations (for example, \code{'BP'} connection sets interpret it is as the learning rate to be used when adjusting weights, \code{'LVQ'} connection sets use it to count iterations for decreasing weight adjustments, etc). Note: more optional parameters may be added in future versions.}
     }
     }
