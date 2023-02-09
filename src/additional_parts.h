@@ -2,7 +2,111 @@
 #define NNLIB2_ADDITIONAL_PARTS_H
 
 #include "nn.h"
-namespace nnlib2 {
+using namespace nnlib2;
+
+//--------------------------------------------------------------------------------------------
+// a layer that performs softmax when recalling data.
+// it contains generic "dumb" pes, so most processing is done in layer code
+// Note:
+// when encoding it simply passes input to output.
+// when recalling it outputs the components of the softmax vector of input values.
+
+class softmax_layer: public pe_layer
+{
+public:
+
+	softmax_layer(string name, int size):pe_layer(name,size){}
+
+	void recall()
+	{
+		if(no_error())
+		{
+			DATA denom=0;
+			for(int i=0;i<size();i++)
+			{
+				pe REF p = pes[i];
+				DATA x = p.input;											// input is already summated;
+				denom=denom+exp(x);
+			}
+
+			for(int i=0;i<size();i++)
+			{
+				pe REF p = pes[i];
+				DATA x = p.input;											// input is already summated;
+				p.output=(DATA)1*exp(x)/denom;
+				p.input=0;													// reset input.
+			}
+		}
+	}
+};
+
+//--------------------------------------------------------------------------------------------
+// a BP hidden layer that performs softmax when recalling data.
+// Based on code (and issue raised) by Thom Quinn (see https://github.com/VNNikolaidis/nnlib2Rcpp/issues/14)
+
+#include "nn_bp.h"
+
+class bp_comput_softmax_layer: public bp::bp_comput_layer
+{
+public:
+
+	void recall()
+	{
+		if(no_error())
+		{
+			DATA denom=0;
+			for(int i=0;i<size();i++)
+			{
+				pe REF p = pes[i];
+				DATA x = p.input;											// input is already summated;
+				x = x + p.bias;												// add bias,
+				denom=denom+exp(x);
+			}
+
+			for(int i=0;i<size();i++)
+			{
+				pe REF p = pes[i];
+				DATA x = p.input;											// input is already summated;
+				x = x + p.bias;												// add bias,
+				p.output=(DATA)1*exp(x)/denom;
+				p.input=0;													// reset input.
+			}
+		}
+	}
+};
+
+//--------------------------------------------------------------------------------------------
+// a BP output layer that performs softmax when recalling data.
+// Based on code (and issue raised) by Thom Quinn (see https://github.com/VNNikolaidis/nnlib2Rcpp/issues/14)
+
+class bp_output_softmax_layer : public bp::bp_output_layer
+{
+public:
+
+	void recall()
+	{
+		if(no_error())
+		{
+			DATA denom=0;
+			for(int i=0;i<size();i++)
+			{
+				pe REF p = pes[i];
+				DATA x = p.input;											// input is already summated;
+				x = x + p.bias;												// add bias,
+				denom=denom+exp(x);
+			}
+
+			for(int i=0;i<size();i++)
+			{
+				pe REF p = pes[i];
+				DATA x = p.input;											// input is already summated;
+				x = x + p.bias;												// add bias,
+				p.output=(DATA)1*exp(x)/denom;//
+				p.input=0;													// reset input.
+			}
+		}
+	}
+};
 
 //--------------------------------------------------------------------------------------------
 // example for manual.pdf
@@ -43,15 +147,15 @@ typedef Connection_Set < MEX_connection > MEX_connection_set;
 // example for manual.pdf
 
 class MEX_pe : public pe
- {
- public:
+{
+public:
 
- void recall()
- 	{
- 	pe::recall();
- 	output = sqrt(output);
- 	}
- };
+	void recall()
+	{
+		pe::recall();
+		output = sqrt(output);
+	}
+};
 
 typedef Layer < MEX_pe > MEX_layer;
 
@@ -62,11 +166,11 @@ typedef Layer < MEX_pe > MEX_layer;
 class perceptron_pe : public pe
 {
 public:
-        DATA threshold_function(DATA value)
-         {
-         if(value>0) return 1;
-         return 0;
-         }
+	DATA threshold_function(DATA value)
+	{
+		if(value>0) return 1;
+		return 0;
+	}
 };
 
 // Percepton layer:
@@ -77,16 +181,16 @@ class perceptron_connection: public connection
 {
 public:
 
-	 // multiply incoming (from source node) value by weight and send it to destination node.
- void recall()
-  	{
-  	destin_pe().receive_input_value( weight() * source_pe().output );
-  	}
-
-  // for simplicity, learning rate is fixed to 0.3 and input contains desired output:
- void encode()
+	// multiply incoming (from source node) value by weight and send it to destination node.
+	void recall()
 	{
-	weight() = weight() + 0.3 * (destin_pe().input - destin_pe().output) * source_pe().output;
+		destin_pe().receive_input_value( weight() * source_pe().output );
+	}
+
+	// for simplicity, learning rate is fixed to 0.3 and input contains desired output:
+	void encode()
+	{
+		weight() = weight() + 0.3 * (destin_pe().input - destin_pe().output) * source_pe().output;
 	}
 };
 
@@ -99,7 +203,7 @@ typedef Connection_Set< perceptron_connection > perceptron_connection_set;
 class JustAdd10_pe : public pe
 {
 public:
-void recall() {	pe::recall(); output = output + 10; }
+	void recall() {	pe::recall(); output = output + 10; }
 };
 
 typedef Layer < JustAdd10_pe > JustAdd10_layer;
@@ -113,10 +217,10 @@ class example_pe : public pe {};
 typedef Layer<example_pe> example_pe_layer_1;
 
 class example_pe_layer_2: public Layer<example_pe>
- {
- public:
- example_pe_layer_2(string name, int size) : Layer(name,size) {};
- };
+	{
+	public:
+	example_pe_layer_2(string name, int size) : Layer(name,size) {};
+	};
 
 //--------------------------------------------------------------------------------------------
 // minimal examples of connection and connection_set definitions:
@@ -127,10 +231,10 @@ class example_connection: public connection {};
 typedef Connection_Set<example_connection> example_connection_set_1;
 
 class example_connection_set_2: public Connection_Set<example_connection>
- {
- public:
- example_connection_set_2(string name) : Connection_Set(name) {};
- };
+{
+public:
+	example_connection_set_2(string name) : Connection_Set(name) {};
+};
 
 //------------------------------------------------------------------------------
 // register new layer classes here:
@@ -140,14 +244,44 @@ class example_connection_set_2: public Connection_Set<example_connection>
 layer PTR generate_custom_layer(string name, int size, DATA optional_parameter=DATA_MIN)
 {
 	if(name == "JustAdd10")         return new JustAdd10_layer (name,size);
-    if(name == "perceptron")        return new perceptron_layer(name,size);
-    if(name == "MEX")				return new MEX_layer(name, size);
+	if(name == "perceptron")        return new perceptron_layer(name,size);
+	if(name == "MEX")				return new MEX_layer(name, size);
 
 	if(name == "example_layer_0")   return new Layer<example_pe> (name, size);
 	if(name == "example_layer_1")   return new example_pe_layer_1(name, size);
 	if(name == "example_layer_2")   return new example_pe_layer_2(name, size);
 
-return NULL;
+	if(name == "softmax")			return new softmax_layer(name, size);
+
+	if(name == "BP-hidden-softmax")
+	{
+		bp_comput_softmax_layer PTR pl = new bp_comput_softmax_layer;
+		// depending on their specifics, some type of layers may have additional setup steps. For BP layers:
+		pl->setup(name,size);
+		pl->randomize_biases(-1,1);
+		DATA bp_learnrate = 0.6;
+		if(optional_parameter!=DATA_MIN)
+			bp_learnrate = optional_parameter;
+		pl->set_learning_rate(bp_learnrate);
+		TEXTOUT << "(This " << name << " layer uses learning rate = " << bp_learnrate << ")\n";
+		return pl;
+	}
+
+	if(name == "BP-output-softmax")
+	{
+		bp_output_softmax_layer PTR pl = new bp_output_softmax_layer;
+		// depending on their specifics, some type of layers may have additional setup steps. For BP layers:
+		pl->setup(name,size);
+		pl->randomize_biases(-1,1);
+		DATA bp_learnrate = 0.6;
+		if(optional_parameter!=DATA_MIN)
+			bp_learnrate = optional_parameter;
+		pl->set_learning_rate(bp_learnrate);
+		TEXTOUT << "(This " << name << " layer uses learning rate = " << bp_learnrate << ")\n";
+		return pl;
+	}
+
+	return NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -164,10 +298,9 @@ connection_set PTR generate_custom_connection_set(string name, DATA optional_par
 	if(name == "example_connection_set_1")  return new example_connection_set_1(name);
 	if(name == "example_connection_set_2")  return new example_connection_set_2(name);
 
-return NULL;
+	return NULL;
 }
 
 //------------------------------------------------------------------------------
 
-} // namespace nnlib2
 #endif // NNLIB2_ADDITIONAL_PARTS_H

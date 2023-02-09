@@ -53,7 +53,7 @@ DATA pe::add_to_input(DATA value)
  }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// sometimes usefull, also sets input to 0.
+// sometimes useful, also resets input to 0 (as it has now been processed).
 
 void pe::move_input_to_output()
  {

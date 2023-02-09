@@ -65,7 +65,7 @@ class bpu1_nn : public bp_nn
  };
 
 /*-----------------------------------------------------------------------*/
-/* Experimental Unsupervised extention of Back Propagation by VNN	 */
+/* Experimental Unsupervised extension of Back Propagation by VNN	 */
 /*                              PunishLoosers				 */
 /*-----------------------------------------------------------------------*/
 
@@ -77,7 +77,7 @@ class bpu2_nn : public bp_nn
  };
 
 /*-----------------------------------------------------------------------*/
-/* Experimental Unsupervised extention of Back Propagation by VNN	 */
+/* Experimental Unsupervised extension of Back Propagation by VNN	 */
 /*                              HardLimitLike			         */
 /*-----------------------------------------------------------------------*/
 
@@ -89,7 +89,7 @@ class bpu3_nn : public bp_nn
  };
 
 /*-----------------------------------------------------------------------*/
-/* Experimental Unsupervised extention of Back Propagation by VNN	 */
+/* Experimental Unsupervised extension of Back Propagation by VNN	 */
 /*	Autoencoder1 (was: VNN's I Think I Saw A Pussy Cat 1)		 */
 /*-----------------------------------------------------------------------*/
 
@@ -112,7 +112,7 @@ class bpu4_nn : public bp_nn
  };
 
 /*-----------------------------------------------------------------------*/
-/* Experimental extention of Back Propagation by VNN			 */
+/* Experimental extension of Back Propagation by VNN			 */
 /* I called it 	Heteroencoder (to use for dimensionality reduction)...	 */
 /*-----------------------------------------------------------------------*/
 /* ...later I realized, such NN are called AutoEncoders in bibliography	 */
