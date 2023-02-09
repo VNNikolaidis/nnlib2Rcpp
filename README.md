@@ -45,7 +45,7 @@ https://cran.r-project.org/web/packages/nnlib2Rcpp/nnlib2Rcpp.pdf
 
 ---
 
-For information on citing this package use the following R command for information:
+For information on citing this package use the following R command:
 
     citation("nnlib2Rcpp")
 
