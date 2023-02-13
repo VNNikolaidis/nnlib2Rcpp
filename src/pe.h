@@ -53,8 +53,8 @@ class pe
  int  reset_received_values();                          // empties list of received input values (received_values).
  void move_input_to_output();                           // sometimes useful, also sets input to 0 and resets received values.
 
- virtual void encode();                                 // should be overiden by derived classes. Default employs input->activation->threshold function sequence and places results to output
- virtual void recall();                                 // should be overiden by derived classes. Default employs input->activation->threshold function sequence and places results to output
+ virtual void encode();                                 // should be overridden by derived classes. Default employs input->activation->threshold function sequence and places results to output
+ virtual void recall();                                 // should be overridden by derived classes. Default employs input->activation->threshold function sequence and places results to output
 
  friend std::istream& operator>> ( std::istream REF s, pe REF it );
  friend std::ostream& operator<< ( std::ostream REF s, pe REF it );

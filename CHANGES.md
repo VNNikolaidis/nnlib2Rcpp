@@ -84,6 +84,17 @@ Changes to nnlib2Rcpp version 0.1.11 (from 0.1.10)
 -	modified handling of errors and warnings.
 -	added method to module "NN" (get_misc_values_at)
 -	added method to module "NN" (get_topology_info, returns data.frame with NN topology information).
--	added "softmax", "bp-hidden-softmax" and "bp-output-softmax" layer types.
--	added documentation describing the names of available NN components (NN_component_names.Rd) 
--	(Note: v.0.1.11 is not yet released to CRAN)
+-	added "softmax", "bp-hidden-softmax" and "bp-output-softmax" layer types (see https://github.com/VNNikolaidis/nnlib2Rcpp/issues/14)
+-	added documentation describing the names of available NN components (NN_component_names.Rd).
+-	added method to module "NN" (set_input_at (same as input_at)).
+-	other minor changes.
+-	(Note: v.0.1.11 was not released to CRAN)
+
+---
+
+Changes to nnlib2Rcpp version 0.2.0 (from 0.1.11)
+-	split additional_parts.h to several files (for less clutter when users create their components).
+-	Small run time performance improvements (less checks in dllist operations).
+-	added method to module "NN" (set_weights_at)
+-	R...
+-	(Note: v.0.2.0 was not released to CRAN)

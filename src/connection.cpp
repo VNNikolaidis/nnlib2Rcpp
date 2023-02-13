@@ -121,10 +121,10 @@ return (mp_connection_set->destin_layer().PE(m_destin_pe));
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 void connection::encode()
- {error(NN_SYSTEM_ERR,"Default connection encode function called, should be overiden!");}
+ {error(NN_SYSTEM_ERR,"Default connection encode function called, should be overridden!");}
 
 void connection::recall()
-{error(NN_SYSTEM_ERR,"Default connection recall function called, should be overiden!");}
+{error(NN_SYSTEM_ERR,"Default connection recall function called, should be overridden!");}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // input it :

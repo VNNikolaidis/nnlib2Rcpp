@@ -26,17 +26,23 @@ namespace nnlib2 {
 //		component for misc functionality
 /*-----------------------------------------------------------------------*/
 
-class aux_control : public component
+class aux_control : public data_io_component, public error_flag_client
 {
 public:
 aux_control();
+void encode (){};														   // overrides virtual method in component, override if required
+void recall (){};														   // overrides virtual method in component, override if required
+bool input_data_from_vector(DATA * data, int dimension){return false;}     // overrides virtual method in data_receiver, override if required
+bool output_data_to_vector(DATA * buffer, int dimension){return false;}    // overrides virtual method in data_provider, override if required
+bool send_input_to(int index, DATA d){return false;}                       // overrides virtual method in data_receiver, override if required
+DATA get_output_from (int index){return 0;}                                // overrides virtual method in data_provider, override if required
 };
 
 /*-----------------------------------------------------------------------*/
 // example of component for misc functionality
 /*-----------------------------------------------------------------------*/
 
-class aux_txt_printer : public aux_control, public error_flag_client
+class aux_txt_printer : public aux_control
 {
 private:
 		layer PTR mp_layer;

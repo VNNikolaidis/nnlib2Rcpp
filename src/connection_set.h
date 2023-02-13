@@ -84,7 +84,7 @@ class Connection_Set : public connection_set
  DATA get_connection_weight(int connection);					// returns 0 if not successful
  bool set_connection_weight(int connection, DATA value);
 
- // Note: the following set_connection_weight... functions are added for initializing weights. Using in processing is not recommented.
+ // Note: the following set_connection_weight... functions are added for initializing weights. Using in processing is not recommended.
  void set_connection_weights (DATA value);
  void set_connection_weights_random(DATA min_random_value, DATA max_random_value);
  bool set_connection_weight (const int source_pe, const int destin_pe, const DATA new_weight);
@@ -111,8 +111,8 @@ class Connection_Set : public connection_set
  bool has_source_layer();
  bool has_destin_layer();
 
- void encode();													// (virtual in component) may be overiden by derived classes with specific layer functiobality.
- void recall();													// (virtual in component) may be overiden by derived classes with specific layer functiobality.
+ void encode();													// (virtual in component) may be overridden by derived classes with specific layer functiobality.
+ void recall();													// (virtual in component) may be overridden by derived classes with specific layer functiobality.
 
  bool add_connection(const int source_pe, const int destin_pe, const DATA initial_weight);
  bool remove_connection(int connection_number);
@@ -504,7 +504,7 @@ void Connection_Set<CONNECTION_TYPE>::to_stream (std::ostream REF s)
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// may be overiden by derived classes.
+// may be overridden by derived classes.
 
 template <class CONNECTION_TYPE>
 void Connection_Set<CONNECTION_TYPE>::encode()

@@ -61,8 +61,8 @@ class connection
  pe REF source_pe();                                                                    // returns pe (regardless PE_TYPE) IF mp_connection set is not NULL;
  pe REF destin_pe();                                                                    // returns pe (regardless PE_TYPE) IF mp_connection set is not NULL;
 
- virtual void encode();                                                                 // should be overiden by derived classes, only produces runtime error message
- virtual void recall();                                                                 // should be overiden by derived classes, only produces runtime error message
+ virtual void encode();                                                                 // should be overridden by derived classes, only produces runtime error message
+ virtual void recall();                                                                 // should be overridden by derived classes, only produces runtime error message
 
  friend std::istream& operator>> ( std::istream REF s, connection REF it );
  friend std::ostream& operator<< ( std::ostream REF s, connection REF it );

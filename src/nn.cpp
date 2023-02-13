@@ -94,7 +94,7 @@ DATA nn::encode_u(DATA PTR input, int input_dim, int iteration)
 // performs a typical supervised encoding, assuming input will go to first layer (unless otherwise defined), while
 // desired output will be presented as _input_ to the last layer in topology (unless otherwise defined).
 // May return indication of encoding success.
-// Should be overiden with needed behaviour, as this is very basic.
+// Should be overridden with needed behaviour, as this is very basic.
 
 DATA nn::encode_s(DATA PTR input, int input_dim, DATA PTR desired_output, int output_dim, int iteration)
  {
@@ -128,7 +128,7 @@ DATA nn::encode_s(DATA PTR input, int input_dim, DATA PTR desired_output, int ou
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // Performs a typical recall, in the direction from input to output
-// in topology. Assumes data is already there. Overide if needed.
+// in topology. Assumes data is already there. Override if needed.
 
 void nn::recall()
 {
@@ -150,7 +150,7 @@ else
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // Performs a typical feed forward encode, in the direction from input to output
-// in topology. Assumes data is already there. Overide if needed.
+// in topology. Assumes data is already there. Override if needed.
 
 void nn::encode()
 {
@@ -171,38 +171,48 @@ else
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// overide if necessary...
+// override if necessary...
 
 int nn::input_dimension()
  {
- // we are probably making too many unneeded checks here
+ // we are probably making too many unneeded checks here:
  if(m_topology_component_for_input<0) return 0;
  if(topology.is_empty()) return 0;
  if(topology.size()<=m_topology_component_for_input)return 0;
- if(topology[m_topology_component_for_input]->type()!=cmpnt_layer) return 0;
- layer PTR p_input_layer = reinterpret_cast<layer PTR>(topology[m_topology_component_for_input]);
- if (p_input_layer!=NULL) return p_input_layer->size();
+ if(!component_accepts_input(m_topology_component_for_input)) return 0;
+ return topology[m_topology_component_for_input]->size();
+ // remaining code is old version's, not used:
+ if(topology[m_topology_component_for_input]->type()==cmpnt_layer)
+ {
+ 	layer PTR p_input_layer = reinterpret_cast<layer PTR>(topology[m_topology_component_for_input]);
+ 	if (p_input_layer!=NULL) return p_input_layer->size();
+ }
  return 0;
  }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// overide if necessary...
+// override if necessary...
 
 int nn::output_dimension()
  {
- // we are probably making too many unneeded checks here
+ // we are probably making too many unneeded checks here:
  if(m_topology_component_for_output<0) return 0;
  if(topology.is_empty()) return 0;
  if(topology.size()<=m_topology_component_for_output)return 0;
- if(topology[m_topology_component_for_output]->type()!=cmpnt_layer) return 0;
- layer PTR p_output_layer = reinterpret_cast<layer PTR>(topology[m_topology_component_for_output]);
- if (p_output_layer!=NULL) return p_output_layer->size();
+ if(!component_provides_output(m_topology_component_for_output)) return 0;
+ return topology[m_topology_component_for_output]->size();
+ // remaining code is old version's, not used:
+ if(topology[m_topology_component_for_output]->type()==cmpnt_layer)
+ {
+ 	layer PTR p_output_layer = reinterpret_cast<layer PTR>(topology[m_topology_component_for_output]);
+ 	if (p_output_layer!=NULL) return p_output_layer->size();
+ }
  return 0;
  }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // (required by data_receiver class)
-// attemps to place data on the first component, unless otherwise defined.
+// attempts to place data on the first component, unless otherwise defined.
 // assuming it [is a layer that] can input data (data_receiver)
 
 bool nn::input_data_from_vector(DATA * data, int dimension)
@@ -224,7 +234,7 @@ bool nn::input_data_from_vector(DATA * data, int dimension)
 // attemps to place data on the m_topology_component_for_input component
 // (sets it to first if not specified)
 // assuming it [is a layer that] can input data (data_receiver)
-// overides virtual method in data_receiver, as above, sets value to corresponding pe input
+// overrides virtual method in data_receiver, as above, sets value to corresponding pe input
 
 bool nn::send_input_to(int index, DATA d)
 {
@@ -258,10 +268,10 @@ bool nn::output_data_to_vector(DATA * buffer, int dimension)
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // (required by data_provider class)
-// attemps to get data from the m_topology_component_for_output component in topology
+// attempts to get data from the m_topology_component_for_output component in topology
 // (sets it to last if not specified)
 // assuming it [is a layer that] outputs data (data_provider)
-// overides virtual method in data_provider, as above, gets value from corresponding pe output
+// overrides virtual method in data_provider, as above, gets value from corresponding pe output
 
 DATA nn::get_output_from (int index)
 {
@@ -284,8 +294,8 @@ bool nn::set_component_for_input(int index)
  if((index<0) OR
     (index>=topology.size()))
      {warning("Requested input component is not in topology"); return false;}
- if(topology[index]->type()!=cmpnt_layer)
-     {warning("Requested input component is not a layer"); return false;}
+ if(!component_accepts_input(index))
+     {warning("Requested component does not support direct input"); return false;}
  m_topology_component_for_input = index;
  #ifndef NNLIB2_WITH_GUI
  // TEXTOUT << "Note: Using NN component in topology index position " << m_topology_component_for_input << " for input.\n";
@@ -301,8 +311,8 @@ bool nn::set_component_for_output(int index)
  if((index<0) OR
    (index>=topology.size()))
     {warning("Requested output component is not in topology"); return false;}
- if(topology[index]->type()!=cmpnt_layer)
-    {warning("Requested output component must be a layer"); return false;}
+ if(!component_provides_output(index))
+    {warning("Requested component does not directly provide output"); return false;}
  m_topology_component_for_output = index;
  #ifndef NNLIB2_WITH_GUI
  // TEXTOUT << "Note: Using NN component in topology index position " << m_topology_component_for_output << " for output.\n";
@@ -478,6 +488,17 @@ bool nn::add_connection_set(connection_set * p_connection_set)
   return false;
 }
 
+bool nn::add_aux_control(aux_control * p_aux_control)
+{
+	if(add_component(p_aux_control))
+	{
+		p_aux_control->set_error_flag(my_error_flag());
+		return true;
+	}
+	return false;
+}
+
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // Trigger encode for component at specified topology index position
 
@@ -551,13 +572,13 @@ return false;
 
 component * nn::component_from_id(int id)
 {
-if(topology.goto_first())
-  {
-    do
-      if(topology.current()->id()==id) return topology.current();
-    while (topology.goto_next());
-  }
-return NULL;
+	for(int i=0;i<topology.size();i++)
+	{
+		component * cp = topology[i];
+		if(no_error())
+			if(cp->id()==id) return cp;
+	}
+	return NULL;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -565,28 +586,49 @@ return NULL;
 
 component * nn::component_from_topology_index(int index)
 {
-  int i=0;
-  if(topology.goto_first())
-  {
-    do
-    {
-      if(index==i) return topology.current();
-      i++;
-    }
-    while (topology.goto_next());
-  }
+  component * cp = topology[index];
+  if(no_error()) return cp;
   return NULL;
 }
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// returns true if data_receiver (layer/aux_control)
+
+bool nn::component_accepts_input(int index)
+{
+	component * cp = component_from_topology_index(index);
+	if(cp==NULL) return false;
+	if(cp->type()==cmpnt_layer) return true;
+	if(cp->type()==cmpnt_aux_control) return true;
+	if(dynamic_cast<data_receiver *>(cp)!=NULL) return true;
+	return false;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// returns true if data_provider (layer/aux_control)
+
+bool nn::component_provides_output(int index)
+{
+	component * cp = component_from_topology_index(index);
+	if(cp==NULL) return false;
+	if(cp->type()==cmpnt_layer) return true;
+	if(cp->type()==cmpnt_aux_control) return true;
+	if(dynamic_cast<data_provider *>(cp)!=NULL) return true;
+	return false;
+}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // returns the index position in topology for component with given id, negative (-1) if not available
 
 int nn::component_topology_index_from_id(int id)
 {
-  component PTR pc = component_from_id(id);
-  if(pc==NULL) return -1;
-  return pc->id();
+	for(int i=0;i<topology.size();i++)
+	{
+		component * cp = topology[i];
+		if(no_error())
+			if(cp->id()==id) return i;
+	}
+	return -1;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -815,6 +857,25 @@ connection_set PTR nn::get_connection_set_at(int index)
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// patch. NULL if not found or not aux_control
+
+aux_control PTR nn::get_aux_control_at(int index)
+{
+	if(index<0) return NULL;
+	if(index>=topology.size()) return NULL;
+	if(topology.is_empty()) return NULL;
+
+	component PTR p_comp = topology[index];
+	if(p_comp==NULL) return NULL;
+
+	if(p_comp->type()!=cmpnt_aux_control) return NULL;
+	// component found and seems to be a aux_control
+
+	aux_control PTR p_ax = reinterpret_cast<aux_control PTR>(p_comp);
+	return p_ax;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // patch.
 
 bool nn::add_connection(int index, int source_pe, int destin_pe, DATA weight)
@@ -839,7 +900,7 @@ bool nn::remove_connection(int index, int connection_number)
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // patch.
 
-bool nn::get_input_data_at_component (int index, DATA * buffer, int dimension)
+bool nn::get_input_at_component (int index, DATA * buffer, int dimension)
 {
   if(buffer==NULL) return false;
   if(dimension<=0) return false;
@@ -877,6 +938,22 @@ bool nn::get_input_data_at_component (int index, DATA * buffer, int dimension)
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // patch.
 
+bool nn::set_input_at_component (int index, DATA * data, int dimension)
+{
+	if(data==NULL) return false;
+	if(dimension<=0) return false;
+	if(index<0) return false;
+	if(index>=topology.size()) return false;
+	if(topology.is_empty()) return false;
+	if(!component_accepts_input(index)) return false;
+	data_receiver * pc = dynamic_cast <data_receiver *> (topology[index]);
+	if (pc==NULL) {error(NN_INTEGR_ERR,"Requested component cannot accept data");return false;}
+	return(pc->input_data_from_vector(data,dimension));
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// patch.
+
 bool nn::get_weights_at_component (int index, DATA * buffer, int dimension)
 {
   if(buffer==NULL) return false;
@@ -904,6 +981,24 @@ bool nn::get_weights_at_component (int index, DATA * buffer, int dimension)
 
   return true;
  }
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// patch.
+
+bool nn::set_weights_at_component(int index, DATA * data, int dimension)
+{
+	if(data==NULL) return false;
+	if(dimension<=0) return false;
+
+	connection_set PTR p_cs = get_connection_set_at(index);
+	if(p_cs==NULL) {warning("Invalid connection set"); return false;}
+	if(p_cs->size()!=dimension) return false;
+
+	for(int i=0;i<dimension;i++)
+		if(!p_cs->set_connection_weight(i, data[i])) return false;
+
+	return true;
+}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // patch. Returns 0 if not successful
@@ -947,6 +1042,22 @@ bool nn::set_misc_at_component(int index, DATA * data, int dimension)
   connection_set PTR p_cs = get_connection_set_at(index);
   if (p_cs != NULL) return p_cs->set_misc(data,dimension);
   return false;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// patch
+
+bool nn::get_output_from_component (int index, DATA * buffer, int dimension)
+{
+	if(buffer==NULL) return false;
+	if(dimension<=0) return false;
+	if(index<0) return false;
+	if(index>=topology.size()) return false;
+	if(topology.is_empty()) return false;
+	if(!component_accepts_input(index)) return false;
+	data_provider * pc = dynamic_cast <data_provider *> (topology[index]);
+	if (pc==NULL) {error(NN_INTEGR_ERR,"Requested component cannot provide data");return false;}
+	return(pc->output_data_to_vector(buffer,dimension));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

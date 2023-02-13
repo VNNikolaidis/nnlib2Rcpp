@@ -12,7 +12,7 @@ Layer names currently available include:
     \item{\code{generic_d}}{: same as above.}
     \item{\code{pe}}{: same as above.}
     \item{\code{pass-through}}{: a layer with PEs that simply pass input to output.}
-    \item{\code{which-max}}{: a layer with PEs that return the id of their input with max value.}
+    \item{\code{which-max}}{: a layer with PEs that return the index of their input with max value.}
     \item{\code{MAM}}{: a layer with PEs for Matrix-Associative-Memory NNs (see vignette).}
     \item{\code{LVQ-input}}{: LVQ input layer (see vignette).}
     \item{\code{LVQ-output}}{: LVQ output layer (see vignette).}

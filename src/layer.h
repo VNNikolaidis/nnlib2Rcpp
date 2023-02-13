@@ -76,10 +76,10 @@ public:
 	void from_stream (std::istream REF s);                                 // read layer from stream
 	void to_stream (std::ostream REF s);                                   // write layer to stream
 
-	bool input_data_from_vector(DATA * data, int dimension);               // overides virtual method in data_receiver, sets values to pe inputs
-	bool output_data_to_vector(DATA * buffer, int dimension);              // overides virtual method in data_provider, gets values from pe outputs
-	bool send_input_to(int index, DATA d);                                 // overides virtual method in data_receiver, sets value to corresponding pe input sets this input to respective pe input (and also appends to pe's list of input values)
-	DATA get_output_from (int index);                                      // overides virtual method in data_provider, gets value from corresponding pe output
+	bool input_data_from_vector(DATA * data, int dimension);               // overrides virtual method in data_receiver, sets values to pe inputs
+	bool output_data_to_vector(DATA * buffer, int dimension);              // overrides virtual method in data_provider, gets values from pe outputs
+	bool send_input_to(int index, DATA d);                                 // overrides virtual method in data_receiver, sets value to corresponding pe input sets this input to respective pe input (and also appends to pe's list of input values)
+	DATA get_output_from (int index);                                      // overrides virtual method in data_provider, gets value from corresponding pe output
 
 	bool get_misc(DATA * buffer, int dimension);						   // added for nnlib2Rcpp 0.1.11
 	bool set_misc(DATA * data, int dimension);							   // set values in misc internal register variables in layer pes
@@ -91,8 +91,8 @@ public:
 	bool get_biases(DATA * buffer, int dimension);						   // added for nnlib2Rcpp 0.1.10
 	DATA get_bias_from(int index);										   // added for nnlib2Rcpp 0.1.10
 
-	void encode();                                                         // (virtual in component) may be overiden by derived classes with specific layer functiobality.
-	void recall();                                                         // (virtual in component) may be overiden by derived classes with specific layer functiobality.
+	void encode();                                                         // (virtual in component) may be overridden by derived classes with specific layer functiobality.
+	void recall();                                                         // (virtual in component) may be overridden by derived classes with specific layer functiobality.
 
 	//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -237,7 +237,7 @@ void Layer<PE_TYPE>::to_stream(std::ostream REF s)
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// overides virtual method in data_receiver, sets values to pe inputs
+// overrides virtual method in data_receiver, sets values to pe inputs
 // (sets this input to respective pe input and to received_values,
 // clearing all previous ones)
 
@@ -259,7 +259,7 @@ bool Layer<PE_TYPE>::input_data_from_vector(DATA* data, int dimension)
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// overides virtual method in data_provider, gets values from pe outputs
+// overrides virtual method in data_provider, gets values from pe outputs
 // (gets the output value from respective pes and copies it to buffer)
 
 template <class PE_TYPE>
@@ -273,7 +273,7 @@ bool Layer<PE_TYPE>::output_data_to_vector(DATA* buffer, int dimension)
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// overides virtual method in data_receiver, sets value to corresponding pe input
+// overrides virtual method in data_receiver, sets value to corresponding pe input
 
 template <class PE_TYPE>
 bool Layer<PE_TYPE>::send_input_to(int index, DATA d)
@@ -286,7 +286,7 @@ bool Layer<PE_TYPE>::send_input_to(int index, DATA d)
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// overides virtual method in data_provider, gets value from corresponding pe output
+// overrides virtual method in data_provider, gets value from corresponding pe output
 
 template <class PE_TYPE>
 DATA Layer<PE_TYPE>::get_output_from(int index)
@@ -420,7 +420,7 @@ bool Layer<PE_TYPE>::move_all_pe_input_to_output()
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// should be overiden by derived classes.
+// should be overridden by derived classes.
 
 template <class PE_TYPE>
 void Layer<PE_TYPE>::encode()

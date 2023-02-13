@@ -197,22 +197,15 @@ plot(iris_data, pch=recalled_ids)
 
   \item{\code{component_ids()}:}{Returns an integer vector containing the ids of the components in topology (these ids are created at run-time and identify each NN component).}
 
-  \item{\code{input_at( pos, data_in )}:}{Input a data vector to the component (layer) at specified topology index. Returns TRUE if successful. Parameters are:
-    \itemize{
-    \item{\code{pos}}{: integer, position in topology of component to receive input.}
-    \item{\code{data_in}}{: NumericVector, data to be sent as input to component (sizes must match).}
-    }
-    }
-
  \item{\code{encode_at( pos )}:}{Trigger the encoding operation of the component at specified topology index (note: depending on implementation, an 'encode' operation usually collects inputs, processes the data, adjusts internal state variables and/or weights, and possibly produces output). Returns TRUE if successful. Parameters are:
     \itemize{
-    \item{\code{pos}}{: integer, position in topology of component to perform encoding.}
+    \item{\code{pos}}{: integer, position (in NN's topology) of component to perform encoding.}
     }
     }
 
  \item{\code{recall_at( pos )}:}{Trigger the recall (mapping, data retrieval) operation of the component at specified topology index (note: depending on implementation, a 'recall' operation usually collects inputs, processes the data, and produces output). Returns TRUE if successful. Parameters are:
     \itemize{
-    \item{\code{pos}}{: integer, position in topology of component to perform recall.}
+    \item{\code{pos}}{: integer, position (in NN's topology) of component to perform recall.}
     }
     }
 
@@ -225,7 +218,7 @@ plot(iris_data, pch=recalled_ids)
  \item{\code{encode_dataset_unsupervised( data, pos, epochs, fwd )}:}{Encode a dataset using unsupervised training. A faster method to encode a data set. All the components in the NN topology will perform 'encode' in specified direction. Returns TRUE if successful. Parameters are:
     \itemize{
     \item{\code{data}}{: numeric matrix, containing input vectors as rows.}
-    \item{\code{pos}}{: integer, position in topology of component to receive input vectors.}
+    \item{\code{pos}}{: integer, position (in NN's topology) of component to receive input vectors.}
     \item{\code{epochs}}{: integer, number of training epochs (encoding repetitions of the entire dataset).}
     \item{\code{fwd}}{: logical, indicates direction, TRUE to trigger encoding forwards (first-to-last component), FALSE to encode backwards (last-to-first component).}
     }
@@ -234,9 +227,9 @@ plot(iris_data, pch=recalled_ids)
  \item{\code{encode_datasets_supervised( i_data, i_pos, j_data, j_pos, j_destination_register, epochs, fwd )}:}{Encode multiple (i,j) vector pairs stored in two corresponding data sets, using supervised training. A faster method to encode the data. All the components in the NN topology will perform 'encode' in specified direction. Returns TRUE if successful. Parameters are:
     \itemize{
     \item{\code{i_data}}{: numeric matrix, data set, each row is a vector i of vector-pair (i,j).}
-    \item{\code{i_pos}}{: integer, position in topology of component to receive i vectors.}
+    \item{\code{i_pos}}{: integer, position (in NN's topology) of component to receive i vectors.}
     \item{\code{j_data}}{: numeric matrix, data set, each row is a corresponding vector j of vector-pair (i,j).}
-    \item{\code{j_pos}}{: integer, position in topology of component to receive j vectors.}
+    \item{\code{j_pos}}{: integer, position (in NN's topology) of component to receive j vectors.}
     \item{\code{j_destination_selector}}{: integer, selects which internal node (pe) registers will receive vector j, i.e. if 0 internal node register '\code{input}' will be used (j will become the layer's input), if 1 register '\code{output}' will be used (j will become the layer's output), if 2 register '\code{misc}' will be used (implementations may use this as an alternative way to transfer data to nodes without altering current input or output).}
     \item{\code{epochs}}{: integer, number of training epochs (encoding repetitions of the entire data).}
     \item{\code{fwd}}{: logical, indicates direction, TRUE to trigger encoding forwards (first-to-last component), FALSE to encode backwards (last-to-first component).}
@@ -246,8 +239,8 @@ plot(iris_data, pch=recalled_ids)
  \item{\code{recall_dataset( data_in, input_pos, output_pos, fwd )}:}{Recall (map, retrieve output for) a dataset. A faster method to recall an entire data set. All the components in the NN topology will perform 'recall' in specified direction. Returns numeric matrix containing corresponding output. Parameters are:
     \itemize{
     \item{\code{data_in}}{: numeric matrix, containing input vectors as rows.}
-    \item{\code{input_pos}}{: integer, position in topology of component to receive input vectors.}
-    \item{\code{output_pos}}{: integer, position in topology of component to produce output.}
+    \item{\code{input_pos}}{: integer, position (in NN's topology) of component to receive input vectors.}
+    \item{\code{output_pos}}{: integer, position (in NN's topology) of component to produce output.}
     \item{\code{fwd}}{: logical, indicates direction, TRUE to trigger 'recall' (mapping) forwards (first-to-last component), FALSE to recall backwards (last-to-first component).}
     }
     }
@@ -258,36 +251,59 @@ plot(iris_data, pch=recalled_ids)
     }
     }
 
- \item{\code{get_output_from( pos )}:}{Get the current output of the component at specified topology index. If successful, returns NumericVector of output values (otherwise vector of zero length). Parameters are:
+ \item{\code{input_at( pos, data_in )}:}{Input a data vector to the component (layer) at specified topology index. Returns TRUE if successful. Parameters are:
     \itemize{
-    \item{\code{pos}}{: integer, position in topology of component to use.}
+    \item{\code{pos}}{: integer, position (in NN's topology) of component to receive input.}
+    \item{\code{data_in}}{: NumericVector, data to be sent as input to component (sizes must match).}
     }
     }
 
-\item{\code{get_output_at( pos )}:}{Same as \code{get_output_from}, see above.}
+ \item{\code{set_input_at( pos, data_in )}:}{Same as \code{input_at} (see above)}
 
  \item{\code{get_input_at( pos )}:}{Get the current input of the component at specified topology index (depends on the implementation: for layers, this may be valid after the \code{pe}s (nodes) have performed their \code{input_function} on incoming values; \code{pe}s have an overridable \code{input_function} that collects all incoming values and produces a single value for further processing which is stored at an internal \code{input} register (whose value is retrieved here); by default \code{input_function} performs summation. If successful, returns NumericVector of final \code{input} values (otherwise vector of zero length). Parameters are:
     \itemize{
-    \item{\code{pos}}{: integer, position in topology of component to use.}
+    \item{\code{pos}}{: integer, position (in NN's topology) of component to use.}
+    }
+    }
+
+ \item{\code{get_output_from( pos )}:}{Get the current output of the component at specified topology index. If successful, returns NumericVector of output values (otherwise vector of zero length). Parameters are:
+    \itemize{
+    \item{\code{pos}}{: integer, position (in NN's topology) of component to use.}
+    }
+    }
+
+ \item{\code{get_output_at( pos )}:}{Same as \code{get_output_from}, see above.}
+
+ \item{\code{set_output_at( pos, data_in )}:}{Set the values in the \code{output} data register that \code{pe} objects maintain, for \code{layer} at specified topology index (currenly only \code{layer} components are supported). If successful, returns TRUE. Parameters are:
+    \itemize{
+    \item{\code{pos}}{: integer, position (in NN's topology) of component to use.}
+    \item{\code{data_in}}{: NumericVector, data to be used for new values in \code{misc} registers (sizes must match).}
     }
     }
 
  \item{\code{get_weights_at( pos )}:}{Get the current weights of the component (\code{connection_set}) at specified topology index. If successful, returns NumericVector of connection weights (otherwise vector of zero length). Parameters are:
     \itemize{
-    \item{\code{pos}}{: integer, position in topology of component to use.}
+    \item{\code{pos}}{: integer, position (in NN's topology) of component to use.}
+    }
+    }
+
+ \item{\code{set_weights_at( pos )}:}{Set the weights of the component (\code{connection_set}) at specified topology index. If successful, returns TRUE. Parameters are:
+    \itemize{
+    \item{\code{pos}}{: integer, position (in NN's topology) of component to use.}
+    \item{\code{data_in}}{: NumericVector, data to be used for new values in \code{weight} registers of connections (sizes must match).}
     }
     }
 
  \item{\code{get_weight_at( pos, connection )}:}{Get the current weight of a connection in component (\code{connection_set}) at specified topology index. If successful, returns weight, otherwise 0 (note: this might change in future versions). Parameters are:
     \itemize{
-    \item{\code{pos}}{: integer, position in topology of component to use.}
+    \item{\code{pos}}{: integer, position (in NN's topology) of component to use.}
     \item{\code{connection}}{: integer, connection to use (note: numbering starts from 0).}
     }
     }
 
  \item{\code{set_weight_at( pos, connection, value )}:}{Set the weight of a connection in component (\code{connection_set}) at specified topology index. If successful, returns TRUE. Parameters are:
     \itemize{
-    \item{\code{pos}}{: integer, position in topology of component to use.}
+    \item{\code{pos}}{: integer, position (in NN's topology) of component to use.}
     \item{\code{connection}}{: integer, connection to use (note: numbering starts from 0).}
     \item{\code{value}}{: new weight for connection.}
     }
@@ -295,51 +311,85 @@ plot(iris_data, pch=recalled_ids)
 
  \item{\code{get_misc_values_at( pos )}:}{Get the values in the \code{misc} data register that \code{pe} and \code{connection} objects maintain, for objects at specified topology index. If successful, returns NumericVector of the values (otherwise vector of zero length). Parameters are:
     \itemize{
-    \item{\code{pos}}{: integer, position in topology of component to use.}
+    \item{\code{pos}}{: integer, position (in NN's topology) of component to use.}
     }
     }
 
  \item{\code{set_misc_values_at( pos, data_in )}:}{Set the values in the \code{misc} data register that \code{pe} and \code{connection} objects maintain, for objects at specified topology index. If successful, returns TRUE. Parameters are:
     \itemize{
-    \item{\code{pos}}{: integer, position in topology of component to use.}
-    \item{\code{data_in}}{: NumericVector, data to be used for new values in \code{misc} registers (sizes must match).}
-    }
-    }
-
- \item{\code{set_output_at( pos, data_in )}:}{Set the values in the \code{output} data register that \code{pe} objects maintain, for \code{layer} at specified topology index (currenly only \code{layer} components are supported). If successful, returns TRUE. Parameters are:
-    \itemize{
-    \item{\code{pos}}{: integer, position in topology of component to use.}
+    \item{\code{pos}}{: integer, position (in NN's topology) of component to use.}
     \item{\code{data_in}}{: NumericVector, data to be used for new values in \code{misc} registers (sizes must match).}
     }
     }
 
  \item{\code{get_biases_at( pos )}:}{Get the values in the \code{bias} register that \code{pe} (Processing Elements or nodes) maintain, for \code{layer} at specified topology index (only \code{layer} components are supported). If successful, returns NumericVector of bias values (otherwise vector of zero length). Parameters are:
     \itemize{
-    \item{\code{pos}}{: integer, position in topology of component to use.}
-    }
-    }
-
- \item{\code{get_bias_at( pos, pe )}:}{Get the bias of a \code{pe} (Processing Element or node) in component (\code{layer}) at specified topology index. If successful, returns bias otherwise 0 (note: this might change in future versions). Parameters are:
-    \itemize{
-    \item{\code{pos}}{: integer, position in topology of component to use.}
-    \item{\code{pe}}{: integer, Processing Element (node) in \code{layer} to use (note: numbering starts from 0).}
+    \item{\code{pos}}{: integer, position (in NN's topology) of component to use.}
     }
     }
 
  \item{\code{set_biases_at( pos, data_in )}:}{Set the values in the \code{bias} register that \code{pe} (Processing Elements or nodes) maintain, for \code{layer} at specified topology index (only \code{layer} components are supported). If successful, returns TRUE. Parameters are:
     \itemize{
-    \item{\code{pos}}{: integer, position in topology of component to use.}
+    \item{\code{pos}}{: integer, position (in NN's topology) of component to use.}
     \item{\code{data_in}}{: NumericVector, data to be used for new values in \code{bias} registers (sizes must match).}
+    }
+    }
+
+ \item{\code{get_bias_at( pos, pe )}:}{Get the bias of a \code{pe} (Processing Element or node) in component (\code{layer}) at specified topology index. If successful, returns bias otherwise 0 (note: this might change in future versions). Parameters are:
+    \itemize{
+    \item{\code{pos}}{: integer, position (in NN's topology) of component to use.}
+    \item{\code{pe}}{: integer, Processing Element (node) in \code{layer} to use (note: numbering starts from 0).}
     }
     }
 
  \item{\code{set_bias_at( pos, pe, value )}:}{Set the bias of a \code{pe} (Processing Element or node) in component (\code{layer}) at specified topology index. If successful, returns TRUE. Parameters are:
     \itemize{
-    \item{\code{pos}}{: integer, position in topology of component to use.}
+    \item{\code{pos}}{: integer, position (in NN's topology) of component to use.}
     \item{\code{pe}}{: integer, Processing Element (node) in \code{layer} to use (note: numbering starts from 0).}
     \item{\code{value}}{: new value for bias at the specified \code{pe}.}
     }
     }
+
+ \item{\code{add_R_forwarding( trigger, FUN )}:}{Adds a control component which will invoke an R function. The R fuction will process the output of the previous component in the topology and feed the result as input to the next (in forward direction) component in the topology. Notes: (a) once the R function is invoked, its result will be maintained as this component's input and output values; (b) the component will fail to perform processing if the R function's result cannot be converted to a numeric vector. If successful, returns TRUE. Parameters are:
+    \itemize{
+    \item{\code{trigger}}{: string, specifies when to invoke the R function. Valid options are \code{"on encode"}, \code{"on recall"}, \code{"always"} or \code{"never"}.}
+    \item{\code{FUN}}{: string, the R function to be invoked.}
+    }}
+
+ \item{\code{add_R_pipelining( trigger, FUN, fwd )}:}{Adds a control component which will invoke an R function. The R fuction will process the output of a neighbouring component in the topology and feed the result as input to the other neighbouring component in the topology. The components are selected depending on the value of parameter \code{fwd} (see below). Notes: (a) once the R function is invoked, its result will be maintained as this component's input and output values; (b) the component will fail to perform processing if the R function's result cannot be converted to a numeric vector. If successful, returns TRUE. Parameters are:
+    \itemize{
+    \item{\code{trigger}}{: string, specifies when to invoke the R function. Valid options are \code{"on encode"}, \code{"on recall"}, \code{"always"} or \code{"never"}.}
+    \item{\code{FUN}}{: string, the R function to be invoked.}
+    \item{\code{fwd}}{: logical, set to TRUE if encoding or recalling in forward, top-to-bottom, direction and need to read from previous component in the topology feeding the result as input to the next (same as \code{add_R_forwarding}). If FALSE, reads from next component in the topology and feeds the result as input to the previous (useful when encoding/recalling in backward, bottom-to-top, direction).}
+    }}
+
+ \item{\code{add_R_ignoring( trigger, FUN, i_mode, input_from )}:}{Adds a control component which will invoke an R function ignoring its result. The R fuction will process values from a specified component in the topology, but the function's result will be ignored. This is suitable for invoking functions such as \code{print}, \code{plot} etc. Note: the component maintains the original values as its input and output values but it does not feed these values automaticaly to any other component. If successful, returns TRUE. Parameters are:
+    \itemize{
+    \item{\code{trigger}}{: string, specifies when to invoke the R function. Valid options are \code{"on encode"}, \code{"on recall"}, \code{"always"} or \code{"never"}.}
+    \item{\code{FUN}}{: string, the R function to be invoked.}
+    \item{\code{i_mode}}{: string, specifies the source of data to be retrieved and processed by the R function. Valid options are \code{"none"}, \code{"input of"}, \code{"output of"}, \code{"weights at"}, \code{"biases at"} and \code{"misc at"}.}
+    \item{\code{input_from}}{: integer, position (in NN's topology) of component to retrieve data from.}
+}}
+
+ \item{\code{add_R_function( trigger, FUN, i_mode, input_from, o_mode, output_to, ignore_result )}:}{Adds a control component which will invoke an R function. The R fuction will process process values from a specified component and feed the results to another component. Notes: (a) once the R function is invoked, its result will be maintained as this component's input and output values (unless \code{ignore_result} is set to TRUE, in which case the original values will be maintained); (b) the component will fail to perform processing if the R function's result cannot be converted to a numeric vector and \code{ignore_result} is FALSE. If successful, returns TRUE. Parameters are:
+    \itemize{
+    \item{\code{trigger}}{: string, specifies when to invoke the R function. Valid options are \code{"on encode"}, \code{"on recall"}, \code{"always"} or \code{"never"}.}
+    \item{\code{FUN}}{: string, the R function to be invoked.}
+    \item{\code{i_mode}}{: string, specifies the source of data to be retrieved and processed by the R function. Valid options are \code{"none"}, \code{"input of"}, \code{"output of"}, \code{"weights at"}, \code{"biases at"} and \code{"misc at"}.}
+    \item{\code{input_from}}{: integer, position (in NN's topology) of component to retrieve data from.}
+
+  \item{\code{o_mode}}{: string, specifies the destination for the result returned by the R function. Valid options are \code{"none"}, \code{"to input"}, \code{"to output"}, \code{"to weights"}, \code{"to biases"} and \code{"to misc"}.}
+ \item{\code{output_to}}{: integer, position (in NN's topology) of component to receive the resulting data.}
+ \item{\code{ignore_result}}{: logical, if TRUE, the R function's results are ignored and original (incoming) values are maintained and (possibly) sent to the \code{output_to} component. If FALSE, the values used are those returned by the R function.}
+    }}
+
+				(o_mode!="none") AND
+				(o_mode!="") AND
+				(o_mode!="") AND
+				(o_mode!="") AND
+				(o_mode!="") AND
+				(o_mode!=""))
+
 
 
 \item{\code{outline()}:}{Print a summary description of all components in topology.}
@@ -353,7 +403,7 @@ plot(iris_data, pch=recalled_ids)
  }
 
 The following methods are inherited (from the corresponding class):
-objectPointer ("RcppClass"), initialize ("RcppClass"), show ("RcppClass")
+objectPointer ("RcppClass"), initialize ("RcppClass"), show ("RcppClass").
 }
 
 
