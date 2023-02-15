@@ -760,7 +760,7 @@ public:
 				data_out= NumericVector(m_nn.output_dimension());
 				double * fpdata_out = REAL(data_out);                   // my (lame?) way to interface with R, cont.)
 				if(NOT m_nn.output_data_to_vector(fpdata_out,data_out.length()))
-					warning("Cannot retreive output from this component");
+					warning("Cannot retreive output from this type of component");
 			}
 			return data_out;
 	}
@@ -790,7 +790,7 @@ public:
 			data_out= NumericVector(num_items);
 			double * fpdata_out = REAL(data_out);                   // my (lame?) way to interface with R, cont.)
 			if(NOT m_nn.get_input_at_component(pos-1,fpdata_out, num_items))
-				warning("Cannot retreive input from this component");
+				warning("Cannot retreive input from this type of component");
 		}
 
 		return data_out;
@@ -818,7 +818,7 @@ public:
 			data_out= NumericVector(num_items);
 			double * fpdata_out = REAL(data_out);                   // my (lame?) way to interface with R, cont.)
 			if(NOT m_nn.get_weights_at_component(pos-1,fpdata_out, num_items))
-				warning("Cannot retreive weights from this component");
+				warning("Cannot retreive weights from this type of component");
 		}
 
 		return data_out;

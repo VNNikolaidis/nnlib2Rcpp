@@ -96,7 +96,7 @@ aux_control_R::aux_control_R(string R_function,
 	(input_mode!="biases at") AND
 	(input_mode!="misc at"))
 	{
-		warning("Input mode must be 'none', 'input of','output of','weights at','biases at' or 'misc at'. Changed to 'none");
+		warning("Source (input mode) must be 'none', 'input of','output of','weights at','biases at' or 'misc at'. Changed to 'none");
 		m_input_mode = "none";
 	}
 	else m_input_mode = input_mode;
@@ -109,14 +109,22 @@ aux_control_R::aux_control_R(string R_function,
 	(output_mode!="to biases") AND
 	(output_mode!="to misc"))
 	{
-		warning("Output mode must be 'none', 'to input','to output','to weights','to biases' or 'to misc'. Changed to 'none");
+		warning("Destination (output mode) must be 'none', 'to input','to output','to weights','to biases' or 'to misc'. Changed to 'none");
 		m_output_mode = "none";
 	}
 	else m_output_mode = output_mode;
 
 	mp_nn = p_nn;
 	m_R_function = R_function;
-	m_name="simple-R-component ("+R_function+")";
+
+	string input_comp_string = std::to_string (input_nn_component+1); // assumes this will be used in R, so indexing starts at 1
+	if(input_nn_component==AUX_CONTROL_R_AUTODETERMINE_PREV) input_comp_string="above";
+	if(input_nn_component==AUX_CONTROL_R_AUTODETERMINE_NEXT) input_comp_string="below";
+
+	if(m_R_function!="")
+	m_name="simple-R-component ("+R_function+" "+m_input_mode+" "+ input_comp_string +")";
+	else
+	m_name="simple-R-component (<transfers> "+m_input_mode+" "+ input_comp_string +")";
 
 	m_component_index_for_input = input_nn_component;
 	m_component_index_for_output = output_nn_component;
@@ -129,8 +137,6 @@ aux_control_R::aux_control_R(string R_function,
 
 void aux_control_R::do_R_magic()
 {
-	Function caller_of_R_function(m_R_function);
-
 	int input_comp_index  = -1;
 	int output_comp_index = -1;
 
@@ -138,21 +144,14 @@ void aux_control_R::do_R_magic()
 
 	read_data_from_NN_component(input_comp_index);
 
-	TEXTOUT << "@@@@@@@ id="<< m_id << " i do R magic ( " << m_R_function << " ) \n";
-	TEXTOUT << "@@@@@@@ topology index is " << mp_nn->component_topology_index_from_id(m_id) << "\n";
-	TEXTOUT << "@@@@@@@ id="<< m_id << " i read " << input_comp_index << " and (maybe) write to " << output_comp_index << " \n";
-
-	TEXTOUT << "current data = " <<  m_data << " changed to ";
-
-	//	if(m_data.length()>0)
+	if(m_R_function!="")	// this "" indicates, just transfer the original unchanged...
 	{
-		if(m_ignore_result) caller_of_R_function(m_data);
-		else m_data = caller_of_R_function(m_data);
+	Function caller_of_R_function(m_R_function);
+	if(m_ignore_result) caller_of_R_function(m_data);
+	else m_data = caller_of_R_function(m_data);
 	}
 
 	write_data_to_NN_component(output_comp_index);
-
-	TEXTOUT << "new data = " <<  m_data << "\n";
 }
 
 
@@ -247,36 +246,55 @@ bool aux_control_R::read_data_from_NN_component(int component_index)
 	if (m_input_mode == "input of")
 	{
 		if(!mp_nn->get_input_at_component(component_index,fp_data,input_size))
-		{error(NN_INTEGR_ERR,"R control cannot get input of specified NN component"); return false;
-		return true;
+		{
+			string message = "Cannot get input of NN component @ "+std::to_string (component_index+1); // assumes this will be used in R, so indexing starts at 1
+			error(NN_INTEGR_ERR,message);
+			return false;
 		}
+		return true;
 	}
 
 	if(m_input_mode == "output of")
 	{
 		if(!mp_nn->get_output_from_component(component_index,fp_data,input_size))
-		{error(NN_INTEGR_ERR,"R control cannot get output of specified NN component"); return false; }
+		{
+		string message = "Cannot get output of NN component @ "+std::to_string (component_index+1); // assumes this will be used in R, so indexing starts at 1
+		error(NN_INTEGR_ERR,message);
+		return false;
+		}
 		return true;
 	}
 
 	if(m_input_mode == "weights at")
 	{
 		if(!mp_nn->get_weights_at_component(component_index,fp_data,input_size))
-		{error(NN_INTEGR_ERR,"R control cannot get weights at specified NN component"); return false; }
+		{
+			string message = "Cannot get weights of NN component @ "+std::to_string (component_index+1); // assumes this will be used in R, so indexing starts at 1
+			error(NN_INTEGR_ERR,message);
+			return false;
+		}
 		return true;
 	}
 
 	if(m_input_mode == "biases at")
 	{
 		if(!mp_nn->get_biases_at_component(component_index,fp_data,input_size))
-		{error(NN_INTEGR_ERR,"R control cannot get biases at specified NN component"); return false; }
+		{
+			string message = "Cannot get biases for NN component @ "+std::to_string (component_index+1); // assumes this will be used in R, so indexing starts at 1
+			error(NN_INTEGR_ERR,message);
+			return false;
+		}
 		return true;
 	}
 
 	if(m_input_mode == "misc at")
 	{
 		if(!mp_nn->get_misc_at_component(component_index,fp_data,input_size))
-		{error(NN_INTEGR_ERR,"R control cannot get misc values at specified NN component"); return false; }
+		{
+			string message = "Cannot get misc values for NN component @ "+std::to_string (component_index+1); // assumes this will be used in R, so indexing starts at 1
+			error(NN_INTEGR_ERR,message);
+			return false;
+		}
 		return true;
 	}
 

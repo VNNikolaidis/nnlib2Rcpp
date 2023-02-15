@@ -443,11 +443,11 @@ string nn::outline (bool show_first_index_as_one)
     {
     if(show_first_index_as_one)
      {
-     s << "@" << c+1 << " (c=" << c << ")";
+     s << "@ " << c+1; // << " (c=" << c << ")";
      }
     else
      {
-     s << "@" << c;
+     s << "@ " << c;
      }
     s << " component (id=" << topology.current()->id() << ")";
     s << " is " << topology.current()->description();
@@ -754,7 +754,7 @@ for(int i=0;i<layer_indexes_in_topology.size()-1;i++)
  all_connected = all_connected AND pair_connected;
  }
 
-if (NOT all_connected)  warning("Could not connect all layer pairs.");
+if (NOT all_connected)  warning("Could not connect all layer pairs (not all layer pairs are linked by connections).");
 bool check_ok = all_connected AND no_error();
 if (set_ready_to_encode_fwd AND check_ok)
  {
@@ -794,6 +794,7 @@ bool nn::connect_layers_at_topology_indexes(                                // c
                                       DATA max_random_weight)               // these two values.
  {
   if(p_connection_set==NULL) return false;
+
   if((source_layer_index<0) OR (source_layer_index>=topology.size())) return false;
   if((destination_layer_index<0) OR (destination_layer_index>=topology.size())) return false;
 
@@ -805,7 +806,17 @@ bool nn::connect_layers_at_topology_indexes(                                // c
   if(p_c1->type()!=cmpnt_layer) { warning("Source is not a layer"); return false;}
   if(p_c2->type()!=cmpnt_layer) { warning("Destination is not a layer"); return false;}
 
-  if(NOT topology.insert(source_layer_index+1,p_connection_set)) return false;
+  if(source_layer_index<destination_layer_index)
+   {if(NOT topology.insert(source_layer_index+1,p_connection_set)) return false;}
+
+  if(source_layer_index==destination_layer_index)
+  {
+  	warning("Source layer equals destination layer, placing connection set below layer in topology");
+  	if(NOT topology.insert(source_layer_index+1,p_connection_set)) return false;
+  }
+
+  if(source_layer_index>destination_layer_index)
+   {if(NOT topology.insert(destination_layer_index+1,p_connection_set)) return false;}
 
   layer PTR p_l1 = reinterpret_cast<layer PTR>(p_c1);
   layer PTR p_l2 = reinterpret_cast<layer PTR>(p_c2);
@@ -900,6 +911,30 @@ bool nn::remove_connection(int index, int connection_number)
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // patch.
 
+// Important to-do recommendation:
+//
+// As nnlib2 is now used under a fully interactive environment (via R) and due to the need
+// for a fully working "get_input_at" method (in NN module) for layers, the ways PEs receive
+// input must change. Currently there are three ways to send input to a PE (class pe):
+// 	(a) its receive_input_value() function (which connections usually use to send a single
+//         value that will collected with other similar ones and later processed by pe's
+//         input_function()) to set the pe's internal "input" variable,
+//     (b) direct access to pe's "input" variable" (sometimes used by layer code) and
+// 	(c) use of add_to_input() which is similar to (b).
+// Having all three methods available may be somewhat confusing to the user of the nnlib2 C++
+// library, but these were maintained for versatility, backwards-compatibility and possibly
+// performance (as (b) and (c) are slightly faster than (a)).
+// However, in order for interactive NN methods to work (especially get_input_at), pe class
+// (in nnlib2 C++ library) will have to change as follows:
+// 	(1) all externally incoming input data to a pe should come ONLY via the pe's
+// receive_input_value() while "input" and "add_to_input" options should be removed or change
+// to protected (for use by pe's only').
+// 	(2) The pe should have a method that calculates and provides the current "final" input
+// value (by calling its input_function()) even if it is not encoding or recalling; doing so
+// should not reset inputs (as is done when encoding or recalling). These changes were
+// investigated and some preparation was done for them in this version. As fully implementing
+// this recommendation appears relatively simple, it will probably be done in a next version.
+
 bool nn::get_input_at_component (int index, DATA * buffer, int dimension)
 {
   if(buffer==NULL) return false;
@@ -920,9 +955,10 @@ bool nn::get_input_at_component (int index, DATA * buffer, int dimension)
 
   if(p_comp->type()==cmpnt_layer)                // component found and it is a layer
   {
-  layer PTR p_la = reinterpret_cast<layer PTR>(p_comp);
-  for(int i=0;i<num_items;i++) buffer[i] = p_la->PE(i).input;
-  return true;
+  	return false;								 // disabled. See notes above.
+  	// layer PTR p_la = reinterpret_cast<layer PTR>(p_comp);
+  	// for(int i=0;i<num_items;i++) buffer[i] = p_la->PE(i).input;
+  	// return true;
   }
 
   if(p_comp->type()==cmpnt_connection_set)       // component found and it is a connection_set
@@ -1078,7 +1114,7 @@ bool nn::set_output_at_component(int index, DATA * data, int dimension)
 bool nn::get_biases_at_component (int index, DATA * buffer, int dimension)
 {
 	layer PTR p_lay = get_layer_at(index);
-	if(p_lay==NULL) {warning("Invalid layer"); return false;}
+	if(p_lay==NULL) {warning("Component is not a layer or is invalid"); return false;}
 	return p_lay->get_biases(buffer,dimension);
 }
 
@@ -1088,7 +1124,7 @@ bool nn::get_biases_at_component (int index, DATA * buffer, int dimension)
 DATA nn::get_bias_at_component(int index, int pe)
 {
 	layer PTR p_lay = get_layer_at(index);
-	if(p_lay==NULL) {warning("Invalid layer"); return false;}
+	if(p_lay==NULL) {warning("Component is not a layer or is invalid"); return false;}
 	return p_lay->get_bias_from(pe);
 }
 

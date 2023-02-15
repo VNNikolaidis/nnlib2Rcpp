@@ -57,6 +57,7 @@ DATA pe::add_to_input(DATA value)
 
 void pe::move_input_to_output()
  {
+ input_function();
  output = input;
  input = 0;
  }
@@ -73,16 +74,16 @@ bool pe::receive_input_value(DATA value)
 // if PE input function is not overloaded, it just sums received_values to input
 
 DATA pe::input_function()
-  {
-  input=0;
+{
+	input=0;
 
-  if(received_values.goto_first())
-  do input = input + received_values.current();
-  while(received_values.goto_next());
+	if(received_values.goto_first())
+		do input = input + received_values.current();
+	while(received_values.goto_next());
 
-  received_values.reset();
-  return input;
-  }
+	received_values.reset();
+	return input;
+}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // empties list of received input values (received_values)

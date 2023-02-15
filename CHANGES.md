@@ -95,6 +95,12 @@ Changes to nnlib2Rcpp version 0.1.11 (from 0.1.10)
 Changes to nnlib2Rcpp version 0.2.0 (from 0.1.11)
 -	split additional_parts.h to several files (for less clutter when users create their components).
 -	Small run time performance improvements (less checks in dllist operations).
+-	(bug fix) Added call to input_function() in pe move_input_to_output(). This allows pass_through_layer to receive input from connections (and not just directly via set_input).
+-	Disabled NN's get_input_at() method for layers as results depended on whether the layer had encoded/recalled the data. Note: As nnlib2 is now used under a fully interactive environment (via R) and due to the need for a fully working "get_input_at" method (in NN module) for layers, the ways PEs receive input must change. Currently there are three ways to send input to a PE (class pe): (a) its receive_input_value() function (which connections usually use to send a single value that will collected with other similar ones and later processed by pe's input_function()) to set the pe's internal "input" variable, (b) direct access to pe's "input" variable" (sometimes used by layer code) and  (c) use of add_to_input() which is similar to (b). 
+Having all three methods available may be somewhat confusing to the user of the nnlib2 C++ library, but these were maintained for versatility, backwards-compatibility and possibly performance (as (b) and (c) are slightly faster than (a)).
+However, in order for interactive NN methods to work (especially get_input_at), pe class (in nnlib2 C++ library) will have to change as follows: (1) all externally incoming input data to a pe should come ONLY via the pe's receive_input_value() while "input" and "add_to_input" options should be removed or change to protected (for use by pe's only'). (2) The pe should have a method that calculates and provides the current "final" input value (by calling its input_function()) even if it is not encoding or recalling; doing so should not reset inputs (as is done when encoding or recalling). These changes were investigated and some preparation was done for them in this version. As fully implementing this recommendation appears relatively simple, it will probably be done in a next version. Until then, NN's get_input_at() method is not allowed to operate in layer components.
+-	NN's connect_layers_at and fully_connect_layers_at support for backward (reverse) direction of connections. 
 -	added method to module "NN" (set_weights_at)
--	R...
--	(Note: v.0.2.0 was not released to CRAN)
+-	Added aux_control component for calling R functions from the NN (Rcpp_aux_control_R.h).
+-	added methods to module "NN" ("add_R_forwarding", "add_R_pipelining", "add_R_ignoring" and "add_R_function"). These methods create NN components that call an R function during NN processing (encoding or recalling data). 
+

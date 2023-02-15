@@ -70,8 +70,8 @@ n$get_output_from(5)
 
 # (1.D) optionally, examine the network:
 
-# the input at first layer at position 1:
-n$get_input_at(1)
+# the input for set of connections at position 2:
+n$get_input_at(2)
 # Data is passed unmodified through connections at position 2,
 # and (by default) summed together at each node of layer at position 3.
 # Final output from layer in position 3:
@@ -118,6 +118,77 @@ recalled_data <- m$recall_dataset(iris_data,1,3,TRUE)
 
 recalled_ids <- apply(recalled_data, 1, which.max)
 plot(iris_data, pch=recalled_ids)
+
+# Example 3: Using add_R_... methods in a NN:
+
+# (3.A) add_R_ignoring is used for functions whose result will be ignored by the NN:
+
+a<-new("NN")
+a$add_layer("pass-through",4)
+a$add_R_ignoring("on recall","print","output of",1)
+a$add_connection_set("pass-through")
+a$add_R_ignoring("on recall","print","input of",3)
+a$add_layer("pass-through",2)
+a$add_R_ignoring("on recall","print","output of",5)
+a$create_connections_in_sets(0,0)
+
+# below a fwd recall. During it, the NN will print the output
+# of layer @1, then print the input of connections @3, and
+# finally print the output of layer @5:
+
+a$set_input_at(1,1:4)
+a$recall_all(TRUE)
+
+# (3.B) add_R_forwarding is used to read output of component above,
+# apply an R function and send result as input to component below.
+# (Due to current limitations of various component types, place the
+# add_R_forwarding between two layers and connect other components
+# two those layers)
+
+a<-new("NN")
+a$add_layer("pass-through",4)
+a$add_R_forwarding("on recall","sin")
+a$add_layer("pass-through",4)
+
+# during a fwd recall, the R component @2 will get the output
+# of layer @1, apply an R function (here function sin) and send
+# the result as input to layer @3.
+
+a$set_input_at(1,1:4)
+a$recall_all(TRUE)
+a$get_output_from(3)
+
+# (3.C) add_R_pipelining is similar to add_R_forwarding but allows reading the output of
+# component below, and feed result to component above (for encode/recalls in backwards
+# direction)
+
+a<-new("NN")
+a$add_layer("pass-through",4)
+a$add_R_pipelining("on recall","sin",FALSE)
+a$add_layer("pass-through",4)
+
+# below is a recall backwards, the R component @2 will get the output
+# of layer @3, apply R function and send the its as input to layer @1.
+
+a$set_input_at(3,1:4)
+a$recall_all(FALSE)
+a$get_output_from(1)
+
+# (3.D) add_R_function allows us to define the destination for the function's
+# results. This may include destinations such as PE biases, connection weights etc.
+
+a<-new("NN")
+a$add_layer("pass-through",4)
+a$add_R_function("on recall","sum","output of",1,"to input",3, FALSE)
+a$add_layer("pass-through",1)
+
+# below, in a typical forward recall, the R component @2 will get the output
+# of layer @1, apply an R function (here function sum) and send it as
+# input of layer @3.
+
+a$set_input_at(1,1:4)
+a$recall_all(TRUE)
+a$get_output_from(3)
 }
 
 \keyword{classes}
@@ -131,7 +202,7 @@ plot(iris_data, pch=recalled_ids)
 \section{Methods}{
   \describe{
 
-    \item{\code{add_layer( name, size, p )}:}{Setup a new \code{layer} component (a layer of processing nodes) and append it to the NN topology. Parameters are:
+    \item{\code{add_layer( name, size, p )}:}{Setup a new \code{layer} component (a layer of processing nodes) and append it to the NN topology. Returns TRUE if successful. Parameters are:
     \itemize{
     \item{\code{name}}{: string, containing name (that also Specifies type) of new layer. Names of predefined layers currently include \code{'pe'}(same as \code{'generic'}), \code{'pass-through'}, \code{'which-max'}, \code{'MAM'}, \code{'LVQ-input'}, \code{'LVQ-output'}, \code{'BP-hidden'}, \code{'BP-output'}, \code{'perceptron'} (Some of the available names are listed in \link{NN_component_names}, additional names for user-defined components may be added, see note.)}
     \item{\code{size}}{: integer, layer size i.e. number of \code{pe} (Processing Elements or nodes) to create in the layer.}
@@ -139,21 +210,21 @@ plot(iris_data, pch=recalled_ids)
     }
     }
 
-    \item{\code{add_connection_set( name, p )}:}{Create a new empty \code{connection_set} component (a set of connections between two layers). It does not connect any layers nor contain any connections between specific layer nodes. The set is appended to the NN topology. Parameters are:
+    \item{\code{add_connection_set( name, p )}:}{Create a new empty \code{connection_set} component (a set of connections between two layers). It does not connect any layers nor contain any connections between specific layer nodes. The set is appended to the NN topology. Returns TRUE if successful. Parameters are:
     \itemize{
     \item{\code{name}}{: string, containing name (that also specifies type) of new empty connection set. Names of predefined connection sets currently include \code{'generic', 'pass-through'}(which does not multiply weights), \code{'wpass-through'}(which does multiply weights), \code{'MAM'}, \code{'LVQ'}, \code{'BP'}, \code{'perceptron'} (Some of the available names are listed in \link{NN_component_names}, additional names for user-defined components may be added, see note.).}
     \item{\code{p}}{: (optional) double, parameter to be used by specific connection set implementations (for example, \code{'BP'} connection sets interpret it is as the learning rate to be used when adjusting weights, \code{'LVQ'} connection sets use it to count iterations for decreasing weight adjustments, etc). Note: more optional parameters may be added in future versions.}
     }
     }
 
-    \item{\code{create_connections_in_sets( min_random_weight, max_random_weight )}:}{Find empty, unconnected \code{connection_set} components that are between two  \code{layer}s in the topology, and set them up to connect the adjacent layers, adding connections to fully connect their nodes  (n x m connections are created, with n and m the number of nodes at each layer respectively). Parameters are:
+    \item{\code{create_connections_in_sets( min_random_weight, max_random_weight )}:}{Find empty, unconnected \code{connection_set} components that are between two  \code{layer}s in the topology, and set them up to connect the adjacent layers, adding connections to fully connect their nodes (n x m connections created, n and m the number of nodes at each layer respectively). Assumes top layer is source and bottom layer is destination. Returns TRUE if successful. Parameters are:
     \itemize{
     \item{\code{min_random_weight}}{: double, minimum value for random initial connection weights.}
     \item{\code{max_random_weight}}{: double, maximum value for random initial connection weights.}
     }
     }
 
-    \item{\code{connect_layers_at( source_pos, destin_pos, name, p )}:}{Insert a new empty \code{connection_set} component (a set of connections between two layers) between the layers at specified topology positions, and prepare it to connect them. No actual connections between any layer nodes are created. Parameters are:
+    \item{\code{connect_layers_at( source_pos, destin_pos, name, p )}:}{Insert a new empty \code{connection_set} component (a set of connections between two layers) between the layers at specified topology positions, and prepare it to connect them. No actual connections between any layer nodes are created. Returns TRUE if successful. Parameters are:
     \itemize{
     \item{\code{source_pos}}{: integer, position in topology of source layer.}
     \item{\code{destin_pos}}{: integer, position in topology of destination layer.}
@@ -162,7 +233,7 @@ plot(iris_data, pch=recalled_ids)
     }
     }
 
-    \item{\code{fully_connect_layers_at( source_pos, destin_pos, name, min_random_weight, max_random_weight, p )}:}{Same as \code{connect_layers_at} but also fills the new \code{connection_set} with connections between the nodes of the two layers, fully connecting the layers (n x m connections are created, with n and m the number of nodes at each layer respectively). Parameters are:
+    \item{\code{fully_connect_layers_at( source_pos, destin_pos, name, min_random_weight, max_random_weight, p )}:}{Same as \code{connect_layers_at} but also fills the new \code{connection_set} with connections between the nodes of the two layers, fully connecting the layers (n x m connections are created, with n and m the number of nodes at each layer respectively). Returns TRUE if successful. Parameters are:
     \itemize{
     \item{\code{source_pos}}{: integer, position in topology of source layer.}
     \item{\code{destin_pos}}{: integer, position in topology of destination layer.}
@@ -203,15 +274,9 @@ plot(iris_data, pch=recalled_ids)
     }
     }
 
- \item{\code{recall_at( pos )}:}{Trigger the recall (mapping, data retrieval) operation of the component at specified topology index (note: depending on implementation, a 'recall' operation usually collects inputs, processes the data, and produces output). Returns TRUE if successful. Parameters are:
-    \itemize{
-    \item{\code{pos}}{: integer, position (in NN's topology) of component to perform recall.}
-    }
-    }
-
  \item{\code{encode_all( fwd )}:}{Trigger the encoding operation of all the components in the NN topology. Returns TRUE if successful. Parameters are:
     \itemize{
-    \item{\code{fwd}}{: logical, set to TRUE to encode forwards (first-to-last component), FALSE to encode backwards (last-to-first component).}
+    \item{\code{fwd}}{: logical, set to TRUE to trigger encoding forwards (first-to-last component), FALSE to trigger encoding backwards (last-to-first component).}
     }
     }
 
@@ -236,6 +301,17 @@ plot(iris_data, pch=recalled_ids)
     }
     }
 
+ \item{\code{recall_at( pos )}:}{Trigger the recall (mapping, data retrieval) operation of the component at specified topology index (note: depending on implementation, a 'recall' operation usually collects input(s), processes the data, produces output and resets input to 0). Returns TRUE if successful. Parameters are:
+    \itemize{
+    \item{\code{pos}}{: integer, position (in NN's topology) of component to perform recall.}
+    }
+    }
+ \item{\code{recall_all( fwd )}:}{Trigger the recall (mapping, data retrieval) operation of all the components in the NN topology. Returns TRUE if successful. Parameters are:
+    \itemize{
+    \item{\code{fwd}}{: logical, set to TRUE to trigger recall forwards (first-to-last component), FALSE to trigger recall backwards (last-to-first component).}
+    }
+    }
+
  \item{\code{recall_dataset( data_in, input_pos, output_pos, fwd )}:}{Recall (map, retrieve output for) a dataset. A faster method to recall an entire data set. All the components in the NN topology will perform 'recall' in specified direction. Returns numeric matrix containing corresponding output. Parameters are:
     \itemize{
     \item{\code{data_in}}{: numeric matrix, containing input vectors as rows.}
@@ -245,13 +321,7 @@ plot(iris_data, pch=recalled_ids)
     }
     }
 
- \item{\code{recall_all( fwd )}:}{Trigger the recall (mapping, data retrieval) operation of all the components in the NN topology. Returns TRUE if successful. Parameters are:
-    \itemize{
-    \item{\code{fwd}}{: logical, set to TRUE to recall forwards (first-to-last component), FALSE to recall backwards (last-to-first component).}
-    }
-    }
-
- \item{\code{input_at( pos, data_in )}:}{Input a data vector to the component (layer) at specified topology index. Returns TRUE if successful. Parameters are:
+ \item{\code{input_at( pos, data_in )}:}{Input a data vector to the component (\code{layer}) at specified topology index. Returns TRUE if successful. Parameters are:
     \itemize{
     \item{\code{pos}}{: integer, position (in NN's topology) of component to receive input.}
     \item{\code{data_in}}{: NumericVector, data to be sent as input to component (sizes must match).}
@@ -260,7 +330,7 @@ plot(iris_data, pch=recalled_ids)
 
  \item{\code{set_input_at( pos, data_in )}:}{Same as \code{input_at} (see above)}
 
- \item{\code{get_input_at( pos )}:}{Get the current input of the component at specified topology index (depends on the implementation: for layers, this may be valid after the \code{pe}s (nodes) have performed their \code{input_function} on incoming values; \code{pe}s have an overridable \code{input_function} that collects all incoming values and produces a single value for further processing which is stored at an internal \code{input} register (whose value is retrieved here); by default \code{input_function} performs summation. If successful, returns NumericVector of final \code{input} values (otherwise vector of zero length). Parameters are:
+ \item{\code{get_input_at( pos )}:}{Get the current input of the component at specified topology index (depends on the implementation: Currenly applicable only to \code{connection_set} components. If successful, returns NumericVector of final \code{input} values (otherwise vector of zero length). Parameters are:
     \itemize{
     \item{\code{pos}}{: integer, position (in NN's topology) of component to use.}
     }
@@ -350,31 +420,31 @@ plot(iris_data, pch=recalled_ids)
     }
     }
 
- \item{\code{add_R_forwarding( trigger, FUN )}:}{Adds a control component which will invoke an R function. The R fuction will process the output of the previous component in the topology and feed the result as input to the next (in forward direction) component in the topology. Notes: (a) once the R function is invoked, its result will be maintained as this component's input and output values; (b) the component will fail to perform processing if the R function's result cannot be converted to a numeric vector. If successful, returns TRUE. Parameters are:
+ \item{\code{add_R_forwarding( trigger, FUN )}:}{Adds a control component which will invoke an R function. The R function will process the output of the previous component in the topology and feed the result as input to the next (in forward direction) component in the topology. Notes: (a) once the R function is invoked, its result will be maintained as this component's input and output values; (b) the component will fail to perform processing if the R function's result cannot be converted to a numeric vector. If successful, returns TRUE. Parameters are:
     \itemize{
     \item{\code{trigger}}{: string, specifies when to invoke the R function. Valid options are \code{"on encode"}, \code{"on recall"}, \code{"always"} or \code{"never"}.}
-    \item{\code{FUN}}{: string, the R function to be invoked.}
+    \item{\code{FUN}}{: string, the R function to be invoked. If \code{""}, no R function is invoked and data is tranfered unmodified.}
     }}
 
- \item{\code{add_R_pipelining( trigger, FUN, fwd )}:}{Adds a control component which will invoke an R function. The R fuction will process the output of a neighbouring component in the topology and feed the result as input to the other neighbouring component in the topology. The components are selected depending on the value of parameter \code{fwd} (see below). Notes: (a) once the R function is invoked, its result will be maintained as this component's input and output values; (b) the component will fail to perform processing if the R function's result cannot be converted to a numeric vector. If successful, returns TRUE. Parameters are:
+ \item{\code{add_R_pipelining( trigger, FUN, fwd )}:}{Adds a control component which will invoke an R function. The R function will process the output of a neighbouring component in the topology and feed the result as input to the other neighbouring component in the topology. The components are selected depending on the value of parameter \code{fwd} (see below). Notes: (a) once the R function is invoked, its result will be maintained as this component's input and output values; (b) the component will fail to perform processing if the R function's result cannot be converted to a numeric vector. If successful, returns TRUE. Parameters are:
     \itemize{
     \item{\code{trigger}}{: string, specifies when to invoke the R function. Valid options are \code{"on encode"}, \code{"on recall"}, \code{"always"} or \code{"never"}.}
-    \item{\code{FUN}}{: string, the R function to be invoked.}
+    \item{\code{FUN}}{: string, the R function to be invoked. If \code{""}, no R function is invoked and data is tranfered unmodified.}
     \item{\code{fwd}}{: logical, set to TRUE if encoding or recalling in forward, top-to-bottom, direction and need to read from previous component in the topology feeding the result as input to the next (same as \code{add_R_forwarding}). If FALSE, reads from next component in the topology and feeds the result as input to the previous (useful when encoding/recalling in backward, bottom-to-top, direction).}
     }}
 
- \item{\code{add_R_ignoring( trigger, FUN, i_mode, input_from )}:}{Adds a control component which will invoke an R function ignoring its result. The R fuction will process values from a specified component in the topology, but the function's result will be ignored. This is suitable for invoking functions such as \code{print}, \code{plot} etc. Note: the component maintains the original values as its input and output values but it does not feed these values automaticaly to any other component. If successful, returns TRUE. Parameters are:
+ \item{\code{add_R_ignoring( trigger, FUN, i_mode, input_from )}:}{Adds a control component which will invoke an R function ignoring its result. The R function will process values from a specified component in the topology, but the function's result will be ignored. This is suitable for invoking functions such as \code{print}, \code{plot} etc. Note: the component maintains the original values as its input and output values but does not send to any other component neither these original values nor the result of the R function. If successful, returns TRUE. Parameters are:
     \itemize{
     \item{\code{trigger}}{: string, specifies when to invoke the R function. Valid options are \code{"on encode"}, \code{"on recall"}, \code{"always"} or \code{"never"}.}
-    \item{\code{FUN}}{: string, the R function to be invoked.}
+    \item{\code{FUN}}{: string, the R function to be invoked. If \code{""}, no R function is invoked and data is tranfered unmodified.}
     \item{\code{i_mode}}{: string, specifies the source of data to be retrieved and processed by the R function. Valid options are \code{"none"}, \code{"input of"}, \code{"output of"}, \code{"weights at"}, \code{"biases at"} and \code{"misc at"}.}
     \item{\code{input_from}}{: integer, position (in NN's topology) of component to retrieve data from.}
 }}
 
- \item{\code{add_R_function( trigger, FUN, i_mode, input_from, o_mode, output_to, ignore_result )}:}{Adds a control component which will invoke an R function. The R fuction will process process values from a specified component and feed the results to another component. Notes: (a) once the R function is invoked, its result will be maintained as this component's input and output values (unless \code{ignore_result} is set to TRUE, in which case the original values will be maintained); (b) the component will fail to perform processing if the R function's result cannot be converted to a numeric vector and \code{ignore_result} is FALSE. If successful, returns TRUE. Parameters are:
+ \item{\code{add_R_function( trigger, FUN, i_mode, input_from, o_mode, output_to, ignore_result )}:}{Adds a control component which will invoke an R function. The R function will process process values from a specified component and feed the results to another component. Notes: (a) once the R function is invoked, its result will be maintained as this component's input and output values (unless \code{ignore_result} is set to TRUE, in which case the original values will be maintained); (b) the component will fail to perform processing if the R function's result cannot be converted to a numeric vector and \code{ignore_result} is FALSE. If successful, returns TRUE. Parameters are:
     \itemize{
     \item{\code{trigger}}{: string, specifies when to invoke the R function. Valid options are \code{"on encode"}, \code{"on recall"}, \code{"always"} or \code{"never"}.}
-    \item{\code{FUN}}{: string, the R function to be invoked.}
+    \item{\code{FUN}}{: string, the R function to be invoked. If \code{""}, no R function is invoked and data is tranfered unmodified.}
     \item{\code{i_mode}}{: string, specifies the source of data to be retrieved and processed by the R function. Valid options are \code{"none"}, \code{"input of"}, \code{"output of"}, \code{"weights at"}, \code{"biases at"} and \code{"misc at"}.}
     \item{\code{input_from}}{: integer, position (in NN's topology) of component to retrieve data from.}
 
