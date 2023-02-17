@@ -26,9 +26,12 @@ NumericMatrix Autoencoder  (
                            double learning_rate,
                            int num_hidden_layers = 1,               // number of hidden layers on each side of special layer
                            int hidden_layer_size = 5,               // number of nodes in each hidden layer
-                           bool show_nn = false
+                           bool show_nn = false,
+                           std::string error_type = "MAE",
+                           double acceptable_error_level = 0
                            )
  {
+ TEXTOUT << "acceptable error level = " << acceptable_error_level << "\n";
 
  int input_dimension    = data_in.cols();
  int num_training_cases = data_in.rows();
@@ -44,6 +47,20 @@ NumericMatrix Autoencoder  (
  if( ae.no_error()) ae.setup(input_dimension, learning_rate, num_hidden_layers, hidden_layer_size, desired_new_dimension);
  if(NOT ae.no_error()) return(data_out);
 
+
+ if(error_type=="MSE")
+ {
+ 	ae.m_use_squared_error = true;
+ 	TEXTOUT << "Note: Using and displaying Mean Squared Error (MSE), ";
+ }
+ else
+ {
+ 	ae.m_use_squared_error = false;
+ 	TEXTOUT << "Note: Using and displaying Mean Absolute Error (MAE), ";
+ }
+
+ if(acceptable_error_level<0) acceptable_error_level=0;
+
  TEXTOUT << "Max number of epochs = " << number_of_training_epochs << "\n";
 
  for(int i=0;(i<number_of_training_epochs) && ae.no_error();i++)
@@ -56,13 +73,23 @@ NumericMatrix Autoencoder  (
 
       error_level += ae.encode_s(fp_v, v.size(), fp_v, v.size());
       }
-    error_level = error_level/(num_training_cases);
+
+    error_level = error_level/(num_training_cases);					// compute MAE or MSE
+
     if(i%100==0)
       {
       checkUserInterrupt();                                       // (RCpp function to check if user pressed cancel)
       TEXTOUT << "Epoch = "<< i << " , Error level indicator = " << error_level << "\n";
       }
+
+    if(error_level<=acceptable_error_level)
+      {
+      TEXTOUT << "Training reached acceptable error lever (" << error_type  << " = ";
+      TEXTOUT << error_level << ")\n";
+      break;
+      }
   }
+
  TEXTOUT << "Training ended.\n\n";
 
  if(show_nn)

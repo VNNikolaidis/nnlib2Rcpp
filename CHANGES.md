@@ -102,5 +102,6 @@ However, in order for interactive NN methods to work (especially get_input_at), 
 -	NN's connect_layers_at and fully_connect_layers_at support for backward (reverse) direction of connections. 
 -	added method to module "NN" (set_weights_at)
 -	added aux_control component for calling R functions from the NN (Rcpp_aux_control_R.h).
--	added methods to module "NN" ("add_R_forwarding", "add_R_pipelining", "add_R_ignoring" and "add_R_function"). These methods create NN components that call an R function during NN processing (encoding or recalling data). 
-
+-	added methods to module "NN" ("add_R_forwarding", "add_R_pipelining", "add_R_ignoring" and "add_R_function"). These methods create NN components that call an R function during NN processing (encoding or recalling data).
+-	added options to Autoencoder function that allow to stop training when an acceptable error level has been reached.
+-	added option to module "BP" (method set_error_level) to stop training when an acceptable error level has been reached.

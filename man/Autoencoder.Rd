@@ -15,7 +15,9 @@ Autoencoder(
   learning_rate,
   num_hidden_layers = 1L,
   hidden_layer_size = 5L,
-  show_nn = FALSE)
+  show_nn = FALSE,
+  error_type = "MAE",
+  acceptable_error_level = 0)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -35,9 +37,12 @@ the learning rate parameter of the Back-Propagation (BP) NN.
 number of hidden layers on each side of the special layer.
 }
   \item{hidden_layer_size}{number of nodes (processing elements or PEs) in each of the hidden layers. In this implementation of Autoencoder all hidden layers are of the same length (defined here), except for the special hidden layer (whose size is defined by \code{desired_new_dimension} above).}
-  \item{show_nn}{
-boolean, option to display the (trained) ANN internal structure.
-}
+
+  \item{show_nn}{boolean, option to display the (trained) ANN internal structure.}
+
+  \item{error_type}{string, error to display and possibly use to stop training (must be 'MSE' or 'MAE').}
+
+  \item{acceptable_error_level}{stops training when error is below this level.}
 }
 \value{
 Returns a numeric matrix containing the projected data.

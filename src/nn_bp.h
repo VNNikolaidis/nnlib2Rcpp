@@ -35,8 +35,11 @@ class bp_nn : public NN_PARENT_CLASS
  public:
  static bool display_squared_error;		// true = display squared error when encoding, false = display absolute error when encoding
 
+ bool m_use_squared_error;				// as above but per bp_nn instance
+
  DATA bp_rnd_min;
  DATA bp_rnd_max;
+
 
  bp_nn();
  ~bp_nn();

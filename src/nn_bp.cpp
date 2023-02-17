@@ -28,7 +28,7 @@ namespace bp {
 #define BP_RND_MIN -1
 #define BP_RND_MAX +1
 
-bool bp_nn::display_squared_error = false;			// true = display squared error when encoding, false = display absolute error when encoding
+bool bp_nn::display_squared_error  = false;			// true = use (display and stop by) squared error (and MSE) when encoding, false = use absolute error (and MAE)
 
 /*-----------------------------------------------------------------------*/
 /* Back Propagation Perceptron Layers									 */
@@ -196,6 +196,7 @@ bp_nn::bp_nn()
 	:NN_PARENT_CLASS("Back Propagation")
  {
  set_initialization_mode_to_default();
+ m_use_squared_error = bp_nn::display_squared_error;
  }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -358,7 +359,7 @@ DATA bp_nn::encode_s(	DATA PTR input,
 
    d = (desired_output[i] - OUTPUT_LAYER.PE(i).output);
 
-   if(display_squared_error)
+   if(m_use_squared_error)
 
      error_level = error_level + (d * d); 					// calculate squared error.
 
@@ -525,7 +526,7 @@ DATA bpu1_nn::encode_u(DATA PTR input, int input_dim, int iteration)
 
    d = (desired_output[i] - OUTPUT_LAYER.PE(i).output);
 
-   if(display_squared_error)
+   if(m_use_squared_error)
 
      error_level = error_level + (d * d); 					// calculate squared error.
 
@@ -615,7 +616,7 @@ DATA bpu2_nn::encode_u(DATA PTR input, int input_dim, int iteration)
 
    d = (desired_output[i] - OUTPUT_LAYER.PE(i).output);
 
-   if(display_squared_error)
+   if(m_use_squared_error)
 
      error_level = error_level + (d * d); 					// calculate squared error.
 
@@ -698,7 +699,7 @@ DATA bpu3_nn::encode_u(DATA PTR input, int input_dim, int iteration)
 
    d = (desired_output[i] - OUTPUT_LAYER.PE(i).output);
 
-   if(display_squared_error)
+   if(m_use_squared_error)
 
      error_level = error_level + (d * d); 					// calculate squared error.
 
@@ -903,7 +904,7 @@ DATA bpu4_nn::encode_u(DATA PTR input, int input_dim, int iteration)
   for(int i=0;i<input_dim;i++)
    {
    DATA d = (desired_output[i] - OUTPUT_LAYER.PE(i).output);
-   if(display_squared_error)
+   if(m_use_squared_error)
      error_level = error_level + (d * d); 					// calculate squared error.
    else
      error_level = error_level + fabs(d);					// calculate absolute error.

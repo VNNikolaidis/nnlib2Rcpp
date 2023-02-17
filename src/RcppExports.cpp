@@ -11,8 +11,8 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // Autoencoder
-NumericMatrix Autoencoder(NumericMatrix data_in, int desired_new_dimension, int number_of_training_epochs, double learning_rate, int num_hidden_layers, int hidden_layer_size, bool show_nn);
-RcppExport SEXP _nnlib2Rcpp_Autoencoder(SEXP data_inSEXP, SEXP desired_new_dimensionSEXP, SEXP number_of_training_epochsSEXP, SEXP learning_rateSEXP, SEXP num_hidden_layersSEXP, SEXP hidden_layer_sizeSEXP, SEXP show_nnSEXP) {
+NumericMatrix Autoencoder(NumericMatrix data_in, int desired_new_dimension, int number_of_training_epochs, double learning_rate, int num_hidden_layers, int hidden_layer_size, bool show_nn, std::string error_type, double acceptable_error_level);
+RcppExport SEXP _nnlib2Rcpp_Autoencoder(SEXP data_inSEXP, SEXP desired_new_dimensionSEXP, SEXP number_of_training_epochsSEXP, SEXP learning_rateSEXP, SEXP num_hidden_layersSEXP, SEXP hidden_layer_sizeSEXP, SEXP show_nnSEXP, SEXP error_typeSEXP, SEXP acceptable_error_levelSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -23,7 +23,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type num_hidden_layers(num_hidden_layersSEXP);
     Rcpp::traits::input_parameter< int >::type hidden_layer_size(hidden_layer_sizeSEXP);
     Rcpp::traits::input_parameter< bool >::type show_nn(show_nnSEXP);
-    rcpp_result_gen = Rcpp::wrap(Autoencoder(data_in, desired_new_dimension, number_of_training_epochs, learning_rate, num_hidden_layers, hidden_layer_size, show_nn));
+    Rcpp::traits::input_parameter< std::string >::type error_type(error_typeSEXP);
+    Rcpp::traits::input_parameter< double >::type acceptable_error_level(acceptable_error_levelSEXP);
+    rcpp_result_gen = Rcpp::wrap(Autoencoder(data_in, desired_new_dimension, number_of_training_epochs, learning_rate, num_hidden_layers, hidden_layer_size, show_nn, error_type, acceptable_error_level));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -49,7 +51,7 @@ RcppExport SEXP _rcpp_module_boot_class_MAM();
 RcppExport SEXP _rcpp_module_boot_class_NN();
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_nnlib2Rcpp_Autoencoder", (DL_FUNC) &_nnlib2Rcpp_Autoencoder, 7},
+    {"_nnlib2Rcpp_Autoencoder", (DL_FUNC) &_nnlib2Rcpp_Autoencoder, 9},
     {"_nnlib2Rcpp_LVQu", (DL_FUNC) &_nnlib2Rcpp_LVQu, 5},
     {"_rcpp_module_boot_class_BP", (DL_FUNC) &_rcpp_module_boot_class_BP, 0},
     {"_rcpp_module_boot_class_LVQs", (DL_FUNC) &_rcpp_module_boot_class_LVQs, 0},

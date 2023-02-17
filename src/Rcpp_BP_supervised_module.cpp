@@ -28,6 +28,8 @@ protected:
 
   bp_nn      bp;
 
+  double m_acceptable_error_level;
+
 public:
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -36,6 +38,7 @@ public:
   {
   TEXTOUT << "BP NN created, now encode data (or load NN from file).\n";
   bp.reset();
+  set_error_level("MSE",0);
   }
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -89,18 +92,33 @@ public:
 
     for(int i=0;i<training_epochs && bp.is_ready();i++)
     {
+
+      DATA mean_error_for_dataset = 0;
+
       for(int r=0;r<num_training_cases;r++)
       {
         NumericVector v_in  = data_in( r , _ );         // (interface with R)
         NumericVector v_out = data_out( r , _ );        // (interface with R)
         // Encode a case item pair (supervised)
         error_level = train_single (v_in,v_out);
+
+        mean_error_for_dataset = mean_error_for_dataset +  error_level;
       }
+
+      mean_error_for_dataset = mean_error_for_dataset / num_training_cases;
+
       if(i%1000==0)
       {
-        TEXTOUT << "Epoch = "<< i << " , Error level indication = " << error_level << "\n";
+        TEXTOUT << "Epoch = "<< i << " , Error level indication = " << mean_error_for_dataset << "\n";
         checkUserInterrupt();                           // (RCpp function to check if user pressed cancel)
       }
+
+      if(mean_error_for_dataset<=m_acceptable_error_level)
+      {
+      	TEXTOUT << "Training reached acceptable error lever (" << mean_error_for_dataset  << ")\n";
+      	break;
+      }
+
     }
 
     TEXTOUT << "Training Finished, error level indicator is " << error_level << " .\n";
@@ -124,7 +142,7 @@ public:
                                     fpdata_out,
                                     data_out.length() );
 
-    return(error_level/data_out.length());
+    return(error_level);								// note: was return(error_level/data_out.length());
   }
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -149,6 +167,29 @@ public:
     }
 
     return data_out;
+  }
+
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  bool set_error_level(std::string error_type, DATA acceptable_error_level)
+  {
+  	if(error_type=="MSE")
+  	{
+  		bp.m_use_squared_error = true;
+  		TEXTOUT << "Note: Using and displaying Mean Squared Error (MSE), ";
+  	}
+  	else
+  	{
+  		bp.m_use_squared_error = false;
+  		TEXTOUT << "Note: Using and displaying Mean Absolute Error (MAE), ";
+  	}
+
+  	m_acceptable_error_level = acceptable_error_level;
+  	if(m_acceptable_error_level<0) m_acceptable_error_level=0;
+
+  	TEXTOUT << "acceptable " << error_type << " = " << m_acceptable_error_level << "\n";
+
+  return true;
   }
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -212,6 +253,8 @@ RCPP_MODULE(class_BP) {
   .method( "show",            &BP::show,            "Print BP NN details" )
   .method( "load",            &BP::load_from_file,  "Load BP" )
   .method( "save",            &BP::save_to_file,    "Save BP" )
+  .method( "set_error_level" ,&BP::set_error_level, "Set parameters for acceptable error when training." )
+
   ;
 }
 
