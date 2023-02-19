@@ -44,6 +44,7 @@ public:
 	virtual bool get_misc(DATA * buffer, int dimension) = 0;							// added for nnlib2Rcpp 0.1.11
 	virtual bool set_misc(DATA * data, int dimension) = 0;
 	virtual DATA get_bias_from(int index) = 0;											// added for nnlib2Rcpp 0.1.10
+	virtual bool get_input(DATA * buffer, int dimension);							    // added for nnlib2Rcpp 0.2.0
 };
 
 /*-----------------------------------------------------------------------*/
@@ -90,6 +91,7 @@ public:
 	bool set_bias_at(int index, DATA d);								   // overwrites current bias register in pe, with the provided data values
 	bool get_biases(DATA * buffer, int dimension);						   // added for nnlib2Rcpp 0.1.10
 	DATA get_bias_from(int index);										   // added for nnlib2Rcpp 0.1.10
+	bool get_input(DATA * buffer, int dimension);						   // added for nnlib2Rcpp 0.2.0
 
 	void encode();                                                         // (virtual in component) may be overridden by derived classes with specific layer functiobality.
 	void recall();                                                         // (virtual in component) may be overridden by derived classes with specific layer functiobality.
@@ -392,6 +394,23 @@ bool Layer<PE_TYPE>::get_biases(DATA * buffer, int dimension)
 	return true;
 }
 
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// get (estimate of) input values
+//
+// Important!!! see implementation of preview_current_input as this is an ESTIMATE and may be affected by PE specific implementation!
+
+template <class PE_TYPE>
+bool Layer<PE_TYPE>::get_input(DATA * buffer, int dimension)
+	{
+		if (NOT no_error()) return false;
+		if (buffer == NULL) return false;
+		if (dimension NEQL size()) { warning ("Incompatible output vector dimension (number of PEs vs vector length)"); return false; }
+		for (int i = 0; i < dimension; i++) buffer[i] = pes[i].preview_current_input();
+		return true;
+	}
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // get bias values
 // added for nnlib2Rcpp 0.1.10 (see Github issue https://github.com/VNNikolaidis/nnlib2Rcpp/issues/13)
@@ -442,7 +461,9 @@ void Layer<PE_TYPE>::recall()
 //-------------------------------------------------------------------------
 // For explicit instantiation of layer template per pe type (not needed
 // as implementation is in this header) use code similar to:
-// template class layer<pe>;                        // instantiate a layer of generic pes
+
+
+// template class layer<pe>;   // (instantiate a layer of generic pes)
 
 //-------------------------------------------------------------------------
 // layer of generic "dumb" pes where most processing will be done in layer code:

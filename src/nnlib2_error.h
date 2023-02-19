@@ -47,7 +47,7 @@ class error_flag_server
 
 class error_flag_client
  {
- private :
+ protected:
 
  bool m_local_error_flag;					// local error flag, used when no error dependancy exists.
  bool * mp_error_flag;						// actual flag is in (related) error_flag_server

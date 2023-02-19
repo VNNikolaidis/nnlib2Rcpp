@@ -583,6 +583,16 @@ public:
 		return m_nn.call_component_encode_all(fwd);
 	}
 
+	bool encode_all_fwd()
+	{
+		return encode_all(true);
+	}
+
+	bool encode_all_bwd()
+	{
+		return encode_all(false);
+	}
+
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// Trigger recall for all components, in fwd or bwd direction
 
@@ -591,6 +601,15 @@ public:
 		return m_nn.call_component_recall_all(fwd);
 	}
 
+	bool recall_all_fwd()
+	{
+		return recall_all(true);
+	}
+
+	bool recall_all_bwd()
+	{
+		return recall_all(false);
+	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// Encode multiple input vectors stored in data set
@@ -774,7 +793,8 @@ public:
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	// get input (pe variable or connection input) (R to Cpp index converted)
+	// get input  (R to Cpp index converted)
+	/// warning: see implementation details for pe and connections, not a general method
 
 	NumericVector get_input_at(int pos)
 	{
@@ -1061,7 +1081,11 @@ RCPP_MODULE(class_NN) {
      .method( "encode_at",       						&NN::encode_at, 	      											"Trigger encode for specified topology index" )
      .method( "recall_at",       						&NN::recall_at, 	      											"Trigger recall for specified topology index" )
      .method( "encode_all",      						&NN::encode_all, 	   												"Trigger encode for entire topology" )
-     .method( "recall_all",     						&NN::recall_all,	   												"Trigger recall for entire topology" )
+     .method( "encode_all_fwd",    						&NN::encode_all_fwd,	   											"Trigger encode for entire topology, forward direction" )
+     .method( "encode_all_bwd",    						&NN::encode_all_bwd,	   											"Trigger encode for entire topology, backward direction" )
+	 .method( "recall_all",     						&NN::recall_all,	   												"Trigger recall for entire topology" )
+     .method( "recall_all_fwd",    						&NN::recall_all_fwd,	   											"Trigger recall for entire topology, forward direction" )
+     .method( "recall_all_bwd",    						&NN::recall_all_bwd,	   											"Trigger recall for entire topology, backward direction" )
      .method( "encode_dataset_unsupervised",     		&NN::encode_dataset_unsupervised,	   								"Encode a data set using unsupervised training" )
      .method( "encode_datasets_supervised",     		&NN::encode_datasets_supervised,	   								"Encode multiple (i,j) vector pairs using supervised training" )
      .method( "recall_dataset",     					&NN::recall_dataset,				   								"Recall (i.e decode,map) a data set" )

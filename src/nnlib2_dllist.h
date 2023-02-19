@@ -43,6 +43,7 @@ class dllist : public error_flag_client
 
  dllist();
  dllist(int number_of_items);
+ dllist(const dllist<T> REF list);
  ~dllist();
  bool goto_first ();						// move mp_current to first item, false if list is empty
  bool goto_last ();							// move mp_current to last item, false if list is empty
@@ -69,6 +70,7 @@ class dllist : public error_flag_client
  bool contains (const T REF item);
  bool find (const T REF item);				// same as 'contains' but moves mp_current to target.
  T REF operator [] (int i);					// returns item at i. does NOT change mp_current to that item.
+ bool append_from(const dllist<T> REF list);
  void from_stream (std::istream REF s);
  void to_stream   (std::ostream REF s);
  friend std::istream REF operator >> ( std::istream REF is, dllist REF it ) {it.from_stream(is);return is;};
@@ -96,6 +98,20 @@ class dllist : public error_flag_client
 
   for (int i = 0; (no_error() AND (i<number_of_items)); i++) append();
   }
+
+
+ //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+ template <class T>
+ dllist<T>::dllist(const dllist<T> REF list)
+ {
+ 	mp_first=mp_last=mp_current=NULL;
+ 	m_number_of_items = 0;
+ 	set_error_flag(list.mp_error_flag);
+
+ 	if(!no_error()) return;
+ 	append_from(list);
+ }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -590,6 +606,27 @@ bool dllist<T>::goto_item(int i)
 
  return true;
  }
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+template <class T>
+bool dllist<T>::append_from(const dllist<T> REF list)
+{
+	if(!no_error()) return false;
+
+	T_wrapper PTR mp_item_to_copy;
+
+	mp_item_to_copy = list.mp_first;
+
+	while(mp_item_to_copy!=NULL)
+	{
+		if(append(mp_item_to_copy->item))
+			mp_item_to_copy=mp_item_to_copy->next;
+		else
+			mp_item_to_copy = NULL;
+	}
+	return(no_error());
+}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // old version, changes mp_current.

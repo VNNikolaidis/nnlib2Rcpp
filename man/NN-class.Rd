@@ -280,6 +280,10 @@ a$get_output_from(3)
     }
     }
 
+ \item{\code{encode_all_fwd( )}:}{Trigger the encoding operation of all the components in the NN topology following a forward (top-to-bottom) direction. Returns TRUE if successful.     }
+
+  \item{\code{encode_all_bwd( )}:}{Trigger the encoding operation of all the components in the NN topology following a backward (bottom-to-top) direction. Returns TRUE if successful.     }
+
  \item{\code{encode_dataset_unsupervised( data, pos, epochs, fwd )}:}{Encode a dataset using unsupervised training. A faster method to encode a data set. All the components in the NN topology will perform 'encode' in specified direction. Returns TRUE if successful. Parameters are:
     \itemize{
     \item{\code{data}}{: numeric matrix, containing input vectors as rows.}
@@ -312,6 +316,10 @@ a$get_output_from(3)
     }
     }
 
+ \item{\code{recall_all_fwd( )}:}{Trigger the recall (mapping, data retrieval) operation of all the components in the NN topology following a forward (top-to-bottom) direction. Returns TRUE if successful.     }
+
+  \item{\code{recall_all_bwd( )}:}{Trigger the recall (mapping, data retrieval) operation of all the components in the NN topology following a backward (bottom-to-top) direction. Returns TRUE if successful.     }
+
  \item{\code{recall_dataset( data_in, input_pos, output_pos, fwd )}:}{Recall (map, retrieve output for) a dataset. A faster method to recall an entire data set. All the components in the NN topology will perform 'recall' in specified direction. Returns numeric matrix containing corresponding output. Parameters are:
     \itemize{
     \item{\code{data_in}}{: numeric matrix, containing input vectors as rows.}
@@ -330,7 +338,7 @@ a$get_output_from(3)
 
  \item{\code{set_input_at( pos, data_in )}:}{Same as \code{input_at} (see above)}
 
- \item{\code{get_input_at( pos )}:}{Get the current input of the component at specified topology index (depends on the implementation: Currenly applicable only to \code{connection_set} components. If successful, returns NumericVector of final \code{input} values (otherwise vector of zero length). Parameters are:
+ \item{\code{get_input_at( pos )}:}{Get the current input for the component at specified topology index. Currenly applicable to \code{connection_set} (returning for each connection the output of corresponding source PE), or \code{layer} (returning a preview of current PE inputs; note: many PE implementations clear their inputs once they have processed them and produced the corresponding output). If successful, returns NumericVector, otherwise vector of zero length. Parameters are:
     \itemize{
     \item{\code{pos}}{: integer, position (in NN's topology) of component to use.}
     }
@@ -420,20 +428,20 @@ a$get_output_from(3)
     }
     }
 
- \item{\code{add_R_forwarding( trigger, FUN )}:}{Adds a control component which will invoke an R function. The R function will process the output of the previous component in the topology and feed the result as input to the next (in forward direction) component in the topology. Notes: (a) once the R function is invoked, its result will be maintained as this component's input and output values; (b) the component will fail to perform processing if the R function's result cannot be converted to a numeric vector. If successful, returns TRUE. Parameters are:
+ \item{\code{add_R_forwarding( trigger, FUN )}:}{Adds a control component which will invoke an R function. The R function will receive (as its first argument) a vector of values containing the output of the previous component in the topology. The object returned by the function will be fed as input to the next (in forward direction) component in the topology. Notes: (a) once the R function is invoked, its result will be maintained as this component's input and output values; (b) the component will fail to perform processing if the R function's result cannot be converted to a numeric vector. If successful, returns TRUE. Parameters are:
     \itemize{
     \item{\code{trigger}}{: string, specifies when to invoke the R function. Valid options are \code{"on encode"}, \code{"on recall"}, \code{"always"} or \code{"never"}.}
     \item{\code{FUN}}{: string, the R function to be invoked. If \code{""}, no R function is invoked and data is tranfered unmodified.}
     }}
 
- \item{\code{add_R_pipelining( trigger, FUN, fwd )}:}{Adds a control component which will invoke an R function. The R function will process the output of a neighbouring component in the topology and feed the result as input to the other neighbouring component in the topology. The components are selected depending on the value of parameter \code{fwd} (see below). Notes: (a) once the R function is invoked, its result will be maintained as this component's input and output values; (b) the component will fail to perform processing if the R function's result cannot be converted to a numeric vector. If successful, returns TRUE. Parameters are:
+ \item{\code{add_R_pipelining( trigger, FUN, fwd )}:}{Adds a control component which will invoke an R function. The R function will process  (as its first argument)  a vector of values which are the output of a neighbouring component in the topology; The result of invoking the function will be fed as input to the other neighbouring component in the topology. The components are selected according to the value of parameter \code{fwd} (see below). Notes: (a) once the R function is invoked, its result will be maintained as this component's input and output values; (b) the component will fail to perform processing if the R function's result cannot be converted to a numeric vector. If successful, returns TRUE. Parameters are:
     \itemize{
     \item{\code{trigger}}{: string, specifies when to invoke the R function. Valid options are \code{"on encode"}, \code{"on recall"}, \code{"always"} or \code{"never"}.}
     \item{\code{FUN}}{: string, the R function to be invoked. If \code{""}, no R function is invoked and data is tranfered unmodified.}
     \item{\code{fwd}}{: logical, set to TRUE if encoding or recalling in forward, top-to-bottom, direction and need to read from previous component in the topology feeding the result as input to the next (same as \code{add_R_forwarding}). If FALSE, reads from next component in the topology and feeds the result as input to the previous (useful when encoding/recalling in backward, bottom-to-top, direction).}
     }}
 
- \item{\code{add_R_ignoring( trigger, FUN, i_mode, input_from )}:}{Adds a control component which will invoke an R function ignoring its result. The R function will process values from a specified component in the topology, but the function's result will be ignored. This is suitable for invoking functions such as \code{print}, \code{plot} etc. Note: the component maintains the original values as its input and output values but does not send to any other component neither these original values nor the result of the R function. If successful, returns TRUE. Parameters are:
+ \item{\code{add_R_ignoring( trigger, FUN, i_mode, input_from )}:}{Adds a control component which will invoke an R function ignoring its result. The R function will process (as its first argument)  a vector of values taken from a specified component in the topology, but the function's result will be ignored. This is suitable for invoking functions such as \code{print}, \code{plot} etc. Note: the component maintains the original values as its input and output values but does not send to any other component neither these original values nor the result of the R function. If successful, returns TRUE. Parameters are:
     \itemize{
     \item{\code{trigger}}{: string, specifies when to invoke the R function. Valid options are \code{"on encode"}, \code{"on recall"}, \code{"always"} or \code{"never"}.}
     \item{\code{FUN}}{: string, the R function to be invoked. If \code{""}, no R function is invoked and data is tranfered unmodified.}
@@ -441,7 +449,7 @@ a$get_output_from(3)
     \item{\code{input_from}}{: integer, position (in NN's topology) of component to retrieve data from.}
 }}
 
- \item{\code{add_R_function( trigger, FUN, i_mode, input_from, o_mode, output_to, ignore_result )}:}{Adds a control component which will invoke an R function. The R function will process process values from a specified component and feed the results to another component. Notes: (a) once the R function is invoked, its result will be maintained as this component's input and output values (unless \code{ignore_result} is set to TRUE, in which case the original values will be maintained); (b) the component will fail to perform processing if the R function's result cannot be converted to a numeric vector and \code{ignore_result} is FALSE. If successful, returns TRUE. Parameters are:
+ \item{\code{add_R_function( trigger, FUN, i_mode, input_from, o_mode, output_to, ignore_result )}:}{Adds a control component which will invoke an R function. The R function will process process (as its first argument) a vector of values taken from a specified component and feed the results to another component. Notes: (a) once the R function is invoked, its result will be maintained as this component's input and output values (unless \code{ignore_result} is set to TRUE, in which case the original values will be maintained); (b) the component will fail to perform processing if the R function's result cannot be converted to a numeric vector and \code{ignore_result} is FALSE. If successful, returns TRUE. Parameters are:
     \itemize{
     \item{\code{trigger}}{: string, specifies when to invoke the R function. Valid options are \code{"on encode"}, \code{"on recall"}, \code{"always"} or \code{"never"}.}
     \item{\code{FUN}}{: string, the R function to be invoked. If \code{""}, no R function is invoked and data is tranfered unmodified.}

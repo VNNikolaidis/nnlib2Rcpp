@@ -164,6 +164,77 @@ string pe::description ()
   }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// Important:
+//
+// As nnlib2 is now used under a fully interactive environment (via R) and due to the need
+// for a fully working "get_input_at" method (in NN module) for layers, the ways PEs receive
+// input must change. Currently there are three ways to send input to a PE (class pe):
+// 	(a) its receive_input_value() function (which connections usually use to send a single
+//         value that will collected with other similar ones and later processed by pe's
+//         input_function()) to set the pe's internal "input" variable,
+//     (b) direct access to pe's "input" variable" (sometimes used by layer code) and
+// 	(c) use of add_to_input() which is similar to (b).
+// Having all three methods available may be somewhat confusing to the user of the nnlib2 C++
+// library, but these were maintained for versatility, backwards-compatibility and possibly
+// performance (as (b) and (c) are slightly faster than (a)).
+// However, in order for interactive NN methods to work (especially get_input_at), pe class
+// (in nnlib2 C++ library) will have to change as follows:
+// 	(1) all externally incoming input data to a pe should come ONLY via the pe's
+// receive_input_value() while "input" and "add_to_input" options should be removed or change
+// to protected (for use by pe's only').
+// 	(2) The pe should have a method that calculates and provides the current "final" input
+// value (by calling its input_function()) even if it is not encoding or recalling; doing so
+// should not reset inputs (as is done when encoding or recalling). These changes were
+// investigated and some preparation was done for them in this version. As fully implementing
+// this recommendation appears relatively simple, it will probably be done in a next version.
+//
+// The pe's preview_current_input() method is a PATCH to estimate current input value without
+// changing the pe's current state.
+//
+// Note. Below, when storing current state there may be an issue (at least the way it is currently
+// quickly implemented) as it assumes PES that are pretty close to generic ones. If the
+// PEs are heavily modified, this may not work.
+// Another side-effect is that it changes "current" item in the list of received_values.
+// Therefore it should be improved in future version.
+
+DATA pe::preview_current_input()
+{
+	if(received_values.size()<=0) return input;
+
+	// we have received_values, call input_function() to process them:
+
+	// store current state. See notes above.
+
+	dllist<DATA> st_received_values(received_values);			// list (queue) of input values, be processed by input_function
+
+	DATA st_input	= input;							    	// final input to this pe, may be accessed directly or result from input_function.
+	DATA st_bias	= bias;					        			// bias
+	DATA st_output	= output;					        		// output of this pe.
+	DATA st_misc	= misc;										// helper register for misc use.
+
+	// call input_function to gather and process received_values...
+
+	DATA v = 0;
+
+	// as there may have been direct manipulation of input variable OR
+	// data incoming via received_values but USUALLY not both, add the two:
+
+	if(received_values.size()>0) v = input_function();
+
+	// restore previous PE state (that may have changed when input_function was called)
+	// whatever that state was, try to recover it...
+
+	received_values.reset();
+	received_values.append_from(st_received_values);
+	input  = st_input;
+	bias   = st_bias;
+	output = st_output;
+	misc   = st_misc;
+
+	return v;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 } // end of namespace nnlib2
 

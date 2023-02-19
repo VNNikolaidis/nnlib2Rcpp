@@ -312,7 +312,7 @@ bool nn::set_component_for_output(int index)
    (index>=topology.size()))
     {warning("Requested output component is not in topology"); return false;}
  if(!component_provides_output(index))
-    {warning("Requested component does not directly provide output"); return false;}
+    {warning("Requested component type does not maintain, provide or report its output"); return false;}
  m_topology_component_for_output = index;
  #ifndef NNLIB2_WITH_GUI
  // TEXTOUT << "Note: Using NN component in topology index position " << m_topology_component_for_output << " for output.\n";
@@ -910,30 +910,7 @@ bool nn::remove_connection(int index, int connection_number)
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // patch.
-
-// Important to-do recommendation:
-//
-// As nnlib2 is now used under a fully interactive environment (via R) and due to the need
-// for a fully working "get_input_at" method (in NN module) for layers, the ways PEs receive
-// input must change. Currently there are three ways to send input to a PE (class pe):
-// 	(a) its receive_input_value() function (which connections usually use to send a single
-//         value that will collected with other similar ones and later processed by pe's
-//         input_function()) to set the pe's internal "input" variable,
-//     (b) direct access to pe's "input" variable" (sometimes used by layer code) and
-// 	(c) use of add_to_input() which is similar to (b).
-// Having all three methods available may be somewhat confusing to the user of the nnlib2 C++
-// library, but these were maintained for versatility, backwards-compatibility and possibly
-// performance (as (b) and (c) are slightly faster than (a)).
-// However, in order for interactive NN methods to work (especially get_input_at), pe class
-// (in nnlib2 C++ library) will have to change as follows:
-// 	(1) all externally incoming input data to a pe should come ONLY via the pe's
-// receive_input_value() while "input" and "add_to_input" options should be removed or change
-// to protected (for use by pe's only').
-// 	(2) The pe should have a method that calculates and provides the current "final" input
-// value (by calling its input_function()) even if it is not encoding or recalling; doing so
-// should not reset inputs (as is done when encoding or recalling). These changes were
-// investigated and some preparation was done for them in this version. As fully implementing
-// this recommendation appears relatively simple, it will probably be done in a next version.
+// Important: see implementation issues.
 
 bool nn::get_input_at_component (int index, DATA * buffer, int dimension)
 {
@@ -949,16 +926,14 @@ bool nn::get_input_at_component (int index, DATA * buffer, int dimension)
   int num_items = p_comp->size();
   if(num_items!=dimension)
     {
-    warning("Cannot retreive inputs, sizes do not match");
+    warning("Cannot retreive inputs from this type of component");
     return false;
     }
 
   if(p_comp->type()==cmpnt_layer)                // component found and it is a layer
   {
-  	return false;								 // disabled. See notes above.
-  	// layer PTR p_la = reinterpret_cast<layer PTR>(p_comp);
-  	// for(int i=0;i<num_items;i++) buffer[i] = p_la->PE(i).input;
-  	// return true;
+  	layer PTR p_la = reinterpret_cast<layer PTR>(p_comp);
+  	return p_la->get_input(buffer, dimension);
   }
 
   if(p_comp->type()==cmpnt_connection_set)       // component found and it is a connection_set
@@ -968,6 +943,7 @@ bool nn::get_input_at_component (int index, DATA * buffer, int dimension)
   return true;
   }
 
+  warning("Cannot retreive inputs, sizes do not match");
   return false;
 }
 
