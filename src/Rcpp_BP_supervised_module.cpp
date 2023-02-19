@@ -38,7 +38,7 @@ public:
   {
   TEXTOUT << "BP NN created, now encode data (or load NN from file).\n";
   bp.reset();
-  set_error_level("MSE",0);
+  set_error_level("MAE",0);
   }
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
