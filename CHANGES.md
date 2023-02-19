@@ -101,6 +101,6 @@ Changes to nnlib2Rcpp version 0.2.0 (from 0.1.11)
 -	added aux_control component for calling R functions from the NN (Rcpp_aux_control_R.h).
 -	added methods to module "NN" ("add_R_forwarding", "add_R_pipelining", "add_R_ignoring" and "add_R_function"). These methods create NN components that can call an R function during NN processing (encoding or recalling data).
 -	added options to Autoencoder function that allow to stop training when an acceptable error level has been reached.
--	added option to module "BP" (method "set_error_level"") to stop training when an acceptable error level has been reached.
+-	added option to module "BP" (method "set_error_level") to stop training when an acceptable error level has been reached.
 -	added to module "NN" methods "encode_all_fwd", "encode_all_bwd", "recall_all_fwd" and "recall_all_bwd".
 -	other minor changes.
