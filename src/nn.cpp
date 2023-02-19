@@ -926,7 +926,7 @@ bool nn::get_input_at_component (int index, DATA * buffer, int dimension)
   int num_items = p_comp->size();
   if(num_items!=dimension)
     {
-    warning("Cannot retreive inputs from this type of component");
+  	warning("Cannot retreive inputs, sizes do not match");
     return false;
     }
 
@@ -943,7 +943,6 @@ bool nn::get_input_at_component (int index, DATA * buffer, int dimension)
   return true;
   }
 
-  warning("Cannot retreive inputs, sizes do not match");
   return false;
 }
 
