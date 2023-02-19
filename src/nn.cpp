@@ -312,7 +312,7 @@ bool nn::set_component_for_output(int index)
    (index>=topology.size()))
     {warning("Requested output component is not in topology"); return false;}
  if(!component_provides_output(index))
-    {warning("Requested component type does not maintain, provide or report its output"); return false;}
+    {warning("Requested component type does not maintain, provide or report output"); return false;}
  m_topology_component_for_output = index;
  #ifndef NNLIB2_WITH_GUI
  // TEXTOUT << "Note: Using NN component in topology index position " << m_topology_component_for_output << " for output.\n";

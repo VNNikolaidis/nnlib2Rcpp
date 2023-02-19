@@ -28,7 +28,8 @@ protected:
 
   bp_nn      bp;
 
-  double m_acceptable_error_level;
+  double		m_acceptable_error_level;
+  std::string	m_error_type;
 
 public:
 
@@ -109,19 +110,22 @@ public:
 
       if(i%1000==0)
       {
-        TEXTOUT << "Epoch = "<< i << " , Error level indication = " << mean_error_for_dataset << "\n";
+        TEXTOUT << "Epoch = "<< i << " , Error level = " << mean_error_for_dataset << "\n";
         checkUserInterrupt();                           // (RCpp function to check if user pressed cancel)
       }
 
       if(mean_error_for_dataset<=m_acceptable_error_level)
       {
-      	TEXTOUT << "Training reached acceptable error lever (" << mean_error_for_dataset  << ")\n";
+      	TEXTOUT << "Epoch = "<< i << " , Error level indication = " << mean_error_for_dataset << "\n";
+      	TEXTOUT << "Training reached acceptable error level ( ";
+      	TEXTOUT << m_error_type << " ";
+      	TEXTOUT << mean_error_for_dataset << " <= " << m_acceptable_error_level << " )\n";
       	break;
       }
 
     }
 
-    TEXTOUT << "Training Finished, error level indicator is " << error_level << " .\n";
+    TEXTOUT << "Training Finished, error level is " << error_level << " .\n";
     return error_level;
   }
 
@@ -173,21 +177,28 @@ public:
 
   bool set_error_level(std::string error_type, DATA acceptable_error_level)
   {
-  	if(error_type=="MSE")
+  	if((error_type!="MAE") AND
+       (error_type!="MSE"))
+  	{
+  		m_error_type="MAE";
+  		warning("Unsupported error type (must be 'MAE' or 'MSE'). Using and displaying Mean Absolute Error (MAE)");
+  	}
+  	else
+  	{
+  		m_error_type = error_type;
+  	}
+
+  	if(m_error_type=="MSE")
   	{
   		bp.m_use_squared_error = true;
-  		TEXTOUT << "Note: Using and displaying Mean Squared Error (MSE), ";
   	}
   	else
   	{
   		bp.m_use_squared_error = false;
-  		TEXTOUT << "Note: Using and displaying Mean Absolute Error (MAE), ";
   	}
 
   	m_acceptable_error_level = acceptable_error_level;
   	if(m_acceptable_error_level<0) m_acceptable_error_level=0;
-
-  	TEXTOUT << "acceptable " << error_type << " = " << m_acceptable_error_level << "\n";
 
   return true;
   }

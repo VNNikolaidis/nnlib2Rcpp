@@ -47,16 +47,20 @@ NumericMatrix Autoencoder  (
  if( ae.no_error()) ae.setup(input_dimension, learning_rate, num_hidden_layers, hidden_layer_size, desired_new_dimension);
  if(NOT ae.no_error()) return(data_out);
 
+ if((error_type!="MAE") AND
+    (error_type!="MSE"))
+ {
+ 	error_type="MAE";
+  	warning("Unsupported error type (must be 'MAE' or 'MSE'). Using and displaying Mean Absolute Error (MAE)");
+ }
 
  if(error_type=="MSE")
  {
  	ae.m_use_squared_error = true;
- 	TEXTOUT << "Note: Using and displaying Mean Squared Error (MSE), ";
  }
  else
  {
  	ae.m_use_squared_error = false;
- 	TEXTOUT << "Note: Using and displaying Mean Absolute Error (MAE), ";
  }
 
  if(acceptable_error_level<0) acceptable_error_level=0;
@@ -79,13 +83,15 @@ NumericMatrix Autoencoder  (
     if(i%100==0)
       {
       checkUserInterrupt();                                       // (RCpp function to check if user pressed cancel)
-      TEXTOUT << "Epoch = "<< i << " , Error level indicator = " << error_level << "\n";
+      TEXTOUT << "Epoch = "<< i << " , Error level = " << error_level << "\n";
       }
 
     if(error_level<=acceptable_error_level)
       {
-      TEXTOUT << "Training reached acceptable error lever (" << error_type  << " = ";
-      TEXTOUT << error_level << ")\n";
+      TEXTOUT << "Epoch = "<< i << " , Error level = " << error_level << "\n";
+      TEXTOUT << "Training reached acceptable error level ( ";
+      TEXTOUT << error_type << " ";
+      TEXTOUT << error_level << " <= " << acceptable_error_level << " )\n";
       break;
       }
   }

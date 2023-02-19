@@ -214,54 +214,54 @@ public:
 				return false;
 			}
 
-			if(
-				(i_mode!="none") AND
-				(i_mode!="input of") AND
-				(i_mode!="output of") AND
-				(i_mode!="weights at") AND
-				(i_mode!="biases at") AND
-				(i_mode!="misc at"))
+		if(
+			(i_mode!="none") AND
+			(i_mode!="input of") AND
+			(i_mode!="output of") AND
+			(i_mode!="weights at") AND
+			(i_mode!="biases at") AND
+			(i_mode!="misc at"))
 			{
 				warning("Not added, data to retreive must be 'none', 'input of','output of','weights at','biases at' or 'misc at'");
 				return false;
 			}
 
-			if(
-				(o_mode!="none") AND
-				(o_mode!="to input") AND
-				(o_mode!="to output") AND
-				(o_mode!="to weights") AND
-				(o_mode!="to biases") AND
-				(o_mode!="to misc"))
+		if(
+			(o_mode!="none") AND
+			(o_mode!="to input") AND
+			(o_mode!="to output") AND
+			(o_mode!="to weights") AND
+			(o_mode!="to biases") AND
+			(o_mode!="to misc"))
 			{
 				warning("Not added, processed data should be send to 'none', 'to input','to output','to weights','to biases' or 'to misc'");
 				return false;
 			}
 
-			//  convert R NN component indexes to C++ indexes:
-			int i_index = input_from;
-			int o_index = output_to;
+		//  convert R NN component indexes to C++ indexes:
+		int i_index = input_from;
+		int o_index = output_to;
 
-			if((i_index != AUX_CONTROL_R_AUTODETERMINE_PREV) AND
-        	   (i_index != AUX_CONTROL_R_AUTODETERMINE_NEXT))
-				i_index = i_index - 1;
+		if((i_index != AUX_CONTROL_R_AUTODETERMINE_PREV) AND
+           (i_index != AUX_CONTROL_R_AUTODETERMINE_NEXT))
+			i_index = i_index - 1;
 
-			if((o_index != AUX_CONTROL_R_AUTODETERMINE_PREV) AND
-        	   (o_index != AUX_CONTROL_R_AUTODETERMINE_NEXT))
-				o_index = o_index - 1;
+		if((o_index != AUX_CONTROL_R_AUTODETERMINE_PREV) AND
+           (o_index != AUX_CONTROL_R_AUTODETERMINE_NEXT))
+			o_index = o_index - 1;
 
-			TEXTOUT << "Adding R component to topology.\n";
+		TEXTOUT << "Adding R component to topology.\n";
 
-			aux_control_R PTR paR = new aux_control_R( FUN,
-                                              &m_nn,
-                                              i_mode,
-                                              i_index,
-                                              o_mode,
-                                              o_index,
-                                              active_on_encode,
-                                              active_on_recall,
-                                              ignore_result);
-			if(paR != NULL)
+		aux_control_R PTR paR = new aux_control_R( FUN,
+                                             &m_nn,
+                                             i_mode,
+                                             i_index,
+                                             o_mode,
+                                             o_index,
+                                             active_on_encode,
+                                             active_on_recall,
+                                             ignore_result);
+		if(paR != NULL)
 			{
 			//	paR->set_auxiliary_parameter(optional_parameter);
 
@@ -276,7 +276,7 @@ public:
 				delete paR;
 			}
 
-			return false;
+		return false;
 	}
 
 
@@ -781,7 +781,7 @@ public:
 				if(NOT m_nn.output_data_to_vector(fpdata_out,data_out.length()))
 					warning("Cannot retreive output from specified component");
 			}
-			return data_out;
+		return data_out;
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
