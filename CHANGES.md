@@ -96,10 +96,11 @@ Changes to nnlib2Rcpp version 0.2.0 (from 0.1.11)
 -	split additional_parts.h to several files (for less clutter when users create their components).
 -	small run time performance improvements (less checks in dllist operations).
 -	(bug fix) added call to input_function() in pe move_input_to_output(). This allows pass_through_layer to receive input from connections (and not just directly via set_input).
--	enabled NN's get_input_at() method for layers (there are issues in the way this is currently implemented, see code for "preview_current_input" method of pe c++ class. 
+-	enabled NN's get_input_at() method for layers (there are issues in the way this is currently implemented, see code for "preview_current_input" method of pe c++ class). 
 -	added "set_weights_at" method to module "NN".
 -	added aux_control component for calling R functions from the NN (Rcpp_aux_control_R.h).
 -	added methods to module "NN" ("add_R_forwarding", "add_R_pipelining", "add_R_ignoring" and "add_R_function"). These methods create NN components that can call an R function during NN processing (encoding or recalling data).
 -	added options to Autoencoder function that allow to stop training when an acceptable error level has been reached.
 -	added option to module "BP" (method "set_error_level"") to stop training when an acceptable error level has been reached.
 -	added to module "NN" methods "encode_all_fwd", "encode_all_bwd", "recall_all_fwd" and "recall_all_bwd".
+-	other minor changes.
