@@ -82,6 +82,11 @@ void nn::reset(bool clear_additional_parameters)
  m_topology_component_for_output = -1;
  }
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+void nn::reset() {reset(true);}
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DATA nn::encode_u(DATA PTR input, int input_dim, int iteration)

@@ -52,7 +52,7 @@ train_set_data_out <- matrix(
           ncol = train_num_classes)
 
 # now for each case, assign a 1 to the column corresponding to its class, 0 otherwise
-# (there must be a better R way to do this)
+# (note: there are better R ways to do this in R)
 for(r in 1:train_num_cases) train_set_data_out[r,train_class_ids[r]]=1
 
 # done with data, let's use BP...

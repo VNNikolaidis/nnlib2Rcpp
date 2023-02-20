@@ -51,7 +51,8 @@ class nn : public component, public data_receiver, public data_provider, public 
  nn(string name);
  ~nn();
 
- virtual void reset(bool clear_additional_parameters = true);
+ virtual void reset();
+ virtual void reset(bool clear_additional_parameters);
  virtual bool set_additional_parameters(double param1,...);
 
  void encode();                                                         // (required by component class) performs a typical encode, in the direction from input to output. Assumes data is available. Override if something else is needed.

@@ -53,7 +53,7 @@ class component
  component(const std::string name, const component_type type);
  virtual ~component();
 
- virtual void reset (bool opt1=true)	   		{ error(NN_SYSTEM_ERR,"reset() not implemented"); }
+ virtual void reset ()	   						{ error(NN_SYSTEM_ERR,"reset() not implemented"); }
  string REF name ()                             { return m_name; }
  virtual string description ();
  virtual string item_description(int item)      { error(NN_SYSTEM_ERR,"item_description() not implemented"); return("No item description"); }
