@@ -378,12 +378,9 @@ class dllist : public error_flag_client
  template <class T>
  bool dllist<T>::reset()
   {
-  unsigned c = 0;
-
   while(goto_last())
    {
    remove_last();
-   c++;
    }
 
   check();

@@ -45,7 +45,6 @@ class lvq_nn : public NN_PARENT_CLASS
  ~lvq_nn();
  bool setup(int input_dimension,int output_dimension, DATA ** initial_cluster_centers_matrix = NULL);   			// optional matrix initializes weights; must be sized output_dimension X input_dimension
 
-
  DATA encode_s(DATA PTR input, int input_dim, DATA PTR desired_output, int output_dim, int iteration);
  DATA encode_s(DATA PTR input, int input_dim, int desired_winner, int iteration);
 
@@ -79,7 +78,8 @@ class lvq_output_layer : public pe_layer
 private:
         int m_neighborhood_size;	// must be 1 in Single Winner Unsupervised, 3,5,7... in Multiple Winner Unsupervised.
 public:
-        void setup(string name, int size, int neighborhood);
+		bool setup(string name, int size);
+        bool setup(string name, int size, int neighborhood);
         void recall();
 };
 

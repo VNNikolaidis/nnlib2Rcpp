@@ -56,11 +56,19 @@ void lvq_input_layer::recall()
 // implementation follows:
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-void lvq_output_layer::setup(string name, int size, int neighborhood)
-  {
-  pe_layer::setup(name,size);
-  m_neighborhood_size=neighborhood;
-  }
+bool lvq_output_layer::setup(string name, int size)
+{
+	bool ok = pe_layer::setup(name,size);
+	m_neighborhood_size=1;
+	return ok;
+}
+
+bool lvq_output_layer::setup(string name, int size, int neighborhood)
+{
+	bool ok = pe_layer::setup(name,size);
+	m_neighborhood_size=neighborhood;
+	return ok;
+}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

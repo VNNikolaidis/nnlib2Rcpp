@@ -35,7 +35,7 @@ This R module maintains an internal Back-Propagation (BP) multilayer perceptron 
 # create some data...
 iris_s                  <- as.matrix(scale(iris[1:4]))
 
-# use a randomply picked subset of (scaled) iris data for training
+# use a randomly picked subset of (scaled) iris data for training.
 training_cases          <- sample(1:nrow(iris_s), nrow(iris_s)/2,replace=FALSE)
 train_set               <- iris_s[training_cases,]
 train_class_ids         <- as.integer(iris$Species[training_cases])
