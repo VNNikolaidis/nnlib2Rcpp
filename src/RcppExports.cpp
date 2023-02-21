@@ -5,11 +5,6 @@
 
 using namespace Rcpp;
 
-#ifdef RCPP_USE_GLOBAL_ROSTREAM
-Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
-Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
-#endif
-
 // Autoencoder
 NumericMatrix Autoencoder(NumericMatrix data_in, int desired_new_dimension, int number_of_training_epochs, double learning_rate, int num_hidden_layers, int hidden_layer_size, bool show_nn, std::string error_type, double acceptable_error_level);
 RcppExport SEXP _nnlib2Rcpp_Autoencoder(SEXP data_inSEXP, SEXP desired_new_dimensionSEXP, SEXP number_of_training_epochsSEXP, SEXP learning_rateSEXP, SEXP num_hidden_layersSEXP, SEXP hidden_layer_sizeSEXP, SEXP show_nnSEXP, SEXP error_typeSEXP, SEXP acceptable_error_levelSEXP) {

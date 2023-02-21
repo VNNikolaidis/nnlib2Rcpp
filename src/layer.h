@@ -44,7 +44,7 @@ public:
 	virtual bool get_misc(DATA * buffer, int dimension) = 0;							// added for nnlib2Rcpp 0.1.11
 	virtual bool set_misc(DATA * data, int dimension) = 0;
 	virtual DATA get_bias_from(int index) = 0;											// added for nnlib2Rcpp 0.1.10
-	virtual bool get_input(DATA * buffer, int dimension);							    // added for nnlib2Rcpp 0.2.0
+	virtual bool get_input(DATA * buffer, int dimension) = 0;						    // added for nnlib2Rcpp 0.2.0
 };
 
 /*-----------------------------------------------------------------------*/
