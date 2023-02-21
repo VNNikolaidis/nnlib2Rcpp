@@ -56,7 +56,7 @@ More information and examples on using the package can be found in the following
 Related links:
 \itemize{
   \item \url{https://github.com/VNNikolaidis/nnlib2Rcpp}
-  \item Package manual in PDF format at \url{https://github.com/VNNikolaidis/nnlib2Rcpp/blob/master/doc/manual.pdf})
+  \item Package manual in PDF format at \url{https://github.com/VNNikolaidis/nnlib2Rcpp/blob/master/support/manual.pdf})
   \item Report bugs, issues and suggestions at \url{https://github.com/VNNikolaidis/nnlib2Rcpp/issues}
 }
 

@@ -37,7 +37,7 @@ while the package vingette (containing information on adding custom components) 
 
 The package vingette is also available in PDF format here:
 
-https://github.com/VNNikolaidis/nnlib2Rcpp/blob/master/doc/manual.pdf
+https://github.com/VNNikolaidis/nnlib2Rcpp/blob/master/support/manual.pdf
 
 A reference manual in PDF format (for the last version in CRAN) can be found here:
 
@@ -63,7 +63,7 @@ https://r-posts.com/creating-custom-neural-networks-with-nnlib2rcpp/ ( permalink
 
 As mentioned earlier, more instructions on using 'nnlib2' and 'nnlib2Rcpp' can be found in the package vingette, also available in PDF format here:
 
-https://github.com/VNNikolaidis/nnlib2Rcpp/blob/master/doc/manual.pdf
+https://github.com/VNNikolaidis/nnlib2Rcpp/blob/master/support/manual.pdf
 
 Link to related paper in the Journal of Open Source Software:
 
