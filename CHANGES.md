@@ -109,5 +109,5 @@ Changes to nnlib2Rcpp version 0.2.0 (from 0.1.11)
 
 Changes to nnlib2Rcpp version 0.2.1 (from 0.2.0)
 -	(nnlib2) added class 'generic_connection_matrix', a matrix-based connection set that can be used to replace generic_connection_set (this is derived from connection_set, working draft, needs improvements, expect small run time performance gains).
--	(nnlib2) used generic_connection_matrix derived classes in BP and related neural nets. Note: Option #define BP_CONNECTIONS in 'nn_bp.cpp' selects whether bp_connection_set (based on 'generic_connection_set') or bp_connection_matrix (based on generic_connection_matrix) is to be used).
+-	(nnlib2) used generic_connection_matrix derived classes in BP and related neural nets. Note: Option #define BP_CONNECTIONS in 'nn_bp.cpp' selects whether bp_connection_set (based on 'generic_connection_set') or bp_connection_matrix (based on generic_connection_matrix) is to be used.
 -	Added example_connection_matrix (example that creates a matrix-based connection set to be used in NN module via its add_connection_set).
