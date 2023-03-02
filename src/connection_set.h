@@ -15,13 +15,15 @@
 #include "connection.h"
 #include "nnlib2_dllist.h"
 #include "nnlib2_misc.h"
+#include "nnlib2_memory.h"
 
 #include <sstream>
 
 namespace nnlib2 {
 
 /*-----------------------------------------------------------------------*/
-/* Neural connection_set virtual (methods regardless CONNECTION_TYPE )   */
+/* A block/set/matrix of Neural connections								 */
+/* virtual (ignores CONNECTION_TYPE, implementation etc 				 */
 /*-----------------------------------------------------------------------*/
 
 class connection_set : public component, public error_flag_client
@@ -46,7 +48,9 @@ public:
 };
 
 /*-----------------------------------------------------------------------*/
-/* Neural connection set template for any CONNECTION_TYPE       		 */
+/* (Type A) Neural connection set template for any _ONE_ CONNECTION_TYPE,*/
+/* allows sparse or redundant connectivity, dynamic addition or removal  */
+/* of connections etc.													 */
 /*-----------------------------------------------------------------------*/
 
 template <class CONNECTION_TYPE>
@@ -120,7 +124,7 @@ class Connection_Set : public connection_set
 
 
 //-------------------------------------------------------------------------
-// For explitit instantiation of connection_set template per connection type (not needed
+// For explicit instantiation of connection_set template per connection type (not needed
 // as implementation is in header below) use code similar to:
 // template class connection_set<connection>;
 
@@ -129,6 +133,11 @@ class Connection_Set : public connection_set
 // define set of generic "dumb" connections where most processing will be done in connection_set code.
 
 typedef Connection_Set<connection> generic_connection_set;
+
+//-------------------------------------------------------------------------
+// dummy layer, useless return value if actual is invalid
+
+static pe_layer dummy_layer;
 
 //-------------------------------------------------------------------------
 // Neural connection_set implementation follows:
@@ -149,7 +158,7 @@ Connection_Set<CONNECTION_TYPE>::Connection_Set()
 
 template <class CONNECTION_TYPE>
 Connection_Set<CONNECTION_TYPE>::Connection_Set(string name)
- :Connection_Set()
+ :Connection_Set<CONNECTION_TYPE>()
  {
  if(no_error()) m_name = name;
  }
@@ -471,7 +480,14 @@ bool Connection_Set<CONNECTION_TYPE>::remove_connection(int connection_number)
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// input it :
+// input it:
+// Note: The from_stream for classes derived from connection_set (incl.
+// generic_connection_matrix) must be improved so that the source and destination
+// layer ids are used to automatically connect the connection_set to them...
+// The old (simpler) approach assumed whichever nn class was retrieving
+// connection data would also setup the connection_set. As these components
+// are now used more interactively in nnlib2Rcpp (via NN module), this
+// has to be improved.
 
 template <class CONNECTION_TYPE>
 void Connection_Set<CONNECTION_TYPE>::from_stream (std::istream REF s)
@@ -481,9 +497,9 @@ void Connection_Set<CONNECTION_TYPE>::from_stream (std::istream REF s)
         if(no_error())
         {
                 component::from_stream(s);
-                s >> comment >> comment;
-                s >> comment >> comment;
-                connections.from_stream(s);								// changed for VC7 port,was	s >> connections;
+        		s >> comment >> comment;		// original_source_layer_id;
+        		s >> comment >> comment;		// original_destin_layer_id;
+                connections.from_stream(s);		// changed for VC7 port,was	s >> connections;
         }
 }
 
@@ -521,11 +537,6 @@ if(connections.goto_first())
 do connections.current().recall();
 while(connections.goto_next());
 }
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// a dummy layer, useless return value if actual are invalid
-
-static pe_layer dummy_layer;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // returns mp_destin_layer as a reference to layer (or to dummy_layer if error)

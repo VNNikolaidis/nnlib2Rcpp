@@ -186,6 +186,21 @@ public:
 };
 
 /*-----------------------------------------------------------------------*/
+/* Back Propagation Perceptron Connections based on a matrix             */
+/*-----------------------------------------------------------------------*/
+
+class bp_connection_matrix : public generic_connection_matrix
+{
+protected:
+	DATA m_learning_rate;
+
+public:
+	void encode();
+	void recall();
+	void set_learning_rate(DATA d);
+};
+
+/*-----------------------------------------------------------------------*/
 
 
 } // end of namespace bp

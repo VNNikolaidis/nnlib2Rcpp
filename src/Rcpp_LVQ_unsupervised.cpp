@@ -11,7 +11,7 @@ using namespace Rcpp;
 
 //--------------------------------------------------------------------------------
 
-#include "nnlib2_misc.h"                      // for which_max
+#include "nnlib2_misc.h"                    // for which_max
 #include "nn_lvq.h"                         // for som_nn
 
 using namespace nnlib2;

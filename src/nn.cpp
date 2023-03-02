@@ -736,9 +736,13 @@ for(int i=0;i<layer_indexes_in_topology.size()-1;i++)
   if(p_c2!=NULL)
    if(p_c2->type()==cmpnt_connection_set)
     {
-    layer * play1 = reinterpret_cast<layer *>(p_c1);
-    connection_set * pconx = reinterpret_cast<connection_set *>(p_c2);
-    layer * play2 = reinterpret_cast<layer *>(p_c3);
+    layer * play1 = dynamic_cast<layer *>(p_c1);
+    connection_set * pconx = dynamic_cast<connection_set *>(p_c2);
+    layer * play2 = dynamic_cast<layer *>(p_c3);
+
+    if(play1==NULL) {error(NN_INTEGR_ERR,"Problem accessing source layer"); return false;}
+    if(pconx==NULL) {error(NN_INTEGR_ERR,"Problem accessing connection set"); return false;}
+    if(play2==NULL) {error(NN_INTEGR_ERR,"Problem accessing destination layer"); return false;}
 
     bool do_connect = true;
 

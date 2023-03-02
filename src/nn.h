@@ -16,6 +16,7 @@
 
 #include "layer.h"
 #include "connection_set.h"
+#include "connection_matrix.h"
 #include "aux_control.h"
 
 #ifdef NNLIB2_FOR_MFC_UI

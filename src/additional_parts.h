@@ -2,6 +2,8 @@
 #define NNLIB2_ADDITIONAL_PARTS_H
 
 #include "nn.h"
+#include "connection_matrix.h"
+
 using namespace nnlib2;
 
 #include "additional_parts_other.h"
@@ -33,6 +35,20 @@ class example_connection_set_2: public Connection_Set<example_connection>
 {
 public:
 	example_connection_set_2(string name) : Connection_Set(name) {};
+};
+
+//--------------------------------------------------------------------------------------------
+// minimal examples of matrix based (derived from generic_connection_matrix) definitions:
+//--------------------------------------------------------------------------------------------
+
+class example_connection_matrix: public generic_connection_matrix
+{
+public:
+
+	example_connection_matrix(string name):generic_connection_matrix(name,true){};
+
+	void encode () {};           // Just an example, does nothing
+	void recall () {};           // Just an example, does nothing
 };
 
 //------------------------------------------------------------------------------
@@ -90,12 +106,16 @@ layer PTR generate_custom_layer(string name, int size, DATA optional_parameter=D
 
 connection_set PTR generate_custom_connection_set(string name, DATA optional_parameter=DATA_MIN)
 {
+	// examples using 'connection' class:
+
 	if(name == "perceptron")                return new perceptron_connection_set(name);
 	if(name == "MEX")						return new MEX_connection_set(name);
 
 	if(name == "example_connection_set_0")  return new Connection_Set<example_connection>(name);
 	if(name == "example_connection_set_1")  return new example_connection_set_1(name);
 	if(name == "example_connection_set_2")  return new example_connection_set_2(name);
+
+	if(name == "example_connection_matrix") return new example_connection_matrix(name);
 
 	return NULL;
 }

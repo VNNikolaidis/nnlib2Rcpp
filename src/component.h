@@ -25,9 +25,6 @@ enum component_type    {cmpnt_unknown,                   // no type.
                         cmpnt_layer,                     // a layer of one or more processing elements (PEs) than can be processed in parallel.
                         cmpnt_connection_set,            // a set of one or more connections between PEs than can be processed in parallel.
                         cmpnt_aux_control};              // a component for special functionality and control commands.
-
-extern char component_type_name [][100];                 // NOTE: should corresponding names for component_type
-
 //-----------------------------------------------------------------------
 
 class component

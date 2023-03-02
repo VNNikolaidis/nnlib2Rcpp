@@ -19,7 +19,8 @@ char component_nn_type_name [][100] = {
 									  "Artificial Neural System",
 									  "Layer",
 									  "Connection Set",
-									  "Control Component"
+									  "Control Component",
+									  "Connection Set (as Matrix)"
 								      };
 
 unsigned int component::current_id = 0;

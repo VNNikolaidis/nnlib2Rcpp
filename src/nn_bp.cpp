@@ -16,8 +16,8 @@
 
 #include "nn_bp.h"
 
-#include "layer.h"
-#include "connection_set.h"
+// #define BP_CONNECTIONS bp_connection_set
+   #define BP_CONNECTIONS bp_connection_matrix
 
 namespace nnlib2 {
 
@@ -187,6 +187,71 @@ void bp_connection_set::set_learning_rate(DATA lrate)
   }
 
 /*-----------------------------------------------------------------------*/
+/* Back Propagation Perceptron Connections (implemented as a matrix)	 */
+/*-----------------------------------------------------------------------*/
+// implementation follows:
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+void bp_connection_matrix::encode()
+{
+	if(NOT no_error()) return;
+	if(NOT sizes_are_consistent()) return;
+
+	layer REF source = source_layer();
+	layer REF destin = destin_layer();
+
+	for(int source_pe_id = 0; source_pe_id<source_layer().size();source_pe_id++)
+	{
+		pe REF source_pe = source.PE(source_pe_id);
+		DATA b = source_pe.output;
+
+		for(int destin_pe_id = 0; destin_pe_id<destin_layer().size();destin_pe_id++)
+		{
+			pe REF destin_pe = destin.PE(destin_pe_id);
+			DATA d = destin_pe.misc;									// get discrepancy at destination pe...
+		 // DATA w = get_connection_weight(source_pe_id,destin_pe_id);  // get connection weight...safer version
+			DATA w = m_weights[destin_pe_id][source_pe_id];				// get connection weight...faster version
+			DATA x = w * d;												// and multiply the two values...
+			source_pe.add_to_input(x);									// feeding it back to the previous layer.
+
+		 // set_connection_weight(source_pe_id,destin_pe_id,			// adjust weight (SIMPSON 5-164/6)
+		 //     w + (m_learning_rate * b * d));							// safer version
+
+			m_weights[destin_pe_id][source_pe_id] = 					// adjust weight (SIMPSON 5-164/6)
+				w + (m_learning_rate * b * d);							// faster version
+		}
+	}
+}
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+void bp_connection_matrix::recall()
+{
+	if(NOT no_error()) return;
+	if(NOT sizes_are_consistent()) return;
+
+	layer REF source = source_layer();
+	layer REF destin = destin_layer();
+
+	for(int source_pe = 0; source_pe<source_layer().size();source_pe++)
+        {
+        	DATA x0 = source.PE(source_pe).output;
+        	for(int destin_pe=0;destin_pe<destin_layer().size();destin_pe++)
+        	{
+        	//  DATA x1 = x0 * get_connection_weight(source_pe,destin_pe);   // safer version
+        		DATA x1 = x0 * m_weights[destin_pe][source_pe];				 // faster version
+        		destin.PE(destin_pe).add_to_input(x1);
+        	}
+        }
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+void bp_connection_matrix::set_learning_rate(DATA lrate)
+{
+	m_learning_rate=lrate;
+}
+
+/*-----------------------------------------------------------------------*/
 /* Back Propagation Perceptron (bp_nn)									 */
 /*-----------------------------------------------------------------------*/
 // implementation follows:
@@ -246,9 +311,10 @@ bool bp_nn::setup(int input_dimension, int output_dimension)
  {
 
  int i,hidden_layers;
-// char namebuffer [100];
  bp_layer * source_layer, * destin_layer;
- bp_connection_set * new_connection_set;
+
+ BP_CONNECTIONS * new_connection_set;
+
  int cparam;
 
  reset(false);
@@ -281,7 +347,7 @@ bool bp_nn::setup(int input_dimension, int output_dimension)
    {
   // create connections to next layer(s)...
 
-   new_connection_set = new bp_connection_set;
+   new_connection_set = new BP_CONNECTIONS;
    new_connection_set->set_error_flag(my_error_flag());
    topology.append(new_connection_set);
 
@@ -309,7 +375,7 @@ bool bp_nn::setup(int input_dimension, int output_dimension)
 
   // similarly, create and connect output layer:
 
-  new_connection_set = new bp_connection_set;
+  new_connection_set = new BP_CONNECTIONS;
   new_connection_set->set_error_flag(my_error_flag());
   topology.append(new_connection_set);
 
@@ -391,7 +457,7 @@ void bp_nn::from_stream ( std::istream REF s )
  int i, number_of_components, hidden_layers;
  string comment;
  bp_layer * source_layer, * destin_layer;
- bp_connection_set * new_connection_set;
+ BP_CONNECTIONS * new_connection_set;
 
  nn::from_stream(s);	                                    // read header (the way it was done in older versions)
 
@@ -416,7 +482,7 @@ void bp_nn::from_stream ( std::istream REF s )
    {
   // create connections to next layer(s)...
 
-   new_connection_set = new bp_connection_set;
+   new_connection_set = new BP_CONNECTIONS;
    new_connection_set->set_error_flag(my_error_flag());
    topology.append(new_connection_set);
    new_connection_set->from_stream(s);						// load connection set
@@ -436,7 +502,7 @@ void bp_nn::from_stream ( std::istream REF s )
 
   // similarly, create and connect output layer:
 
-  new_connection_set = new bp_connection_set;
+  new_connection_set = new BP_CONNECTIONS;
   new_connection_set->set_error_flag(my_error_flag());
   topology.append(new_connection_set);
   new_connection_set->from_stream(s);						// load connection set
@@ -763,7 +829,7 @@ bool bpu4_nn::setup(int input_dimension,int output_dimension)
  std::stringstream name;
 
  bp_layer * source_layer, * destin_layer;
- bp_connection_set * new_connection_set;
+ BP_CONNECTIONS * new_connection_set;
 
   // create input layer...
 
@@ -776,7 +842,7 @@ bool bpu4_nn::setup(int input_dimension,int output_dimension)
    {
   // create connections to next layer(s)...
 
-   new_connection_set = new bp_connection_set;
+   new_connection_set = new BP_CONNECTIONS;
    new_connection_set->set_error_flag(my_error_flag());
    topology.append(new_connection_set);
 
@@ -803,7 +869,7 @@ bool bpu4_nn::setup(int input_dimension,int output_dimension)
 
   // similarly, create and connect internal special layer:
 
-  new_connection_set = new bp_connection_set;
+  new_connection_set = new BP_CONNECTIONS;
   new_connection_set->set_error_flag(my_error_flag());
   topology.append(new_connection_set);
 
@@ -825,7 +891,7 @@ bool bpu4_nn::setup(int input_dimension,int output_dimension)
    {
   // create connections to next layer(s)...
 
-   new_connection_set = new bp_connection_set;
+   new_connection_set = new BP_CONNECTIONS;
    new_connection_set->set_error_flag(my_error_flag());
    topology.append(new_connection_set);
 
@@ -852,7 +918,7 @@ bool bpu4_nn::setup(int input_dimension,int output_dimension)
 
   // similarly, create and connect output layer:
 
-  new_connection_set = new bp_connection_set;
+  new_connection_set = new BP_CONNECTIONS;
   new_connection_set->set_error_flag(my_error_flag());
   topology.append(new_connection_set);
 
@@ -970,7 +1036,7 @@ bool bpu5_nn::setup(int input_dimension, DATA learning_rate, int hidden_layers_p
  int i;
  std::stringstream name;
  bp_layer * source_layer, * destin_layer;
- bp_connection_set * new_connection_set;
+ BP_CONNECTIONS * new_connection_set;
 
   // create input layer...
 
@@ -983,7 +1049,7 @@ bool bpu5_nn::setup(int input_dimension, DATA learning_rate, int hidden_layers_p
    {
   // create connections to next layer(s)...
 
-   new_connection_set = new bp_connection_set;
+   new_connection_set = new BP_CONNECTIONS;
    new_connection_set->set_error_flag(my_error_flag());
    topology.append(new_connection_set);
 
@@ -1010,7 +1076,7 @@ bool bpu5_nn::setup(int input_dimension, DATA learning_rate, int hidden_layers_p
 
   // similarly, create and connect internal special layer:
 
-  new_connection_set = new bp_connection_set;
+  new_connection_set = new BP_CONNECTIONS;
   new_connection_set->set_error_flag(my_error_flag());
   topology.append(new_connection_set);
 
@@ -1033,7 +1099,7 @@ bool bpu5_nn::setup(int input_dimension, DATA learning_rate, int hidden_layers_p
    {
   // create connections to next layer(s)...
 
-   new_connection_set = new bp_connection_set;
+   new_connection_set = new BP_CONNECTIONS;
    new_connection_set->set_error_flag(my_error_flag());
    topology.append(new_connection_set);
 
@@ -1060,7 +1126,7 @@ bool bpu5_nn::setup(int input_dimension, DATA learning_rate, int hidden_layers_p
 
   // similarly, create and connect output layer:
 
-  new_connection_set = new bp_connection_set;
+  new_connection_set = new BP_CONNECTIONS;
   new_connection_set->set_error_flag(my_error_flag());
   topology.append(new_connection_set);
 

@@ -17,7 +17,7 @@ namespace nnlib2 {
 
 DATA ** malloc_2d (int r, int c)
 {
-DATA ** dp;
+DATA ** dp = NULL;
 int i,j;
 bool noerror = true;
 
@@ -29,12 +29,16 @@ else
   if((dp[i]=(DATA*)malloc(sizeof(DATA) * c))==NULL)
    {
    error(NN_MEMORY_ERR,"No memory for rows.",NULL);
+   for(j=0;j<i;j++) free(dp[j]);
+   free(dp);
+   dp=NULL;
    noerror = false;
    }
   else
    for(j=0;j<c;j++)
     dp[i][j]=(DATA)0;
   }
+
 return dp;
 }
 
