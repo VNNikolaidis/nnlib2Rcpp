@@ -12,7 +12,7 @@
 #include <iostream>
 #include <fstream>
 
-#include "Rcpp_aux_control_R.h"
+#include "Rcpp_R_aux_control.h"
 
 #include "nn_lvq.h"
 #include "nn_bp.h"
@@ -31,8 +31,19 @@ protected:
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// generate layer for further use later (note: name is also used as type selector)
 
-	layer PTR generate_layer(string name, int size, DATA optional_parameter=DATA_MIN)
+	layer PTR generate_layer(List parameters)
 	{
+		// extract incoming parameters from list:
+
+		string name = parameters["name"];
+		int size	= parameters["size"];
+		DATA optional_parameter = DATA_MIN;
+
+		if(parameters.containsElementNamed("optional_parameter"))
+			optional_parameter = parameters["optional_parameter"];
+
+		// create the new layer (NN components already defined in nnlib2 are shown below):
+
 		if( name == "pe" ) 				return new pe_layer(name,size);
 		if( name == "generic_d" ) 		return new pe_layer(name,size);
 		if( name == "generic" )  		return new Layer<pe>(name,size);
@@ -79,7 +90,7 @@ protected:
 			return pl;
 		}
 
-		layer PTR pl = generate_custom_layer(name,size,optional_parameter);
+		layer PTR pl = generate_custom_layer(parameters);
 		if(pl != NULL) return pl;
 
 		warning("Unknown layer type");
@@ -89,8 +100,18 @@ protected:
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// generate connection set for further use later (note: name is also used as type)
 
-	connection_set PTR generate_connection_set(string name, DATA optional_parameter = DATA_MIN )
+	connection_set PTR generate_connection_set(List parameters)
 	{
+		// extract incoming parameters from list:
+
+		string name = parameters["name"];
+		DATA optional_parameter = DATA_MIN;
+
+		if(parameters.containsElementNamed("optional_parameter"))
+			optional_parameter = parameters["optional_parameter"];
+
+		// create the new connection set (NN components already defined in nnlib2 are shown below):
+
 		if( name == "generic" )			return new Connection_Set<connection>(name);
 
 		if( name == "pass-through" )	return new Connection_Set<pass_through_connection>(name);
@@ -127,28 +148,32 @@ protected:
 			return pc;
 		}
 
-		connection_set PTR pc = generate_custom_connection_set(name,optional_parameter);
+		connection_set PTR pc = generate_custom_connection_set(parameters);
 		if(pc!=NULL) return pc;
 
 		warning("Unknown connection set type");
 		return NULL;
 	}
 
-
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	// Connect two layers (note: connection_set_name is also used as type)
+	// Connect two layers (note: connection_set name is also used as type)
 
 	bool add_connection_set_for(int source_pos,
                              int destin_pos,
-                             string connection_set_name,
+                             List parameters,
                              bool fully_connect,
                              DATA min_random_weight,
-                             DATA max_random_weight,
-                             DATA optional_parameter = DATA_MIN )
+                             DATA max_random_weight)
 	{
+		// extract incoming name from list:
+
+		string connection_set_name = parameters["name"];
+
+		// create the set and then connect it if required:
+
 		TEXTOUT << "Adding set of " << connection_set_name << " connections to topology.\n";
 
-		connection_set PTR p = generate_connection_set(connection_set_name, optional_parameter);
+		connection_set PTR p = generate_connection_set(parameters);
 
 		if (p == NULL) return false;
 
@@ -346,10 +371,32 @@ public:
 
 	bool add_layer_1xp(string name, int size, DATA optional_parameter)
 	{
-		m_nn.change_is_ready_flag(true);
-		TEXTOUT << "Adding layer of " << name << " PEs to topology.\n";
+		List parameters = List::create(	Named("name")=name,
+                                		Named("size")=size,
+                                		Named("optional_parameter")=optional_parameter);
 
-		layer PTR p = generate_layer(name, size, optional_parameter);
+		return add_layer_Mxp(parameters);
+	}
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+	bool add_layer_0xp(string name, int size)
+	{
+		return add_layer_1xp(name,size,DATA_MIN);
+	}
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+	bool add_layer_Mxp(List parameters)
+	{
+		string name = parameters["name"];
+		int size	= parameters["size"];
+
+		m_nn.change_is_ready_flag(true);
+
+		TEXTOUT << "Adding layer of "<< size << " " << name << " PEs to topology.\n";
+
+		layer PTR p = generate_layer(parameters);
 		if(p!=NULL)
 		{
 			if(m_nn.add_layer(p))
@@ -367,27 +414,43 @@ public:
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-	bool add_layer_0xp(string name, int size)
-	{
-		return add_layer_1xp(name,size,DATA_MIN);
-	}
-
-	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// add connection set to topology (disconnected and empty)
 	// (note: name is also used as type)
 	// Some redundancy to add optional parameters:
-	// (add_connection_set ----> add_connection_set_0xp, add_connection_set_1xp)
+	// (add_connection_set ----> add_connection_set_0xp (now obsolete), add_connection_set_1xp, etc)
 	// see https://lists.r-forge.r-project.org/pipermail/rcpp-devel/2010-November/001326.html
 
-	bool add_connection_set_1xp(string name, DATA optional_parameter)
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// the following is left for backward compatibility AND for the case a single string is passed as parameter...
+
+	bool add_connection_set_1xp(string name, DATA optional_parameter=DATA_MIN)
 	{
-		m_nn.change_is_ready_flag(false);
+		List parameters = List::create(	Named("name")=name,
+                                  Named("optional_parameter")=optional_parameter);
+
+		return add_connection_set_Mxp(parameters);
+	}
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// this is called for a single string (assumed name) or a list of parameters
+
+	bool add_connection_set_Mxp(List parameters)
+	{
+		if(parameters.length()==1) return add_connection_set_1xp(parameters[0]);			// i.e. name. Takes advantage of how Rcpp handles a a single string...
+
+		string name = parameters["name"];
+		DATA optional_parameter = DATA_MIN;
+
+		if(parameters.containsElementNamed("optional_parameter"))
+			optional_parameter = parameters["optional_parameter"];
 
 		TEXTOUT << "Adding (empty) set of " << name << " connections to topology.\n";
 		TEXTOUT << "(once topology is complete, use create_connections_in_sets to fill it with connections).\n";
 
-		connection_set PTR p = generate_connection_set(name, optional_parameter);
+		m_nn.change_is_ready_flag(false);
+
+		connection_set PTR p = generate_connection_set(parameters);
+
 		if(p!=NULL)
 		{
 			if(m_nn.add_connection_set(p))
@@ -403,13 +466,6 @@ public:
 		m_nn.change_is_ready_flag(false);
 		TEXTOUT << "Note: Adding connection set failed.\n";
 		return false;
-	}
-
-	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-	bool add_connection_set_0xp(string name, DATA optional_parameter)
-	{
-		return add_connection_set_1xp(name,DATA_MIN);
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -429,71 +485,77 @@ public:
 	// Setup connection set for two layers (note: connection set name is also used as type),
 	// no connections added
 	// Some redundancy to add optional parameters:
-	// (connect_layers_at ----> connect_layers_at_0xp, connect_layers_at_1xp)
+	// (connect_layers_at ----> connect_layers_at_0xp (now obsolete), connect_layers_at_1xp etc.)
 	// see https://lists.r-forge.r-project.org/pipermail/rcpp-devel/2010-November/001326.html
 
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// the following is left for backward compatibility AND for the case a single string is passed as parameter...
+
 	bool connect_layers_at_1xp(	int source_pos,
-                             int destin_pos,
-                             string name,
-                             DATA optional_parameter)
+                            	int destin_pos,
+                            	string name,
+                            	DATA optional_parameter)
 	{
-		return add_connection_set_for(source_pos,
-                                destin_pos,
-                                name,
-                                false,
-                                0,0,
-                                optional_parameter);
+		List parameters = List::create(	Named("name")=name,
+                                		Named("optional_parameter")=optional_parameter);
+
+		return add_connection_set_for(source_pos, destin_pos, parameters, false, 0, 0);
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// this is called for a single string (assumed name) or a list of parameters
 
-	bool connect_layers_at_0xp(	int source_pos,
-                             int destin_pos,
-                             string name)
+	bool connect_layers_at_Mxp(	int source_pos,
+                            	int destin_pos,
+                            	List parameters)
 	{
-		return add_connection_set_for(source_pos,
-                                destin_pos,
-                                name,
-                                false,
-                                0,0);
+		string name;
+
+		if(parameters.length()==1) return connect_layers_at_1xp( source_pos,
+    															 destin_pos,
+    															 parameters[0],			// i.e. name. Takes advantage of how Rcpp handles a a single string...
+																 DATA_MIN);
+
+		return add_connection_set_for(source_pos, destin_pos, parameters,false,0,0);
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// Fully connect two layers (note: connection set  name is also used as type)
 	// Some redundancy to add optional parameters:
-	// (fully_connect_layers_at ----> fully_connect_layers_at_0xp, fully_connect_layers_at_1xp)
+	// (fully_connect_layers_at ----> fully_connect_layers_at_0xp (now obsolete) , fully_connect_layers_at_1xp)
 	// see https://lists.r-forge.r-project.org/pipermail/rcpp-devel/2010-November/001326.html
 
 	bool fully_connect_layers_at_1xp(	int source_pos,
-                                   int destin_pos,
-                                   string name,
-                                   DATA min_random_weight,
-                                   DATA max_random_weight,
-                                   DATA optional_parameter)
+                                		int destin_pos,
+                                		string name,
+                                		DATA min_random_weight,
+                                		DATA max_random_weight,
+                                		DATA optional_parameter )
 	{
-		return add_connection_set_for(	source_pos,
-                                 destin_pos,
-                                 name,
-                                 true,
-                                 min_random_weight,
-                                 max_random_weight,
-                                 optional_parameter);
+		List parameters = List::create(	Named("name")=name,
+                                		Named("optional_parameter")=optional_parameter);
+
+		return add_connection_set_for(source_pos, destin_pos, parameters, true, min_random_weight, max_random_weight);
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-	bool fully_connect_layers_at_0xp(	int source_pos,
-                                   int destin_pos,
-                                   string name,
-                                   DATA min_random_weight,
-                                   DATA max_random_weight)
+	bool fully_connect_layers_at_Mxp(	int source_pos,
+                                		int destin_pos,
+                                		List parameters,
+                                		DATA min_random_weight,
+                                		DATA max_random_weight )
 	{
-		return add_connection_set_for(	source_pos,
-                                 destin_pos,
-                                 name,
-                                 true,
-                                 min_random_weight,
-                                 max_random_weight);
+		string name;
+
+		if(parameters.length()==1) return fully_connect_layers_at_1xp(	source_pos,
+    																	destin_pos,
+    																	parameters[0],			// i.e. name. Takes advantage of how Rcpp handles a a single string...
+            															min_random_weight,
+            															max_random_weight,
+            															DATA_MIN);
+
+		return add_connection_set_for(source_pos, destin_pos, parameters,true,min_random_weight,max_random_weight);
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1064,14 +1126,15 @@ RCPP_MODULE(class_NN) {
      .method( "add_R_forwarding", 						&NN::add_R_forwarding,         										"Append R function, results will be forwarded to next component in topology" )
      .method( "add_R_pipelining", 						&NN::add_R_pipelining,         										"Append R function, results will be transfered fwd or bwd" )
      .method( "add_R_ignoring", 						&NN::add_R_ignoring,         										"Append R function, ignoring its results" )
-     .method( "add_layer",				(bool (NN::*)(string,int))(&NN::add_layer_0xp), 									"Append layer component to topology" )
-     .method( "add_layer",				(bool (NN::*)(string,int,DATA))(&NN::add_layer_1xp),								"Append layer component to topology" )
-     .method( "add_connection_set",		(bool (NN::*)(string))(&NN::add_connection_set_0xp),  								"Append set of connections to topology (disconnected and empty of connections)" )
-     .method( "add_connection_set",		(bool (NN::*)(string,DATA))(&NN::add_connection_set_1xp),  							"Append set of connections to topology (disconnected and empty of connections)" )
-     .method( "connect_layers_at",		(bool (NN::*)(int,int,string))(&NN::connect_layers_at_0xp),							"Add connection set for two layers, no connections added" )
-     .method( "connect_layers_at",		(bool (NN::*)(int,int,string,DATA))(&NN::connect_layers_at_1xp),					"Add connection set for two layers, no connections added" )
-     .method( "fully_connect_layers_at",	(bool (NN::*)(int,int,string,DATA,DATA))(&NN::fully_connect_layers_at_0xp),		"Add connection set that fully connects two layers with connections" )
-     .method( "fully_connect_layers_at",	(bool (NN::*)(int,int,string,DATA,DATA,DATA))(&NN::fully_connect_layers_at_1xp),"Add connection set that fully connects two layers with connections" )
+     .method( "add_layer",					  (bool (NN::*)(string,int))(&NN::add_layer_0xp),								"Append layer component to topology" )
+     .method( "add_layer",				 (bool (NN::*)(string,int,DATA))(&NN::add_layer_1xp),								"Append layer component to topology" )
+     .method( "add_layer",							(bool (NN::*)(List))(&NN::add_layer_Mxp),								"Append layer component to topology" )
+     .method( "add_connection_set",			 (bool (NN::*)(string,DATA))(&NN::add_connection_set_1xp),  					"Append set of connections to topology (disconnected and empty of connections)" )
+     .method( "add_connection_set",					(bool (NN::*)(List))(&NN::add_connection_set_Mxp),  					"Append set of connections to topology (disconnected and empty of connections)" )
+     .method( "connect_layers_at",	 (bool (NN::*)(int,int,string,DATA))(&NN::connect_layers_at_1xp),						"Add connection set for two layers, no connections added" )
+     .method( "connect_layers_at",		    (bool (NN::*)(int,int,List))(&NN::connect_layers_at_Mxp),						"Add connection set for two layers, no connections added" )
+     .method( "fully_connect_layers_at",   (bool (NN::*)(int,int,string,DATA,DATA,DATA))(&NN::fully_connect_layers_at_1xp), "Add connection set that fully connects two layers with connections" )
+	 .method( "fully_connect_layers_at",		  (bool (NN::*)(int,int,List,DATA,DATA))(&NN::fully_connect_layers_at_Mxp), "Add connection set that fully connects two layers with connections" )
      .method( "create_connections_in_sets", 			&NN::create_connections_in_sets,									"Create connections to fully connect consequent layers" )
      .method( "add_single_connection",					&NN::add_single_connection,											"Add a connection to a set that already connects two layers" )
      .method( "remove_single_connection",				&NN::remove_single_connection,										"Remove a connection from a set" )

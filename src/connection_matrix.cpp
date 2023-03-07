@@ -578,7 +578,7 @@ void generic_connection_matrix::from_stream (std::istream REF s)
 			return;
 			}
 
-		// now try to allocate matrices using stored sizes (and hope for the best).
+		// now try to allocate matrices using stored sizes (and hope for the best) <- sad I wrote this a few days before the terrible 'pame kai opou vgei' accident [or it would be if Greece was run half-decently, now you can call it a crime]
 
 		reset_matrices();
 

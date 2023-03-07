@@ -202,18 +202,22 @@ a$get_output_from(3)
 \section{Methods}{
   \describe{
 
-    \item{\code{add_layer( name, size, p )}:}{Setup a new \code{layer} component (a layer of processing nodes) and append it to the NN topology. Returns TRUE if successful. Parameters are:
+    \item{\code{add_layer( name, size, optional_parameter )}:}{}
+    \item{\code{add_layer( parameters )}:}{Setup a new \code{layer} component (a layer of processing nodes) and append it to the NN topology. Returns TRUE if successful. Parameters are:
     \itemize{
     \item{\code{name}}{: string, containing name (that also Specifies type) of new layer. Names of predefined layers currently include \code{'pe'}(same as \code{'generic'}), \code{'pass-through'}, \code{'which-max'}, \code{'MAM'}, \code{'LVQ-input'}, \code{'LVQ-output'}, \code{'BP-hidden'}, \code{'BP-output'}, \code{'perceptron'} (Some of the available names are listed in \link{NN_component_names}, additional names for user-defined components may be added, see note.)}
     \item{\code{size}}{: integer, layer size i.e. number of \code{pe} (Processing Elements or nodes) to create in the layer.}
-    \item{\code{p}}{: (optional) double, parameter to be used by specific layer implementations (for example, BP layer implementations \code{'BP-hidden'} and \code{'BP-output'} interpret it is as the layer's learning rate). Note: more optional parameters may be added in future versions.}
+    \item{\code{optional_parameter}}{: (optional) double, parameter to be used by specific layer implementations (for example, BP layer implementations \code{'BP-hidden'} and \code{'BP-output'} interpret it is as the layer's learning rate). Note: for more optional parameters use \code{parameters} below.}
+    	\item{\code{parameters}}{: list, containing named parameters to be used in creating the layer. Must include an element named \code{name} and an element called \code{size} (similar to the corresponding standalone parameters described above).}
     }
     }
 
-    \item{\code{add_connection_set( name, p )}:}{Create a new empty \code{connection_set} component (a set of connections between two layers). It does not connect any layers nor contain any connections between specific layer nodes. The set is appended to the NN topology. Returns TRUE if successful. Parameters are:
+    \item{\code{add_connection_set( name, optional_parameter )}:}{}
+    \item{\code{add_connection_set( parameters )}:}{Create a new empty \code{connection_set} component (a set of connections between two layers). It does not connect any layers nor contain any connections between specific layer nodes. The set is appended to the NN topology. Returns TRUE if successful. Parameters are:
     \itemize{
     \item{\code{name}}{: string, containing name (that also specifies type) of new empty connection set. Names of predefined connection sets currently include \code{'generic', 'pass-through'}(which does not multiply weights), \code{'wpass-through'}(which does multiply weights), \code{'MAM'}, \code{'LVQ'}, \code{'BP'}, \code{'perceptron'} (Some of the available names are listed in \link{NN_component_names}, additional names for user-defined components may be added, see note.).}
-    \item{\code{p}}{: (optional) double, parameter to be used by specific connection set implementations (for example, \code{'BP'} connection sets interpret it is as the learning rate to be used when adjusting weights, \code{'LVQ'} connection sets use it to count iterations for decreasing weight adjustments, etc). Note: more optional parameters may be added in future versions.}
+    \item{\code{optional_parameter}}{: (optional) double, parameter to be used by specific connection set implementations (for example, \code{'BP'} connection sets interpret it is as the learning rate to be used when adjusting weights, \code{'LVQ'} connection sets use it to count iterations for decreasing weight adjustments, etc). Note: for more optional parameters use \code{parameters} below.}
+	\item{\code{parameters}}{: list, containing named parameters to be used in creating the connection set. Must include an element named \code{name} which contains the name (that also specifies type) of new empty connection set (similar to the corresponding standalone parameter described above).}
     }
     }
 
@@ -224,23 +228,27 @@ a$get_output_from(3)
     }
     }
 
-    \item{\code{connect_layers_at( source_pos, destin_pos, name, p )}:}{Insert a new empty \code{connection_set} component (a set of connections between two layers) between the layers at specified topology positions, and prepare it to connect them. No actual connections between any layer nodes are created. Returns TRUE if successful. Parameters are:
+    \item{\code{connect_layers_at( source_pos, destin_pos, name, optional_parameter )}:}{}
+    \item{\code{connect_layers_at( source_pos, destin_pos, parameters )}:}{Insert a new empty \code{connection_set} component (a set of connections between two layers) between the layers at specified topology positions, and prepare it to be filled with connections between them. No actual connections between any layer nodes are created. Returns TRUE if successful. Parameters are:
     \itemize{
     \item{\code{source_pos}}{: integer, position in topology of source layer.}
     \item{\code{destin_pos}}{: integer, position in topology of destination layer.}
     \item{\code{name}}{: string, containing name (that also specifies type) of new connection set (see above).}
-    \item{\code{p}}{: (optional) double, parameter to be used by specific connection set implementations (for example, \code{'BP'} connection sets interpret it is as the learning rate to be used when adjusting weights, \code{'LVQ'} connection sets use it to count iterations for decreasing weight adjustments, etc). Note: more optional parameters may be added in future versions.}
+    \item{\code{optional_parameter}}{: (optional) double, parameter to be used by specific connection set implementations (for example, \code{'BP'} connection sets interpret it is as the learning rate to be used when adjusting weights, \code{'LVQ'} connection sets use it to count iterations for decreasing weight adjustments, etc). Note: for more optional parameters use \code{parameters} below.}
+    	\item{\code{parameters}}{: list, containing named parameters to be used in creating the connection set. Must include an element named \code{name} which contains the name (that also specifies type) of new empty connection set (similar to the corresponding standalone parameter described above).}
     }
     }
 
-    \item{\code{fully_connect_layers_at( source_pos, destin_pos, name, min_random_weight, max_random_weight, p )}:}{Same as \code{connect_layers_at} but also fills the new \code{connection_set} with connections between the nodes of the two layers, fully connecting the layers (n x m connections are created, with n and m the number of nodes at each layer respectively). Returns TRUE if successful. Parameters are:
+	\item{\code{fully_connect_layers_at( source_pos, destin_pos, name, min_random_weight, max_random_weight, optional_parameter )}:}{}
+    \item{\code{fully_connect_layers_at( source_pos, destin_pos, parameters, min_random_weight, max_random_weight )}:}{Same as \code{connect_layers_at} but also fills the new \code{connection_set} with connections between the nodes of the two layers, fully connecting the layers (n x m connections are created, with n and m the number of nodes at each layer respectively). Returns TRUE if successful. Parameters are:
     \itemize{
     \item{\code{source_pos}}{: integer, position in topology of source layer.}
     \item{\code{destin_pos}}{: integer, position in topology of destination layer.}
     \item{\code{name}}{: string, containing name (that also specifies type) of new connection set (see above).}
     \item{\code{min_random_weight}}{: double, minimum value for random initial connection weights.}
     \item{\code{max_random_weight}}{: double, maximum value for random initial connection weights.}
-    \item{\code{p}}{: (optional) double, parameter to be used by specific connection set implementations (for example, \code{'BP'} connection sets interpret it is as the learning rate to be used when adjusting weights, \code{'LVQ'} connection sets use it to count iterations for decreasing weight adjustments, etc). Note: more optional parameters may be added in future versions.}
+    \item{\code{optional_parameter}}{: (optional) double, parameter to be used by specific connection set implementations (for example, \code{'BP'} connection sets interpret it is as the learning rate to be used when adjusting weights, \code{'LVQ'} connection sets use it to count iterations for decreasing weight adjustments, etc). Note: for more optional parameters use \code{parameters} below.}
+    	\item{\code{parameters}}{: list, containing named parameters to be used in creating the connection set. Must include an element named \code{name} which contains the name (that also specifies type) of new empty connection set (similar to the corresponding standalone parameter described above).}
     }
     }
 

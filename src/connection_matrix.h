@@ -40,6 +40,8 @@ protected:
 	DATA ** m_weights;											   // the weight of each connection
 	DATA ** m_misc;												   // an optional extra value (besides weight) stored per connection (and associated to it) for its own temporary use (not saved)
 
+	bool uses_misc() {return m_requires_misc;}
+
 	bool sizes_are_consistent();
 	void reset_matrices();
 

@@ -1,16 +1,15 @@
 //		----------------------------------------------------------
 //		(C)2020       Vasilis.N.Nikolaidis     All rights reserved.
 //		-----------------------------------------------------------
-//    	Rcpp glue code for building custom NNs
+//    	aux component for NN module (nnlib2Rcpp)
 //		-----------------------------------------------------------
+
+#include "nnlib2.h"
 
 #ifdef NNLIB2_FOR_RCPP
 
-#ifndef RCPP_NN_AUX_CONTROL_R
-#define RCPP_NN_AUX_CONTROL_R
-
-#include "nnlib2.h"
-#include "additional_parts.h"		// header for user-defined parts (components etc)
+#ifndef RCPP_NN_R_AUX_CONTROL
+#define RCPP_NN_R_AUX_CONTROL
 
 #define AUX_CONTROL_R_AUTODETERMINE_PREV (-1000)
 #define AUX_CONTROL_R_AUTODETERMINE_NEXT (-2000)
@@ -381,5 +380,5 @@ void aux_control_R::get_source_dest_component_indexes(int REF source_index, int 
 
 //--------------------------------------------------------------------------------
 
-#endif // RCPP_NN_AUX_CONTROL_R
+#endif // RCPP_NN_R_AUX_CONTROL
 #endif // NNLIB2_FOR_RCPP
