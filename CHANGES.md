@@ -113,7 +113,6 @@ Changes to nnlib2Rcpp version 0.2.1 (from 0.2.0)
 -	Added example_connection_matrix (example that creates a matrix-based connection set to be used in NN module via its add_connection_set).
 -	Rcpp_aux_control_R.h was renamed to Rcpp_R_aux_control.h.
 -	Modified "add_connection_set" method of module "NN" to also accept a list (R object) containing the parameters. This also allows for user-defined parameters to be passed when creating new connection sets.
--	Modified "add_layer" method of module "NN" to also accept a list (R object) containing the parameters. This also allows for user-defined parameters to be passed when creating new layers.
--	other minor changes.
 -	Modified "connect_layers_at" and "fully_connect_layers_at" methods of module "NN" to also accept a list (R object) containing the parameters for creating the new connection set. This also allows for user-defined parameters to be passed when creating new layers.
+-	Modified "add_layer" method of module "NN" to also accept a list (R object) containing the parameters. This also allows for user-defined parameters to be passed when creating new layers.
 -	other minor changes.
