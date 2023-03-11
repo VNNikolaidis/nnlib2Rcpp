@@ -1,15 +1,16 @@
 //		----------------------------------------------------------
 //		(C)2020       Vasilis.N.Nikolaidis     All rights reserved.
 //		-----------------------------------------------------------
-//    	aux component for NN module (nnlib2Rcpp)
+//    	Rcpp glue code for building custom NNs
 //		-----------------------------------------------------------
-
-#include "nnlib2.h"
 
 #ifdef NNLIB2_FOR_RCPP
 
-#ifndef RCPP_NN_R_AUX_CONTROL
-#define RCPP_NN_R_AUX_CONTROL
+#ifndef RCPP_NN_AUX_CONTROL_R
+#define RCPP_NN_AUX_CONTROL_R
+
+#include "nnlib2.h"
+#include "additional_parts.h"		// header for user-defined parts (components etc)
 
 #define AUX_CONTROL_R_AUTODETERMINE_PREV (-1000)
 #define AUX_CONTROL_R_AUTODETERMINE_NEXT (-2000)
@@ -89,11 +90,11 @@ aux_control_R::aux_control_R(string R_function,
 
 	if(
 		(input_mode!="none") AND
-		(input_mode!="input of") AND
-		(input_mode!="output of") AND
-		(input_mode!="weights at") AND
-		(input_mode!="biases at") AND
-		(input_mode!="misc at"))
+	(input_mode!="input of") AND
+	(input_mode!="output of") AND
+	(input_mode!="weights at") AND
+	(input_mode!="biases at") AND
+	(input_mode!="misc at"))
 	{
 		warning("Source (input mode) must be 'none', 'input of','output of','weights at','biases at' or 'misc at'. Changed to 'none");
 		m_input_mode = "none";
@@ -102,11 +103,11 @@ aux_control_R::aux_control_R(string R_function,
 
 	if(
 		(output_mode!="none") AND
-		(output_mode!="to input") AND
-		(output_mode!="to output") AND
-		(output_mode!="to weights") AND
-		(output_mode!="to biases") AND
-		(output_mode!="to misc"))
+	(output_mode!="to input") AND
+	(output_mode!="to output") AND
+	(output_mode!="to weights") AND
+	(output_mode!="to biases") AND
+	(output_mode!="to misc"))
 	{
 		warning("Destination (output mode) must be 'none', 'to input','to output','to weights','to biases' or 'to misc'. Changed to 'none");
 		m_output_mode = "none";
@@ -380,5 +381,5 @@ void aux_control_R::get_source_dest_component_indexes(int REF source_index, int 
 
 //--------------------------------------------------------------------------------
 
-#endif // RCPP_NN_R_AUX_CONTROL
+#endif // RCPP_NN_AUX_CONTROL_R
 #endif // NNLIB2_FOR_RCPP

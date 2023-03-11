@@ -29,7 +29,7 @@ class pe
  {
  protected:
 
- dllist<DATA> received_values;                          // list (queue) of input values, be processed by input_function
+ dllist<DATA> received_values;                          // list (queue) of input values, to be processed by input_function
 
  public:
 
@@ -50,6 +50,8 @@ class pe
 
  DATA add_to_input (DATA value);        	    		// directly add (arithmeticaly) the value to input (summation function)
  bool receive_input_value (DATA value);                 // append to list of input values (received_values), later to be processed by input_function for producing final input value.
+ int number_of_received_input_values();               	// how many values are in the queue?
+ DATA received_input_value(int i);						// the i-th received value.
  int  reset_received_values();                          // empties list of received input values (received_values).
  void move_input_to_output();                           // sometimes useful, also sets input to 0 and resets received values.
  DATA preview_current_input();							// The pe's preview_current_input() method is a PATCH to _estimate_ current input value without changing the pe's current state.

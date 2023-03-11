@@ -12,12 +12,13 @@ Layer names currently available include:
     \item{\code{generic_d}}{: same as above.}
     \item{\code{pe}}{: same as above.}
     \item{\code{pass-through}}{: a layer with PEs that simply pass input to output.}
-    \item{\code{which-max}}{: a layer with PEs that return the index of their input with max value.}
+    \item{\code{which-max}}{: a layer with PEs that return the index of one of their inputs whose value is maximum.}
     \item{\code{MAM}}{: a layer with PEs for Matrix-Associative-Memory NNs (see vignette).}
     \item{\code{LVQ-input}}{: LVQ input layer (see vignette).}
     \item{\code{LVQ-output}}{: LVQ output layer (see vignette).}
     \item{\code{BP-hidden}}{: Back-Propagation hidden layer (see vignette).}
     \item{\code{BP-output}}{: Back-Propagation output layer (see vignette).}
+    \item{\code{R-layer}}{: A layer whose encode and recall (map) functionality is defined in R (see \link{NN_R_components}).}
 }
 Additional (user-defined) layers currently available include:
   \itemize{
@@ -30,6 +31,7 @@ Additional (user-defined) layers currently available include:
     \item{\code{BP-hidden-softmax}}{: Back-Propagation hidden layer that performs softmax on its output (when recalling).}
     \item{\code{BP-output-softmax}}{: Back-Propagation output layer that performs softmax on its output (when recalling).}
     \item{\code{softmax}}{: a layer that (during recall) sums its inputs and outputs the softmax values.}
+    \item{\code{R-connections}}{: A set of connections whose encode and recall (map) functionality is defined in R (see \link{NN_R_components}).}
 }
 }
 

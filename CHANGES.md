@@ -110,9 +110,12 @@ Changes to nnlib2Rcpp version 0.2.0 (from 0.1.11)
 Changes to nnlib2Rcpp version 0.2.1 (from 0.2.0)
 -	(nnlib2) added class 'generic_connection_matrix', a matrix-based connection set that can be used to replace generic_connection_set (this is derived from connection_set, working draft, needs improvements, expect small run time performance gains).
 -	(nnlib2) used generic_connection_matrix derived classes in BP and related neural nets. Note: Option #define BP_CONNECTIONS in 'nn_bp.cpp' selects whether bp_connection_set (based on 'generic_connection_set') or bp_connection_matrix (based on generic_connection_matrix) is to be used.
--	Added example_connection_matrix (example that creates a matrix-based connection set to be used in NN module via its add_connection_set).
+-	added example_connection_matrix (example that creates a matrix-based connection set to be used in NN module via its add_connection_set).
 -	Rcpp_aux_control_R.h was renamed to Rcpp_R_aux_control.h.
--	Modified "add_connection_set" method of module "NN" to also accept a list (R object) containing the parameters. This also allows for user-defined parameters to be passed when creating new connection sets.
--	Modified "connect_layers_at" and "fully_connect_layers_at" methods of module "NN" to also accept a list (R object) containing the parameters for creating the new connection set. This also allows for user-defined parameters to be passed when creating new layers.
--	Modified "add_layer" method of module "NN" to also accept a list (R object) containing the parameters. This also allows for user-defined parameters to be passed when creating new layers.
+-	modified "add_connection_set" method of module "NN" to also accept a list (R object) containing the parameters. This also allows for user-defined parameters to be passed when creating new connection sets.
+-	modified "connect_layers_at" and "fully_connect_layers_at" methods of module "NN" to also accept a list (R object) containing the parameters for creating the new connection set. This also allows for user-defined parameters to be passed when creating new layers.
+-	modified "add_layer" method of module "NN" to also accept a list (R object) containing the parameters. This also allows for user-defined parameters to be passed when creating new layers.
+-	added 'R-connections' (C++ class 'R_connection_matrix'), a matrix-based connection_set type that calls R functions when encoding/recalling (file Rcpp_R_layer.h).
+-	added 'R-layer' (C++ class 'R_layer') a layer type that calls R functions when encoding/recalling (file Rcpp_R_connection_matrix.h).
+-	added support and documentation (file NN-R-components.Rd) about using 'R-layer' and 'R-connections' in 'NN' module.
 -	other minor changes.

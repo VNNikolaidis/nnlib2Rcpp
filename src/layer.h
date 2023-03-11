@@ -253,6 +253,7 @@ bool Layer<PE_TYPE>::input_data_from_vector(DATA* data, int dimension)
 		return false; }
 	for (int i = 0; i < dimension; i++)
 	{
+	//  (note: some next version must replace dual modes of input (input AND received_values) with only one (received_values))
 		pes[i].input = data[i];                    // sets this input to respective pe input for direct processing
 		pes[i].reset_received_values();
 		pes[i].receive_input_value(data[i]);       // make this the only received_value (for optional processing by pe::input_function)

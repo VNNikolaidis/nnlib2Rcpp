@@ -96,6 +96,16 @@ int pe::reset_received_values()
  }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// how many values are in the queue?
+
+int pe::number_of_received_input_values() { return(received_values.size()); }
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// the i-th received value.
+
+DATA pe::received_input_value(int i) { return received_values[i]; }
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // if PE activation function is not overloaded, it just returns value
 
 DATA pe::activation_function(DATA value)

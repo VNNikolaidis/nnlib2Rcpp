@@ -74,6 +74,20 @@ public:
 typedef Layer < perceptron_pe > perceptron_layer;
 
 // Perceptron connections:
+// Note:
+// At the example in the post the destination PE inputs were also used to store
+// the desired output (iris class). This is mentioned in the post, but was chosen
+// for simplicity and compatibility with the nnlib2Rcpp version then available at CRAN.
+//
+// This version searches for the desired output in the 'misc' register of the
+// destination PEs, thus is more correct: the desired value is not an actual PE input.
+// To use this while following the post's example, 'use set_misc_values_at'
+// instead of 'set_input_at'. I.e. In the post's example code
+// replace:
+//  		p$input_at(3,desired_data_out[c,])
+// with:
+//			p$set_misc_values_at(3,desired_data_out[c,])
+
 class perceptron_connection: public connection
 {
 public:
@@ -84,10 +98,10 @@ public:
 		destin_pe().receive_input_value( weight() * source_pe().output );
 	}
 
-	// for simplicity, learning rate is fixed to 0.3 and input contains desired output:
+	// for simplicity, learning rate is fixed to 0.3. Desired output in 'misc' (was 'input'):
 	void encode()
 	{
-		weight() = weight() + 0.3 * (destin_pe().input - destin_pe().output) * source_pe().output;
+		weight() = weight() + 0.3 * (destin_pe().misc - destin_pe().output) * source_pe().output;
 	}
 };
 

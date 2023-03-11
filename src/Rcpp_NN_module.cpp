@@ -12,11 +12,14 @@
 #include <iostream>
 #include <fstream>
 
-#include "Rcpp_R_aux_control.h"
-
 #include "nn_lvq.h"
 #include "nn_bp.h"
 #include "nn_mam.h"
+
+#include "Rcpp_R_layer.h"
+#include "Rcpp_R_connection_matrix.h"
+#include "Rcpp_R_aux_control.h"
+
 #include "spare_parts.h"
 #include "additional_parts.h"		// header for user-defined parts (components etc)
 
@@ -90,6 +93,15 @@ protected:
 			return pl;
 		}
 
+		if( name == "R-layer" )
+		{
+			string encode_FUN = parameters["encode_FUN"];
+			string recall_FUN = parameters["recall_FUN"];
+			R_layer PTR pl = new R_layer(name,size,encode_FUN,recall_FUN);
+			return pl;
+		}
+
+
 		layer PTR pl = generate_custom_layer(parameters);
 		if(pl != NULL) return pl;
 
@@ -120,7 +132,8 @@ protected:
 
 		if( name == "MAM" )				return new mam::mam_connection_set(name);
 
-		if( name == "LVQ")				{
+		if( name == "LVQ")
+		{
 			lvq::lvq_connection_set PTR pc = new lvq::lvq_connection_set;
 			if(pc!=NULL)
 			{
@@ -134,7 +147,8 @@ protected:
 			return pc;
 		}
 
-		if( name == "BP" )				{
+		if( name == "BP" )
+		{
 			bp::bp_connection_set PTR pc = new bp::bp_connection_set;
 			if(pc!=NULL)
 			{
@@ -145,6 +159,17 @@ protected:
 				pc->set_learning_rate(bp_learnrate);
 				TEXTOUT << "(This " << name << " connection set uses learning rate = " << bp_learnrate << ")\n";
 			}
+			return pc;
+		}
+
+		if( name == "R-connections" )
+		{
+			string encode_FUN = parameters["encode_FUN"];
+			string recall_FUN = parameters["recall_FUN"];
+			bool requires_misc = false;
+			if(parameters.containsElementNamed("requires_misc"))
+				requires_misc = parameters["requires_misc"];
+			R_connection_matrix PTR pc = new R_connection_matrix(name,encode_FUN,recall_FUN,requires_misc);
 			return pc;
 		}
 
