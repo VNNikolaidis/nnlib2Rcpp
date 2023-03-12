@@ -39,7 +39,7 @@ Note: The two variations of input (\code{INPUT} and \code{INPUT_Q}) are provided
 	\item{\code{requires_misc}}{: (optional) logical, if TRUE each connection will be provided with an extra 'misc' data register.}
 	}
 For example: \cr\cr \code{p$add_connection_set(list(name="R-connections",encode_FUN="ef",recall_FUN="rf"))} \cr\cr adds a set of connections to the NN topology (here the NN is named \code{p}). The new connection set will use some R function (here named \code{ef}) when encoding data and another R function (here named \code{rf}) when recalling (mapping) data.\cr\cr
-Note that here each set of connections maintains connection weights and (if required) misc values in matrices. During encode or recall (map) operations, the connection weights matrix, misc values matrix (if any) and other data from the connected layers are sent for processing to the two R functions. No \code{connection_set} or \code{connection} classes are employed (this is significantly less versatile than what nnlib2’s C++ classes offer). Thus, the R functions specified as \code{encode_FUN} and \code{recall_FUN} for connection sets will have to be defined so that they accept (zero or more) of the following parameters:
+Note that here each set of connections maintains connection weights and (if required) misc values in matrices. During encode or recall (map) operations, the connection weights matrix, misc values matrix (if any) and other data from the connected layers are sent for processing to the two R functions. No \code{connection_set} or \code{connection} classes are employed (this is significantly less versatile than what these nnlib2’s C++ classes offer). Thus, the R functions specified as \code{encode_FUN} and \code{recall_FUN} for connection sets will have to be defined so that they accept (zero or more) of the following parameters:
   \itemize{
     \item{\code{WEIGHTS}}{: numeric matrix (s rows, d columns). This matrix contains the current connection weights..}
     \item{\code{SOURCE_INPUT}}{: numeric vector (length s) containing the current input values of the nodes in the source layer (note: nodes often reset this values after they have processed them).}
@@ -75,7 +75,7 @@ Defining NN components with custom behavior in R does have a cost in terms of ru
 
 \examples{\dontrun{
 #-------------------------------------------------------------------------------
-# LAYER EXAMPLE:
+# 1. LAYER EXAMPLE:
 
 # Example R function to be used when the layer is encoding:
 # Version for when the final input (a single value per PE) is directly sent to
@@ -155,7 +155,7 @@ n$recall_at(1)
 print(n$get_output_at(1))
 
 #-------------------------------------------------------------------------------
-# CONNECTION SET EXAMPLE:
+# 2. CONNECTION SET EXAMPLE:
 
 # This simple connection set will encode data by adding to each connection
 # weight the output of the source node.
@@ -207,6 +207,92 @@ print(n$get_weights_at(2))
 n$set_input_at(1,c(20,20,20,20))
 n$recall_all_fwd()
 print(n$get_output_at(3))
+
+#-------------------------------------------------------------------------------
+# 3. A COMPLETE EXAMPLE (simple single layer perceptron-like NN):
+
+# Function for connections, when recalling/mapping:
+# Use any one of the two functions below.
+# Each column of the returned matrix contains the data that will be sent to the
+# corresponding destination node.
+
+# version 1: sends multiple values (product) for destination nodes to summate.
+
+CSmap1 <- function(WEIGHTS, SOURCE_OUTPUT,...)  WEIGHTS * SOURCE_OUTPUT
+
+# version 2: sends corresponding value (dot product) to destination node.
+
+CSmap2 <- function(WEIGHTS, SOURCE_OUTPUT,...) SOURCE_OUTPUT %*% WEIGHTS
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Function for connections, when encoding data:
+
+learning_rate <- 0.3
+
+CSenc <- function(WEIGHTS, SOURCE_OUTPUT, DESTINATION_MISC, DESTINATION_OUTPUT, ...)
+{
+  a <- learning_rate *
+          (DESTINATION_MISC - DESTINATION_OUTPUT)   # desired output is in misc registers.
+  a <- outer( SOURCE_OUTPUT, a , "*" )              # compute weight adjustments.
+  w <- WEIGHTS + a                                  # compute adjusted weights.
+  return(list(WEIGHTS=w))                           # return new (adjusted) weights.
+}
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Function for layer, when recalling/mapping:
+# (note: no encode function is used for the layer in this example)
+
+LAmap <- function(INPUT_Q,...)
+{
+	x <- colSums(INPUT_Q)		# input function is summation.
+	x <- ifelse(x>0,1,0)		# threshold function is step.
+	return(x)
+}
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# prepare some data based on iris data set:
+
+data_in <- as.matrix(iris[1:4])
+iris_cases <- nrow((data_in))
+# make a "one-hot" encoding matrix for iris species
+desired_data_out <- matrix(data=0, nrow=iris_cases, ncol=3)
+desired_data_out[cbind(1:iris_cases,unclass(iris[,5]))]=1
+
+# create the NN and define its components:
+# (first generic layer simply accepts input and transfers it to the connections)
+
+p <- new("NN")
+
+p$add_layer("generic",4)
+
+p$add_connection_set(list(name="R-connections",
+                          encode_FUN="CSenc",
+                          recall_FUN="CSmap2"))
+
+p$add_layer(list(name="R-layer",
+                 size=3,
+                 encode_FUN="",
+                 recall_FUN="LAmap"))
+
+p$create_connections_in_sets(0,0)
+
+# encode data and desired output (for 50 training epochs):
+
+for(i in 1:50)
+	for(c in 1:iris_cases)
+	{
+		p$input_at(1,data_in[c,])
+		p$set_misc_values_at(3,desired_data_out[c,])  # put desired output in misc registers
+		p$recall_all_fwd();
+		p$encode_at(2)
+	}
+
+# Recall the data and show NN's output:
+
+for(c in 1:iris_cases)
+{
+	p$input_at(1,data_in[c,])
+	p$recall_all_fwd()
+	cat("iris case ",c,", desired = ", desired_data_out[c,], " returned = ", p$get_output_from(3),"\n")
+}
 }}
-
-
