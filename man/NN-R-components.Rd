@@ -293,6 +293,7 @@ for(c in 1:iris_cases)
 {
 	p$input_at(1,data_in[c,])
 	p$recall_all_fwd()
-	cat("iris case ",c,", desired = ", desired_data_out[c,], " returned = ", p$get_output_from(3),"\n")
+	cat("iris case ",c,", desired = ", desired_data_out[c,],
+		" returned = ", p$get_output_from(3),"\n")
 }
 }}
