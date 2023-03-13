@@ -469,15 +469,6 @@ a$get_output_from(3)
  \item{\code{ignore_result}}{: logical, if TRUE, the R function's results are ignored and original (incoming) values are maintained and (possibly) sent to the \code{output_to} component. If FALSE, the values used are those returned by the R function.}
     }}
 
-				(o_mode!="none") AND
-				(o_mode!="") AND
-				(o_mode!="") AND
-				(o_mode!="") AND
-				(o_mode!="") AND
-				(o_mode!=""))
-
-
-
 \item{\code{outline()}:}{Print a summary description of all components in topology.}
 
 \item{\code{print()}:}{Print internal NN state, including all components in topology.}
