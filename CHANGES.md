@@ -119,3 +119,6 @@ Changes to nnlib2Rcpp version 0.2.1 (from 0.2.0)
 -	added 'R-layer' (C++ class 'R_layer') a layer type that calls R functions when encoding/recalling (file Rcpp_R_connection_matrix.h).
 -	added support and documentation (file NN-R-components.Rd) about using 'R-layer' and 'R-connections' in 'NN' module.
 -	other minor changes.
+
+Changes to nnlib2Rcpp version 0.2.2 (from 0.2.1)
+-	minor correction in documentation file NN-class.rd
