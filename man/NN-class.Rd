@@ -23,18 +23,18 @@ All reference classes extend and inherit methods from \code{"\linkS4class{envRef
 Vasilis N. Nikolaidis <vnnikolaidis@gmail.com>
 }
 \note{
-This R module maintains a generic neural network that can be manipulated using the provided methods. In addition to predefined, new neural network components can be defined and then employed by the \code{"NN"} module. Currently, definition of new components must be done in C++, requires the package source code (which includes the \pkg{nnlib2} C++ library of neural network base classes) and the ability to compile it.  In particular:
-    \itemize{
-  \item Any new component type or class definition can be added to a single header file called "\code{additional_parts.h}" (which is included in the package source). All new components to be employed by the \code{NN} module must be defined in this file (or be accessible from functions in this file).
+This R module maintains a generic neural network that can be manipulated using the provided methods. In addition to predefined components already existing in the package, new neural network components can be defined and then employed by the \code{"NN"} module. In doing so, it is recommended to use the provided C++ base classes and class-templates. This requires the package source code (which includes the \pkg{nnlib2} C++ library of neural network base classes) and the ability to compile the package. The steps for defining new types of components using C++ are outlined below:
+\itemize{
+  \item Any new component type or class definition should be added to the header file called "\code{additional_parts.h}" which is included in the package source (src) directory, or in files accessible by the functions in "\code{additional_parts.h}". Therefore, all new components to be employed by the \code{NN} module must be defined in "\code{additional_parts.h}" or in files that this file includes via \code{#include}.
   \item New \code{layer}, \code{connection_set}, \code{pe} or \code{connection} definitions must comply (at least loosely) to the \pkg{nnlib2} base class hierarchy and structure and follow the related guidelines. Note: some minimal examples of class and type definitions can be found in the "\code{additional_parts.h}" file itself.
   \item A textual name must be assigned to any new \code{layer} or \code{connection_set}, to be used as parameter in \code{NN} module methods that require a name to create a component. This can be as simple as a single line of code where given the textual name the corresponding component object is created and returned. This code must be added (as appropriate) to either \code{generate_custom_layer()} or \code{generate_custom_connection_set()} functions found in the same "\code{additional_parts.h}" header file. Note: example entries can be found in these functions at the "\code{additional_parts.h}" file. Some of the available names are listed in \link{NN_component_names}.
 }
-More information on expanding the library with new types of NN components (nodes, layers, connections etc) and models, can be found in the package's  vignette as well as the related \href{https://github.com/VNNikolaidis/nnlib2Rcpp}{repository on Github}). Please consider submitting any useful components you create, to enrich  future versions of the package.
+Alternatively, NN components can also be defined using only R code (see \link{NN_R_components}). More information on expanding the library with new types of NN components (nodes, layers, connections etc) and models, can be found in the package's  vignette as well as the related \href{https://github.com/VNNikolaidis/nnlib2Rcpp}{repository on Github}). Please consider submitting any useful components you create, to enrich  future versions of the package.
 }
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
-\seealso{\code{\link{BP}}, \code{\link{LVQs}}, \code{\link{MAM}}, {\link{NN_component_names}.}}
+\seealso{\code{\link{BP}}, \code{\link{LVQs}}, \code{\link{MAM}}, {\link{NN_component_names}}, {\link{NN_R_components}.}}
 
 \examples{
 # Example 1:

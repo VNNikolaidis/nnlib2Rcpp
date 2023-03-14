@@ -3,10 +3,10 @@
 
 \title{Custom NN components defined using R}
 
-\description{Custom NN components used in \code{\link{NN}} module can be defined in R code.}
+\description{Custom NN components used in \code{\link{NN}} module can be defined using \pkg{nnlib2} C++ classes. Alternatively, NN components can also be defined using R code.}
 
 \section{Introduction}{
-In addition to NN components defined using nnlib2 C++ classes and templates, custom, user-defined NN components also can be created in R code (without any need for C++). Regardless of how they are defined, such components can be added to neural networks created in R via \code{\link{NN}} module and cooperate with each other.}
+In addition to NN components defined using the provided \pkg{nnlib2} C++ classes and class-templates (see Notes in \link{NN}), custom, user-defined NN components also can be created in R code (without any need for C++). Regardless of how they are defined, such components can be added to neural networks created in R via \code{\link{NN}} module and cooperate with each other.}
 
 \section{1. Layers}{Layers of nodes (aka Processing Elements or PEs) whose encode/recall behavior is to be defined using R can be added to the NN via the \code{add_layer} \code{\link{NN}} method. The call to \code{add_layer} should have a single parameter, a \code{list} containing four named elements:
   \itemize{

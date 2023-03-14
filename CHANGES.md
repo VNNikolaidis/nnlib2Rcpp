@@ -123,4 +123,4 @@ Changes to nnlib2Rcpp version 0.2.1 (from 0.2.0)
 ---
 
 Changes to nnlib2Rcpp version 0.2.2 (from 0.2.1)
--	minor correction in documentation file NN-class.rd
+-	minor corrections and changes in documentation.
