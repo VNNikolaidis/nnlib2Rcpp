@@ -31,6 +31,8 @@ protected:
   double		m_acceptable_error_level;
   std::string	m_error_type;
 
+  bool m_mute_training_output;
+
 public:
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -40,6 +42,7 @@ public:
   TEXTOUT << "BP NN created, now encode data (or load NN from file).\n";
   bp.reset();
   set_error_level("MAE",0);
+  m_mute_training_output = false;
   }
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -91,6 +94,8 @@ public:
     // encode all data input-output pairs
     DATA error_level = DATA_MAX;
 
+    if(m_mute_training_output) TEXTOUT << "Training...\n";
+
     for(int i=0;i<training_epochs && bp.is_ready();i++)
     {
 
@@ -108,15 +113,16 @@ public:
 
       mean_error_for_dataset = mean_error_for_dataset / num_training_cases;
 
+      if(NOT m_mute_training_output)
       if(i%1000==0)
       {
-        TEXTOUT << "Epoch = "<< i << " , Error level = " << mean_error_for_dataset << "\n";
+        TEXTOUT << "Epoch = "<< i << " , error level = " << mean_error_for_dataset << "\n";
         checkUserInterrupt();                           // (RCpp function to check if user pressed cancel)
       }
 
       if(mean_error_for_dataset<=m_acceptable_error_level)
       {
-      	TEXTOUT << "Epoch = "<< i << " , Error level indication = " << mean_error_for_dataset << "\n";
+      	TEXTOUT << "Epoch = "<< i << " , error level indication = " << mean_error_for_dataset << "\n";
       	TEXTOUT << "Training reached acceptable error level ( ";
       	TEXTOUT << m_error_type << " ";
       	TEXTOUT << mean_error_for_dataset << " <= " << m_acceptable_error_level << " )\n";
@@ -205,6 +211,14 @@ public:
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+  bool mute(bool on)
+  {
+  	m_mute_training_output = on;
+  	return on;
+  }
+
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
   bool save_to_file(std::string filename)
   {
     std::ofstream outfile;
@@ -262,6 +276,7 @@ RCPP_MODULE(class_BP) {
   .method( "recall",          &BP::recall,          "Get output for a dataset using BP NN" )
   .method( "print",           &BP::print,           "Print BP NN details" )
   .method( "show",            &BP::show,            "Print BP NN details" )
+  .method( "mute",            &BP::mute,            "Disable output of current error level during training" )
   .method( "load",            &BP::load_from_file,  "Load BP" )
   .method( "save",            &BP::save_to_file,    "Save BP" )
   .method( "set_error_level" ,&BP::set_error_level, "Set parameters for acceptable error when training." )

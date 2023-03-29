@@ -502,7 +502,7 @@ bool generic_connection_matrix::connection_properties( int connection,
                                                DATA REF weight)
 {
 	if(sizes_are_consistent())
-		if((connection>=0) AND (connection<size()))
+	if((connection>=0) AND (connection<size()))
 		{
 			int con_row = (int)connection/m_allocated_cols_source_layer_size;
 			int con_col = connection % m_allocated_cols_source_layer_size;

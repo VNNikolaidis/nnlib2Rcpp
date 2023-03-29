@@ -132,14 +132,15 @@ plot(iris_s, pch=bp_classification, main="Iris classified by a partialy trained 
     }
     }
 
+    \item{\code{mute(on)}:}{ Disable output of current error level when training (if parameter \code{on} is TRUE). }
 
-    \item{\code{print()}:}{ print NN structure. }
+    \item{\code{print()}:}{ Print NN structure. }
 
-    \item{\code{show()}:}{ print NN structure. }
+    \item{\code{show()}:}{ Print NN structure. }
 
-    \item{\code{load(filename)}:}{ retrieve the NN from specified file. }
+    \item{\code{load(filename)}:}{ Retrieve the NN from specified file. }
 
-    \item{\code{save(filename)}:}{ save the NN to specified file. }
+    \item{\code{save(filename)}:}{ Save the NN to specified file. }
   }
 
 The following methods are inherited (from the corresponding class):

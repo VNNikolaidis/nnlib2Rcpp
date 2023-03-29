@@ -28,7 +28,8 @@ NumericMatrix Autoencoder  (
                            int hidden_layer_size = 5,               // number of nodes in each hidden layer
                            bool show_nn = false,
                            std::string error_type = "MAE",
-                           double acceptable_error_level = 0
+                           double acceptable_error_level = 0,
+                           int display_rate = 1000
                            )
  {
  TEXTOUT << "acceptable error level = " << acceptable_error_level << "\n";
@@ -64,12 +65,13 @@ NumericMatrix Autoencoder  (
  }
 
  if(acceptable_error_level<0) acceptable_error_level=0;
+ if(display_rate<0) display_rate=1000;
 
  TEXTOUT << "Max number of epochs = " << number_of_training_epochs << "\n";
+ DATA error_level = 0;
 
  for(int i=0;(i<number_of_training_epochs) && ae.no_error();i++)
   {
-    DATA error_level = 0;
     for(int r=0;r<num_training_cases;r++)
       {
       NumericVector v(data_in( r , _ ));                            // my (lame?) way to interface with R. Remember, NumericMatrix stores data row-first, as R does.
@@ -80,15 +82,16 @@ NumericMatrix Autoencoder  (
 
     error_level = error_level/(num_training_cases);					// compute MAE or MSE
 
-    if(i%100==0)
+    if(display_rate>0)
+    if(i%display_rate==0)
       {
       checkUserInterrupt();                                       // (RCpp function to check if user pressed cancel)
-      TEXTOUT << "Epoch = "<< i << " , Error level = " << error_level << "\n";
+      TEXTOUT << "Epoch = "<< i << " , error level = " << error_level << "\n";
       }
 
     if(error_level<=acceptable_error_level)
       {
-      TEXTOUT << "Epoch = "<< i << " , Error level = " << error_level << "\n";
+      TEXTOUT << "Epoch = "<< i << " , error level = " << error_level << "\n";
       TEXTOUT << "Training reached acceptable error level ( ";
       TEXTOUT << error_type << " ";
       TEXTOUT << error_level << " <= " << acceptable_error_level << " )\n";
@@ -96,7 +99,7 @@ NumericMatrix Autoencoder  (
       }
   }
 
- TEXTOUT << "Training ended.\n\n";
+ TEXTOUT << "Training ended , error level = " << error_level << "\n\n";
 
  if(show_nn)
  {

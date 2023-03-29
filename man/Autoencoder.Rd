@@ -17,7 +17,8 @@ Autoencoder(
   hidden_layer_size = 5L,
   show_nn = FALSE,
   error_type = "MAE",
-  acceptable_error_level = 0)
+  acceptable_error_level = 0,
+  display_rate = 1000)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -43,7 +44,10 @@ number of hidden layers on each side of the special layer.
   \item{error_type}{string, error to display and possibly use to stop training (must be 'MSE' or 'MAE').}
 
   \item{acceptable_error_level}{stops training when error is below this level.}
+
+  \item{display_rate}{number of epochs that pass before current error level is displayed (0 = never display current error).}
 }
+
 \value{
 Returns a numeric matrix containing the projected data.
 }
