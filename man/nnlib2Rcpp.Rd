@@ -2,6 +2,7 @@
 \Rdversion{1.1}
 \docType{package}
 \alias{nnlib2Rcpp}
+\alias{nnlib2Rcpp-package}
 
 \title{A collection of Neural Networks and tools to create custom models}
 \description{

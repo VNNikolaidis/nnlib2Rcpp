@@ -126,3 +126,8 @@ Changes to nnlib2Rcpp version 0.2.2 (from 0.2.1)
 -	minor corrections and changes in documentation.
 -	added 'display_rate' parameter to Autoencoder function (controls or limits display of current error when training).
 -	added 'mute' method to 'BP' module (enables/disables display of current error when training).
+
+---
+
+Changes to nnlib2Rcpp version 0.2.3 (from 0.2.2)
+-	minor change in documentation (nnlib2Rcpp.Rd, as suggested by Kurt Hornik)
