@@ -73,8 +73,8 @@ print(mam_recalled_cluster_ids)
 
     \item{\code{encode( data_in, data_out )}:}{ Setup a new MAM NN and encode input-output data pairs. Parameters are:
     \itemize{
-    \item{\code{data_in}}{: numeric matrix, input data to be encoded in MAM, a numeric matrix (2d, of n rows). Each row will be paired to the corresponding data_out row, forming an input-output vector pair.}
-    \item{\code{data_out}}{: numeric matrix, output data to be encoded in MAM, a numeric matrix (2d, also of n rows). Each row will be paired to the corresponding data_in row, forming an input-output vector pair.}
+    \item\code{data_in}: numeric matrix, input data to be encoded in MAM, a numeric matrix (2d, of n rows). Each row will be paired to the corresponding data_out row, forming an input-output vector pair.
+    \item\code{data_out}: numeric matrix, output data to be encoded in MAM, a numeric matrix (2d, also of n rows). Each row will be paired to the corresponding data_in row, forming an input-output vector pair.
     }
     Note: to encode additional input-output vector pairs in an existing MAM, use \code{train_single} method (see below).
     }

@@ -98,12 +98,12 @@ plot(iris_s, pch=bp_classification, main="Iris classified by a partialy trained 
 
     \item{\code{encode( data_in, data_out, learning_rate, training_epochs, hidden_layers, hidden_layer_size )}:}{ Setup a new BP NN and encode input-output data pairs. Parameters are:
     \itemize{
-    \item{\code{data_in}}{: numeric matrix, containing input vectors as rows. . It is recommended that these values are in 0 to 1 range.}
-    \item{\code{data_out}}{: numeric matrix, containing corresponding (desired) output vectors. It is recommended that these values are in 0 to 1 range.}
-    \item{\code{learning_rate}}{: a number (preferably greater than 0 and less than 1) used in training.}
-    \item{\code{training_epochs}}{: number of training epochs, aka single presentation iterations of all training data pairs to the NN during training.}
-    \item{\code{hidden_layers}}{: number of hidden layers to be created between input and output layers.}
-    \item{\code{hidden_layer_size}}{: number of nodes (processing elements or PEs) in each of the hidden layers (all hidden layers are of the same length in this implementation of BP).}
+    \item\code{data_in}: numeric matrix, containing input vectors as rows. . It is recommended that these values are in 0 to 1 range.
+    \item\code{data_out}: numeric matrix, containing corresponding (desired) output vectors. It is recommended that these values are in 0 to 1 range.
+    \item\code{learning_rate}: a number (preferably greater than 0 and less than 1) used in training.
+    \item\code{training_epochs}: number of training epochs, aka single presentation iterations of all training data pairs to the NN during training.
+    \item\code{hidden_layers}: number of hidden layers to be created between input and output layers.
+    \item\code{hidden_layer_size}: number of nodes (processing elements or PEs) in each of the hidden layers (all hidden layers are of the same length in this implementation of BP).
     }
     Note: to encode additional input-output vector pairs in an existing BP, use \code{train_single} or \code{train_multiple} methods (see below).
     }
@@ -112,11 +112,11 @@ plot(iris_s, pch=bp_classification, main="Iris classified by a partialy trained 
 
     \item{\code{setup(input_dim, output_dim, learning_rate, hidden_layers, hidden_layer_size)}:}{ Setup the BP NN so it can be trained and used. Note: this is not needed if using \code{encode}. Parameters are:
     \itemize{
-    \item{\code{input_dim}}{: integer length of input vectors.}
-    \item{\code{output_dim}}{: integer length of output vectors.}
-    \item{\code{learning_rate}}{: a number (preferably greater than 0 and less than 1) used in training.}
-    \item{\code{hidden_layers}}{: number of hidden layers to be created between input and output layers.}
-    \item{\code{hidden_layer_size}}{: number of nodes (processing elements or PEs) in each of the hidden layers (all hidden layers are of the same length in this implementation of BP).}
+    \item\code{input_dim}: integer length of input vectors.
+    \item\code{output_dim}: integer length of output vectors.
+    \item\code{learning_rate}: a number (preferably greater than 0 and less than 1) used in training.
+    \item\code{hidden_layers}: number of hidden layers to be created between input and output layers.
+    \item\code{hidden_layer_size}: number of nodes (processing elements or PEs) in each of the hidden layers (all hidden layers are of the same length in this implementation of BP).
     }
     }
 
@@ -127,8 +127,8 @@ plot(iris_s, pch=bp_classification, main="Iris classified by a partialy trained 
 
     \item{\code{set_error_level(error_type, acceptable_error_level)}:}{ Set options that stop training when an acceptable error level has been reached (when a subsequent \code{encode} or \code{train_multiple} is performed). Parameters are:
     \itemize{
-  \item{\code{error_type}}{: string, error type to display and use to stop training (must be 'MSE' or 'MAE').}
-  \item{\code{acceptable_error_level}}{: training stops when error is below this level.}
+  \item\code{error_type}: string, error type to display and use to stop training (must be 'MSE' or 'MAE').
+  \item\code{acceptable_error_level}: training stops when error is below this level.
     }
     }
 

@@ -68,9 +68,9 @@ plot(iris_s, pch=lvq_recalled_class_ids, main="LVQ recalled clusters (module)")
 
     \item{\code{encode(data, desired_class_ids, training_epochs)}:}{ Encode input and output (classification) for a dataset using LVQ NN. Parameters are:}
     \itemize{
-    \item{\code{data}}{: training data, a numeric matrix, (2d, cases in rows, variables in columns). Data should be in 0 to 1 range.}
-    \item{\code{desired_class_ids}}{ : vector of integers containing a desired class id for each training data case (row). Should contain integers in 0 to n-1 range, where n is the number of classes.}
-  \item{\code{training_epochs}}{: integer, number of training epochs, aka presentations of all training data to the NN during training.}
+    \item\code{data}: training data, a numeric matrix, (2d, cases in rows, variables in columns). Data should be in 0 to 1 range.
+    \item\code{desired_class_ids} : vector of integers containing a desired class id for each training data case (row). Should contain integers in 0 to n-1 range, where n is the number of classes.
+  \item\code{training_epochs}: integer, number of training epochs, aka presentations of all training data to the NN during training.
   }
 
     \item{\code{recall(data_in)}:}{ Get output (classification) for a dataset (numeric matrix \code{data_in}) from the (trained) LVQ NN. The \code{data_in} dataset should be 2-d containing  data cases (rows) to be presented to the NN and is expected to have same number or columns as the original training data. Returns a vector of integers containing a class id for each case (row).}

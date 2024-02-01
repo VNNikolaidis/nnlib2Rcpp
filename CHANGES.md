@@ -136,8 +136,8 @@ Changes to nnlib2Rcpp version 0.2.3 (from 0.2.2)
 
 Changes to nnlib2Rcpp version 0.2.4 (from 0.2.3)
 -	minor corrections in documentation (NN-R-components.Rd)
--	in documentation file examples which employ the matrix multiplication operator (%*%), the percent symbol is replaced by backslash-percent so that these examples appear correctly in the help viewer.
-
+-	in documentation, file examples which employ the matrix multiplication operator (%*%), the percent symbol is replaced by backslash-percent so that these examples appear correctly in the help viewer.
+-	in documentation, changed all files to eliminate "Unnecessary braces" notes when tools::checkRd() is used.
 ---
 
 
