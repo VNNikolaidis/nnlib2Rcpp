@@ -1,7 +1,7 @@
 Package: nnlib2Rcpp
 Type: Package
 Title: A Tool for Creating Custom Neural Networks in C++ and using Them in R
-Version: 0.2.5
+Version: 0.2.4.1
 Author: Vasilis Nikolaidis [aut, cph, cre] (<https://orcid.org/0000-0003-1471-8788>)
 Maintainer: Vasilis Nikolaidis <v.nikolaidis@uop.gr>
 Description: Contains a module to define neural networks from custom components and versions of Autoencoder, BP, LVQ, MAM NN.
