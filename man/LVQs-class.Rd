@@ -75,6 +75,15 @@ plot(iris_s, pch=lvq_recalled_class_ids, main="LVQ recalled clusters (module)")
 
     \item{\code{recall(data_in)}:}{ Get output (classification) for a dataset (numeric matrix \code{data_in}) from the (trained) LVQ NN. The \code{data_in} dataset should be 2-d containing  data cases (rows) to be presented to the NN and is expected to have same number or columns as the original training data. Returns a vector of integers containing a class id for each case (row).}
 
+ \item{\code{get_weights()}:}{Get the current weights (codebook vector coordinates) of the 2nd component (\code{connection_set}). If successful, returns NumericVector of connection weights (otherwise vector of zero length).
+    }
+
+ \item{\code{set_weights( data_in )}:}{Set the weights of the 2nd component (\code{connection_set}), i.e. directly define the LVQ's codebook vectors. If successful, returns TRUE. Parameters are:
+    \itemize{
+    \item\code{data_in}: NumericVector, data to be used for new values in \code{weight} registers of connections (sizes must match).
+    }
+    }
+
     \item{\code{print()}:}{ print NN structure. }
 
     \item{\code{show()}:}{ print NN structure. }

@@ -3,12 +3,13 @@ An R package providing access to Neural Networks created using nnlib2.
 
 ---
 
-A collection of Artificial Neural Networks (NNs or ANNs or ANSs) created using the 'nnlib2' C++ library.
+A tool for creating custom neural networks in C++ and using them in R. The Artificial Neural Networks (ANN), also called Artificial Neural Systems (ANS) or simply Neural Networks (NN) are created using the 'nnlib2' C++ library.
 
-Currently includes predefined versions of BP, Autoencoder, MAM, LVQ (supervised and unsupervised). 
+Currently also includes predefined versions of BP, Autoencoder, MAM, LVQ (supervised and unsupervised).
+
 All NNs are created using 'nnlib2' (a C++ library of classes for implementing NNs) and interfaced with R via RCpp.
 
-The package also provides the NN R module (Class "NN") which allows creation and control of custom NNs configurations from R using NN components (predefined or user-defined) created using 'nnlib2'. To add new user-defined NN components (layers, nodes, connections, sets of connections etc) see the "NN" component documentation (type ?NN in R). Note: this process requires some familiarity with C++.
+The package also provides the NN R module (Class "NN") which allows creation and control of custom NNs configurations and topologies from R. These NNs consist of components (predefined or user-defined) usually defined via 'nnlib2'. To add new user-defined NN components (layers, nodes, connections, sets of connections etc) to the package see the "NN" component documentation (type ?NN in R). Note: defining components via 'nnlib2' requires some familiarity with C++.
 
 ---
 

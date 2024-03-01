@@ -40,7 +40,7 @@ public:
   }
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  // recommended cluster ids should be in 0 to n range.
+  // recommended cluster ids should be in 0 to n-1 range (n the number of clusters)
 
   void encode(NumericMatrix data,IntegerVector desired_class_ids,int training_epochs)
   {
@@ -154,6 +154,49 @@ public:
   }
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // Get weights (connection variable)
+
+  NumericVector get_weights()
+  {
+  	// using R numbering, 1st is input layer, 2nd connections, 3rd output layer:
+  	int pos = 2;
+
+	NumericVector data_out;
+
+  	component PTR pc;
+  	pc = lvq.component_from_topology_index(pos-1);
+  	if(pc==NULL) return data_out;
+  	if(pc->type()!=cmpnt_connection_set)
+  	{
+  		warning("Not a connection set.");
+  		return data_out;
+  	}
+
+  	int num_items = pc->size();
+  	if(num_items>0)
+  	{
+  		data_out= NumericVector(num_items);
+  		double * fpdata_out = REAL(data_out);                   // my (lame?) way to interface with R, cont.)
+  		if(NOT lvq.get_weights_at_component(pos-1,fpdata_out, num_items))
+  			warning("Cannot retreive weights from specified component");
+  	}
+
+  	return data_out;
+  }
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// Set weight (connection variable) for connections in given connection set (R to Cpp index converted)
+
+	bool set_weights(NumericVector data_in)
+	{
+		// using R numbering, 1st is input layer, 2nd connections, 3rd output layer:
+		int pos = 2;
+
+		double * fpdata_in  = REAL(data_in);                    // my (lame?) way to interface with R, cont.)
+		return lvq.set_weights_at_component(pos-1,fpdata_in,data_in.length());
+	}
+
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   void print()
   {
@@ -180,12 +223,14 @@ RCPP_MODULE(class_LVQs) {
   class_<LVQs>( "LVQs" )
   .constructor()
   //.constructor<NumericMatrix,IntegerVector,int>()
-  .method( "encode",    &LVQs::encode,        "Encode input and output (classification) for a dataset using LVQ NN" )
-  .method( "recall",    &LVQs::recall,        "Get output (classification) for a dataset using LVQ NN" )
-  .method( "print",     &LVQs::print,         "Print LVQ NN details" )
-  .method( "show",      &LVQs::show,          "Print LVQ NN details" )
-  .method( "load",      &LVQs::load_from_file,"Load LVQ" )
-  .method( "save",      &LVQs::save_to_file,  "Save LVQ" )
+  .method( "encode",    	&LVQs::encode,        "Encode input and output (classification) for a dataset using LVQ NN" )
+  .method( "recall",    	&LVQs::recall,        "Get output (classification) for a dataset using LVQ NN" )
+  .method( "print",     	&LVQs::print,         "Print LVQ NN details" )
+  .method( "show",      	&LVQs::show,          "Print LVQ NN details" )
+  .method( "load",      	&LVQs::load_from_file,"Load LVQ" )
+  .method( "save",      	&LVQs::save_to_file,  "Save LVQ" )
+  .method( "get_weights",   &LVQs::get_weights,	  "Get current weight values" )
+  .method( "set_weights",   &LVQs::set_weights,	  "Set current weight values" )
   ;
 }
 

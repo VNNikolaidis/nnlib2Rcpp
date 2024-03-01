@@ -932,7 +932,7 @@ public:
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	// Set "bias" register values for PEs in given layer (R to Cpp index converted)
+	// Set weight (connection variable) for connections in given connection set (R to Cpp index converted)
 
 	bool set_weights_at(int pos, NumericVector data_in)
 	{
