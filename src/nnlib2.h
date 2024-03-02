@@ -15,7 +15,7 @@
 #ifndef VNN_H
 #define VNN_H
 
-#define NN_VERSION "nnlib2 v.0.3.0 (c) 2023 Vasilis N. Nikolaidis"
+#define NN_VERSION "nnlib2 v.0.3.2 (c) 2023 Vasilis N. Nikolaidis"
 
 /*-----------------------------------------------------------------------*/
 

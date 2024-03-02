@@ -96,12 +96,12 @@ void lvq_output_layer::recall()
    if(p.output < last_winning_value)
     {
     last_winning_value = p.output;
-    p.misc = LVQ_REWARD_PE;										// set PE to activated.
-    if(last_winner >= 0) pes[last_winner].misc = LVQ_DEACTI_PE;	// deactivate any previous winner.
+    p.bias = LVQ_REWARD_PE;										// set PE to activated.
+    if(last_winner >= 0) pes[last_winner].bias = LVQ_DEACTI_PE;	// deactivate any previous winner.
     last_winner = i;
     }
    else
-    p.misc = LVQ_DEACTI_PE;										// set PE to not activated.
+    p.bias = LVQ_DEACTI_PE;										// set PE to not activated.
    }
 
   // also activate nodes in neighborhood
@@ -117,7 +117,7 @@ void lvq_output_layer::recall()
 		current_pe_to_activate = current_pe_to_activate-1;
 		if(current_pe_to_activate<0)
 			current_pe_to_activate=size()-1;					// circular topology
-		pes[current_pe_to_activate].misc  = LVQ_REWARD_PE;		// PE is in winner's neighborhood, activate it;
+		pes[current_pe_to_activate].bias  = LVQ_REWARD_PE;		// PE is in winner's neighborhood, activate it;
 		}
 	current_pe_to_activate = last_winner;						// activate counterclockwise (left)
 	for (i=1;i<=distance_to_activate;i++)
@@ -125,7 +125,7 @@ void lvq_output_layer::recall()
 		current_pe_to_activate = current_pe_to_activate+1;
 		if(current_pe_to_activate>size()-1)
 			current_pe_to_activate=0;							// circular topology
-		pes[current_pe_to_activate].misc  = LVQ_REWARD_PE;		// PE is in winner's neighborhood, activate it;
+		pes[current_pe_to_activate].bias  = LVQ_REWARD_PE;		// PE is in winner's neighborhood, activate it;
 		}
 	}
 
@@ -172,14 +172,14 @@ void lvq_connection_set::encode()
    connection REF c = (connections.current());
    pe REF destin_pe = destin.PE(c.destin_pe_id());
 
-   if(destin_pe.misc == LVQ_REWARD_PE) 						// if destination PE is activated...
+   if(destin_pe.bias == LVQ_REWARD_PE) 						// if destination PE is activated...
 	{
     DATA d = c.misc;										// get difference, it was already computed during recall (see below)...
     DATA x = a*d ;
     c.weight() += x;										// adjust weight (SIMPSON 5-109)
     }
 
-   if(destin_pe.misc == LVQ_PUNISH_PE)						// if destination PE is activated but is to be punished (supervised mode)...
+   if(destin_pe.bias == LVQ_PUNISH_PE)						// if destination PE is activated but is to be punished (supervised mode)...
 	{
     DATA d = c.misc;										// get difference, it was already computed during recall (see below)...
     DATA x = a*d ;
@@ -211,7 +211,7 @@ void lvq_connection_set::recall()
    x = source.PE(source_pe).output;
    w = c.weight();
 
-   c.misc = (x - w);												// keep a copy of the difference in connection's misc.
+   c.misc = (x - w);												// keep a copy of the difference in connection's 'misc' register.
 
    x = (x - w)*(x - w);												// then find the square of the differences and...
 
@@ -221,85 +221,202 @@ void lvq_connection_set::recall()
   }
 
 /*-----------------------------------------------------------------------*/
-/* Kohonen LVQ	ANS	(Supervised LVQ)									 */
+/* Base class for Kohonen - inspired ANS (currently LVQ or SOM)			 */
+/*-----------------------------------------------------------------------*/
+
+kohonen_nn::kohonen_nn()
+:NN_PARENT_CLASS("Kohonen-inspired ANS")
+{}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+kohonen_nn::~kohonen_nn()
+{
+reset();
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+bool kohonen_nn::setup(
+			int input_dimension,
+            int output_dimension,
+            int output_neighborhood_size,						// for for unsupervised training (SOM) output_neighborhood_size is how many output nodes are affected,
+            DATA ** initial_cluster_centers_matrix)			  	// optional matrix initializes weights; must be sized output_dimension X input_dimension
+	{
+		lvq_input_layer    * p_input_layer;
+		lvq_output_layer   * p_output_layer;
+		lvq_connection_set * p_connection_set;
+
+		if((input_dimension<=0) OR (output_dimension<=0)) {error(NN_DATAST_ERR,"Invalid LVQ dims"); return false;}
+
+		if(no_error())
+		{
+			reset();
+
+			// create input layer...
+
+			p_input_layer = new lvq_input_layer;
+			p_input_layer->set_error_flag(my_error_flag());			// runtime errors in layer affect entire neural net.
+			p_input_layer->setup("Input",input_dimension);
+
+			p_output_layer = new lvq_output_layer ();
+			p_output_layer->set_error_flag(my_error_flag());
+			p_output_layer->setup("Output",output_dimension, output_neighborhood_size);
+
+			p_connection_set = new lvq_connection_set;
+			p_connection_set->set_error_flag(my_error_flag());
+
+			p_connection_set->setup("",p_input_layer,p_output_layer);
+			p_connection_set->fully_connect(false);
+
+			if(initial_cluster_centers_matrix EQL NULL)
+			{
+				p_connection_set->set_connection_weights_random(LVQ_RND_MIN,LVQ_RND_MAX);
+			}
+			else
+			{
+				int s,d;
+				for(d=0;d<p_output_layer->size();d++)
+					for(s=0;s<p_input_layer->size();s++)
+						p_connection_set->set_connection_weight(s,d,initial_cluster_centers_matrix[d][s]);
+			}
+
+			topology.append(p_input_layer);
+			topology.append(p_connection_set);
+			topology.append(p_output_layer);
+
+			if(no_error())
+			{
+				set_component_for_input(0);
+				set_component_for_output(2);
+				set_is_ready_flag();
+			}
+		}
+
+		return no_error();
+	}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// input it :
+
+void kohonen_nn::from_stream ( std::istream REF s )
+{
+	string comment;
+	lvq_input_layer    * p_input_layer;
+	lvq_output_layer   * p_output_layer;
+	lvq_connection_set * p_connection_set;
+	int number_of_components;
+
+	nn::from_stream(s);		                                    // read header (the way it was done in older versions)
+
+	if(no_error())
+	{
+		if(s.rdstate()) {error(NN_IOFILE_ERR,"Error reading stream (LVQ)");return;}
+
+		s >> comment >> number_of_components ;
+
+		if(number_of_components NEQL 3) {error(NN_IOFILE_ERR,"Not a Kohonen-type (LVQ or SOM) neural net");return;}
+
+		// create input layer...
+
+		p_input_layer = new lvq_input_layer;
+		p_input_layer->set_error_flag(my_error_flag());				// runtime errors in layer affect entire neural net.
+		topology.append(p_input_layer);
+		p_input_layer->from_stream(s);								// load input layer
+
+		p_connection_set = new lvq_connection_set;
+		p_connection_set->set_error_flag(my_error_flag());
+		topology.append(p_connection_set);
+		p_connection_set->from_stream(s);								// load connection set
+
+		p_output_layer = new lvq_output_layer ();
+		p_output_layer->set_error_flag(my_error_flag());
+		topology.append(p_output_layer);
+		p_output_layer->from_stream(s);								// load output layer
+
+		// fixup connection set (fix pointers ...)
+
+		p_connection_set->setup("Connections",p_input_layer,p_output_layer);
+
+		if(no_error())
+		{
+			set_component_for_input(0);
+			set_component_for_output(2);
+			set_is_ready_flag();
+		}
+	}
+}
+
+/*-----------------------------------------------------------------------*/
+/* LVQ ANS (Supervised LVQ)												 */
 /*-----------------------------------------------------------------------*/
 // implementation follows:
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 lvq_nn::lvq_nn()
- :NN_PARENT_CLASS("Kohonen LVQ")
  {
- m_output_neighborhood_size=1;								// no neighborhood in supervised LVQ mode.
+ m_number_of_output_nodes_per_class = 0;
+ set_number_of_output_nodes_per_class(1);
+ }
+
+lvq_nn::lvq_nn(int number_of_output_nodes_per_class)
+ {
+ m_number_of_output_nodes_per_class = 0;
+ set_number_of_output_nodes_per_class(number_of_output_nodes_per_class);
  }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-lvq_nn::~lvq_nn() {}
+void lvq_nn::set_number_of_output_nodes_per_class(int number_of_output_nodes_per_class)
+{
+	if(number_of_output_nodes_per_class==m_number_of_output_nodes_per_class)
+		return;
+
+	if(number_of_output_nodes_per_class<=1)
+		{
+		m_name = "LVQs (Supervised LVQ) ANS";
+		m_number_of_output_nodes_per_class = 1;
+		return;
+		}
+
+	m_name = "LVQs (Supervised LVQ) ANS with multiple output nodes per class";
+	m_number_of_output_nodes_per_class = number_of_output_nodes_per_class;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+int lvq_nn::get_number_of_output_nodes_per_class()
+{
+	return m_number_of_output_nodes_per_class;
+}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // optional matrix initializes weights; must be sized output_dimension X input_dimension
 
-bool lvq_nn::setup(int input_dimension, int output_dimension,DATA ** initial_cluster_centers_matrix)
+bool lvq_nn::setup(int input_dimension,
+                   int number_of_classes,
+                   DATA ** initial_cluster_centers_matrix)
  {
- lvq_input_layer    * p_input_layer;
- lvq_output_layer   * p_output_layer;
- lvq_connection_set * p_connection_set;
+	return kohonen_nn::setup(
+							input_dimension,
+							number_of_classes * m_number_of_output_nodes_per_class,
+							1,
+							initial_cluster_centers_matrix
+							);
 
- if((input_dimension<=0) OR (output_dimension<=0)) {error(NN_DATAST_ERR,"Invalid LVQ dims"); return false;}
-
- if(no_error())
-  {
-  reset();
-
-  // create input layer...
-
-  p_input_layer = new lvq_input_layer;
-  p_input_layer->set_error_flag(my_error_flag());			// runtime errors in layer affect entire neural net.
-  p_input_layer->setup("Input",input_dimension);
-
-  p_output_layer = new lvq_output_layer ();
-  p_output_layer->set_error_flag(my_error_flag());
-  p_output_layer->setup("Output",output_dimension,m_output_neighborhood_size);
-
-  p_connection_set = new lvq_connection_set;
-  p_connection_set->set_error_flag(my_error_flag());
-
-  p_connection_set->setup("",p_input_layer,p_output_layer);
-  p_connection_set->fully_connect(false);
-
-  if(initial_cluster_centers_matrix EQL NULL)
-   {
-   p_connection_set->set_connection_weights_random(LVQ_RND_MIN,LVQ_RND_MAX);
-   }
-  else
-   {
-   int s,d;
-   for(d=0;d<p_output_layer->size();d++)
-    for(s=0;s<p_input_layer->size();s++)
-     p_connection_set->set_connection_weight(s,d,initial_cluster_centers_matrix[d][s]);
-   }
-
-  topology.append(p_input_layer);
-  topology.append(p_connection_set);
-  topology.append(p_output_layer);
-
-  if(no_error())
-   {
-   set_component_for_input(0);
-   set_component_for_output(2);
-   set_is_ready_flag();
-   }
-  }
-
- return no_error();
  }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DATA lvq_nn::encode_s(DATA PTR input, int input_dim, DATA PTR desired_output, int output_dim, int iteration)
  {
- if(desired_output==NULL) error (NN_NULLPT_ERR,"No desired output defined for LVQ");
- if(output_dim<1)		  error (NN_DATAST_ERR,"No desired output defined for LVQ");
+ if(desired_output==NULL)
+ 	error (NN_NULLPT_ERR,"No desired output defined for LVQ");
+ if(output_dim<1)
+ 	error (NN_DATAST_ERR,"No desired output defined for LVQ");
+ if(m_number_of_output_nodes_per_class>1)
+ 	error (NN_DATAST_ERR,"This operation is not currently implemented for LVQs with multiple outputs per class");
+
  if(no_error())
   {
   DATA max=desired_output[0];
@@ -319,23 +436,25 @@ DATA lvq_nn::encode_s(DATA PTR input, int input_dim, DATA PTR desired_output, in
 
 DATA lvq_nn::encode_s(	DATA PTR input,
 						int input_dim,
-						int desired_winner,
+						int desired_class,
 						int iteration)
  {
 
  if(is_ready())
   {
+  // recall the data vector:
+
   INPUT_LAYER.input_data_from_vector(input,input_dim);
   recall();
 
-  // find current winner class (with smallest distance)...
+  // find which output node is best for input vector (has smallest distance)
 
   int current_winner_pe	  = 0;
   DATA current_win_output = OUTPUT_LAYER.PE(0).output;	// this should be the distance, see lvq_output_layer::recall.
 
   for(int i=0;i<output_dimension();i++)
    {
-   OUTPUT_LAYER.PE(i).misc = LVQ_DEACTI_PE;
+   OUTPUT_LAYER.PE(i).bias = LVQ_DEACTI_PE;
    DATA d = OUTPUT_LAYER.PE(i).output;					// this should be the distance, see lvq_output_layer::recall.
    if(d<=current_win_output)
 	{
@@ -344,10 +463,20 @@ DATA lvq_nn::encode_s(	DATA PTR input,
     }
    }
 
-  if(current_winner_pe==desired_winner)					// this is based on SIMPSON equation (5-113)
-	OUTPUT_LAYER.PE(current_winner_pe).misc = LVQ_REWARD_PE;
+  // translate winning PE number to class id (numbers start at 0):
+
+  int returned_class =
+  	(int)(current_winner_pe / m_number_of_output_nodes_per_class);
+
+  // reward if winning PE is one of those assigned to desired class, else punish.
+
+  if(returned_class==desired_class)					// this is based on SIMPSON equation (5-113)
+    {
+	OUTPUT_LAYER.PE(current_winner_pe).bias = LVQ_REWARD_PE;
+  	OUTPUT_LAYER.PE(current_winner_pe).misc = OUTPUT_LAYER.PE(current_winner_pe).misc + 1;  // just a counter of rewards given to the PE (for inspection purposes, not affecting results)
+    }
   else
-	OUTPUT_LAYER.PE(current_winner_pe).misc = LVQ_PUNISH_PE;
+	OUTPUT_LAYER.PE(current_winner_pe).bias = LVQ_PUNISH_PE;
 
   if(no_error()) LVQ_CONNECTIONS.encode(iteration);
   }
@@ -356,55 +485,44 @@ DATA lvq_nn::encode_s(	DATA PTR input,
  }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// input it :
 
-void lvq_nn::from_stream ( std::istream REF s )
- {
- string comment;
- lvq_input_layer    * p_input_layer;
- lvq_output_layer   * p_output_layer;
- lvq_connection_set * p_connection_set;
- int number_of_components;
+int lvq_nn::recall_class( DATA PTR input,
+                    	  int input_dim )
 
- nn::from_stream(s);		                                    // read header (the way it was done in older versions)
+{
+	int returned_class = -1;
 
- if(no_error())
-  {
-  if(s.rdstate()) {error(NN_IOFILE_ERR,"Error reading stream (LVQ)");return;}
+	if(is_ready())
+	{
+		// recall the data vector:
 
-  s >> comment >> number_of_components ;
+		INPUT_LAYER.input_data_from_vector(input,input_dim);
+		recall();
 
-  if(number_of_components NEQL 3) {error(NN_IOFILE_ERR,"Not an LVQ neural net");return;}
+		// find which output node is best for input vector (has smallest distance)
 
-  // create input layer...
+		int current_winner_pe	  = 0;
+		DATA current_win_output = OUTPUT_LAYER.PE(0).output;	// this should be the distance, see lvq_output_layer::recall.
 
-  p_input_layer = new lvq_input_layer;
-  p_input_layer->set_error_flag(my_error_flag());				// runtime errors in layer affect entire neural net.
-  topology.append(p_input_layer);
-  p_input_layer->from_stream(s);								// load input layer
+		for(int i=0;i<output_dimension();i++)
+		{
+			OUTPUT_LAYER.PE(i).bias = LVQ_DEACTI_PE;
+			DATA d = OUTPUT_LAYER.PE(i).output;					// this should be the distance, see lvq_output_layer::recall.
+			if(d<=current_win_output)
+			{
+				current_win_output = d;
+				current_winner_pe  = i;
+			}
+		}
 
-  p_connection_set = new lvq_connection_set;
-  p_connection_set->set_error_flag(my_error_flag());
-  topology.append(p_connection_set);
-  p_connection_set->from_stream(s);								// load connection set
+		// translate winning PE number to class id (numbers start at 0):
 
-  p_output_layer = new lvq_output_layer ();
-  p_output_layer->set_error_flag(my_error_flag());
-  topology.append(p_output_layer);
-  p_output_layer->from_stream(s);								// load output layer
+		returned_class =
+			(int)(current_winner_pe / m_number_of_output_nodes_per_class);
+	}
 
-  // fixup connection set (fix pointers ...)
-
-  p_connection_set->setup("Connections",p_input_layer,p_output_layer);
-
-  if(no_error())
-    {
-  	set_component_for_input(0);
-  	set_component_for_output(2);
-  	set_is_ready_flag();
-    }
-  }
- }
+	return returned_class;
+}
 
 /*-----------------------------------------------------------------------*/
 /* Kononen SOM	ANS	(Unsupervised LVQ)									 */
@@ -413,14 +531,24 @@ void lvq_nn::from_stream ( std::istream REF s )
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 som_nn::som_nn(int neighborhood_size)
- :lvq_nn()
  {
- m_name = "LVQu (SOM) ANS";
+ m_name = "LVQu (SOM or Unsupervised LVQ) ANS";
  m_output_neighborhood_size = neighborhood_size;
  if(m_output_neighborhood_size%2==0) m_output_neighborhood_size=m_output_neighborhood_size-1;
  if(m_output_neighborhood_size<1) m_output_neighborhood_size=1;
  }
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+bool som_nn::setup(int input_dimension,
+                   int output_dimension,
+                   DATA ** initial_cluster_centers_matrix)   			// optional matrix initializes weights; must be sized output_dimension X input_dimension
+{
+	return kohonen_nn::setup(	input_dimension,
+                    			output_dimension,
+                    			m_output_neighborhood_size,
+                    			initial_cluster_centers_matrix);
+}
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DATA som_nn::encode_u(DATA PTR input, int input_dim, int iteration)

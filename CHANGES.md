@@ -144,5 +144,7 @@ Changes to nnlib2Rcpp version 0.2.4 (from 0.2.3)
 Changes to nnlib2Rcpp version 0.2.5 (from 0.2.4)
 -	added example in NN documentation (NN-class.Rd).
 -	added get_weights, set_weights methods to LVQs (allows access to codebook vectors).
+-	added set_number_of_nodes_per_class method to LVQs (allows multiple output nodes (i.e codebook vectors) per class in the training data).
+-	added get_number_of_rewards method to LVQs (counts number of times each output node was positively reinforced).
 -	other minor changes.
 

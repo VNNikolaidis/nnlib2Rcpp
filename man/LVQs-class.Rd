@@ -48,12 +48,25 @@ iris_desired_class_ids<-as.integer(iris$Species)-1;
 # now create the NN:
 lvq<-new("LVQs")
 
-# and train it:
+# Optionally, the output layer could be expanded, e.g. use 5 nodes per class:
+# lvq$set_number_of_nodes_per_class(5)
+
+# train it:
 lvq$encode(iris_s,iris_desired_class_ids,100)
+
+# Optionally, examine how many times each output PE was positively reinforced.
+# print(lvq$get_number_of_rewards())
+
+# Optionally, get the connection weights (codebook vector coordinates).
+# print(lvq$get_weights())
 
 # recall the same data (a simple check of how well the LVQ was trained):
 lvq_recalled_class_ids<-lvq$recall(iris_s);
+
+# show results:
+cat("Correct: ",sum(lvq_recalled_class_ids==iris_desired_class_ids),"\n")
 plot(iris_s, pch=lvq_recalled_class_ids, main="LVQ recalled clusters (module)")
+
 }
 \keyword{classes}
 \section{Fields}{
@@ -83,6 +96,14 @@ plot(iris_s, pch=lvq_recalled_class_ids, main="LVQ recalled clusters (module)")
     \item\code{data_in}: NumericVector, data to be used for new values in \code{weight} registers of connections (sizes must match).
     }
     }
+
+ \item{\code{set_number_of_nodes_per_class( n )}:}{Set the number of nodes in the output layer (and thus incoming connections whose weights form codebook vectors) that will be used per class. Default is 1, i.e. each class in the data to be encoded in the NN corresponds to a single node (PE) in it's output layer. Returns resulting number of nodes that will be used. Parameters are:
+    \itemize{
+    \item\code{n}: integer, number of nodes to be used per each class.
+    }
+    }
+
+  \item{\code{get_number_of_rewards( )}:}{ Get the number of times an output node was positively reinforced during data encoding. Returns NumericVector containing results per output node. }
 
     \item{\code{print()}:}{ print NN structure. }
 

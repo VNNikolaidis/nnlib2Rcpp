@@ -85,8 +85,8 @@ class nn : public component, public data_receiver, public data_provider, public 
  virtual string description ();
  string outline (bool show_first_index_as_one=false);                   // output a textual summary of the NN structure
  string item_description (int item);
- void from_stream ( std::istream REF s );			        // overrides virtual method in component, only reads header
- void to_stream   ( std::ostream REF s );			        // overrides virtual method in component
+ void from_stream ( std::istream REF s );			        			// overrides virtual method in component, only reads header
+ void to_stream   ( std::ostream REF s );			        			// overrides virtual method in component
 
  bool set_component_for_input(int index);                               // set which component in the topology is used for input (by index position in topology)
  bool set_component_for_input_by_id(int id);                            // set which component in the topology is used for input (by component id)
@@ -94,7 +94,7 @@ class nn : public component, public data_receiver, public data_provider, public 
  bool set_component_for_output_by_id(int id);                           // set which component in the topology is used for output (by component id)
 
  bool call_component_encode(int index);                                 // Trigger encode for component at specified topology index position
- bool call_component_recall(int index);                   	        // Trigger recall for component at specified topology index position
+ bool call_component_recall(int index);                   	        	// Trigger recall for component at specified topology index position
 
  bool call_component_encode_all(bool fwd = true);                       // Trigger encode for all components in the topology (1st to last if fwd=true, last to 1st if fwd=false)
  bool call_component_recall_all(bool fwd = true);              	        // Trigger recall for all components in the topology (1st to last if fwd=true, last to 1st if fwd=false)
@@ -154,6 +154,7 @@ class nn : public component, public data_receiver, public data_provider, public 
  DATA get_bias_at_component(int index, int pe_number);					// only works only for layers
  bool set_biases_at_component(int index, DATA * data, int dimension);   // only works only for layers
  bool set_bias_at_component(int index, int pe_number, DATA value);		// only works only for layers
+ int  number_of_components_in_topology();
  void change_is_ready_flag(bool new_state);                             // avoid using, nn should set m_nn_is_ready flag itself, once its setup is completed
  };
 

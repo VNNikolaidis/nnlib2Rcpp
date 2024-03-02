@@ -40,6 +40,16 @@ public:
   }
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // set number of output PEs (nodes) per class
+
+  int set_number_of_nodes_per_class(int n)
+  {
+  	TEXTOUT << "LVQ will use " << n << " output PE(s) per class when encoding or recalling data.\n";
+    lvq.set_number_of_output_nodes_per_class(n);
+    return lvq.get_number_of_output_nodes_per_class();
+  }
+
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // recommended cluster ids should be in 0 to n-1 range (n the number of clusters)
 
   void encode(NumericMatrix data,IntegerVector desired_class_ids,int training_epochs)
@@ -62,7 +72,7 @@ public:
       return;
     }
 
-    TEXTOUT << "Setting up LVQ for 0 to " << max_class_id << " ids (" << output_dim << " classes).\n";
+    TEXTOUT << "Setting up LVQ for 0 to " << max_class_id << " ids (" << output_dim << " classes). \n";
 
     if(!lvq.setup(input_data_dim,output_dim))
     {
@@ -107,21 +117,13 @@ public:
       return returned_cluster_ids;
     }
 
-    int output_dim = lvq.output_dimension();
-    DATA * output_vector = new DATA [output_dim];
-
     for(int r=0;r<data_in.rows();r++)
     {
       NumericVector v(data_in( r , _ ));                              // my (lame?) way to interface with R. Remember, NumericMatrix stores data row-first, as R does.
       double * fpdata = REAL(v);                                      // my (lame?) way to interface with R, cont.)
 
-      lvq.recall(fpdata, data_in.cols(), output_vector, output_dim);
-
-      // find which element in the output vector has the smallest value and use it as the winner id.
-      returned_cluster_ids[r] = which_min(output_vector,output_dim);
+      returned_cluster_ids[r] = lvq.recall_class(fpdata, data_in.cols());
     }
-
-    delete [] output_vector;
 
     TEXTOUT << "Lvq returned " << unique(returned_cluster_ids).length() << " clusters with ids: " << unique(returned_cluster_ids) << "\n";
 
@@ -163,6 +165,12 @@ public:
 
 	NumericVector data_out;
 
+	if(lvq.number_of_components_in_topology()!=3)
+		{
+		warning("The LVQ topology has not been defined yet.");
+		return data_out;
+		}
+
   	component PTR pc;
   	pc = lvq.component_from_topology_index(pos-1);
   	if(pc==NULL) return data_out;
@@ -189,11 +197,54 @@ public:
 
 	bool set_weights(NumericVector data_in)
 	{
+		if(lvq.number_of_components_in_topology()!=3)
+		{
+			warning("The LVQ topology has not been defined yet.");
+			return false;
+		}
+
 		// using R numbering, 1st is input layer, 2nd connections, 3rd output layer:
 		int pos = 2;
 
 		double * fpdata_in  = REAL(data_in);                    // my (lame?) way to interface with R, cont.)
 		return lvq.set_weights_at_component(pos-1,fpdata_in,data_in.length());
+	}
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// Get weights (connection variable)
+
+	NumericVector get_number_of_rewards()
+	{
+	// using R numbering, 1st is input layer, 2nd connections, 3rd output layer:
+	int pos = 3;
+
+	NumericVector data_out;
+
+	if(lvq.number_of_components_in_topology()!=3)
+	{
+		warning("The LVQ topology has not been defined yet.");
+		return data_out;
+	}
+
+	component PTR pc;
+	pc = lvq.component_from_topology_index(pos-1);
+	if(pc==NULL) return data_out;
+	if(pc->type()!=cmpnt_layer)
+	{
+		warning("Not a layer.");
+		return data_out;
+	}
+
+	int num_items = pc->size();
+	if(num_items>0)
+	{
+		data_out= NumericVector(num_items);
+		double * fpdata_out = REAL(data_out);                   // my (lame?) way to interface with R, cont.)
+		if(NOT lvq.get_misc_at_component(pos-1,fpdata_out, num_items))
+			warning("Cannot retreive misc values from specified component");
+	}
+
+	return data_out;
 	}
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -223,14 +274,16 @@ RCPP_MODULE(class_LVQs) {
   class_<LVQs>( "LVQs" )
   .constructor()
   //.constructor<NumericMatrix,IntegerVector,int>()
-  .method( "encode",    	&LVQs::encode,        "Encode input and output (classification) for a dataset using LVQ NN" )
-  .method( "recall",    	&LVQs::recall,        "Get output (classification) for a dataset using LVQ NN" )
-  .method( "print",     	&LVQs::print,         "Print LVQ NN details" )
-  .method( "show",      	&LVQs::show,          "Print LVQ NN details" )
-  .method( "load",      	&LVQs::load_from_file,"Load LVQ" )
-  .method( "save",      	&LVQs::save_to_file,  "Save LVQ" )
-  .method( "get_weights",   &LVQs::get_weights,	  "Get current weight values" )
-  .method( "set_weights",   &LVQs::set_weights,	  "Set current weight values" )
+  .method( "encode",    						&LVQs::encode,							"Encode input and output (classification) for a dataset using LVQ NN" )
+  .method( "recall",    						&LVQs::recall,							"Get output (classification) for a dataset using LVQ NN" )
+  .method( "print",     						&LVQs::print,							"Print LVQ NN details" )
+  .method( "show",      						&LVQs::show,							"Print LVQ NN details" )
+  .method( "load",  						 	&LVQs::load_from_file,					"Load LVQ" )
+  .method( "save",      						&LVQs::save_to_file,					"Save LVQ" )
+  .method( "get_weights",						&LVQs::get_weights,						"Get current weight values" )
+  .method( "set_weights",						&LVQs::set_weights,						"Set current weight values" )
+  .method( "set_number_of_nodes_per_class",		&LVQs::set_number_of_nodes_per_class,	"Set number of output PEs to be used per class" )
+  .method( "get_number_of_rewards",				&LVQs::get_number_of_rewards,			"Get number of times each output PE was positively reinforced during encoding" )
   ;
 }
 

@@ -839,6 +839,15 @@ bool nn::connect_layers_at_topology_indexes(                                // c
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// Returns number of components in current topology
+
+int nn::number_of_components_in_topology()
+{
+	if(topology.is_empty()) return 0;
+	return(topology.size());
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // patch. NULL if not found or not layer
 
 layer PTR nn::get_layer_at(int index)

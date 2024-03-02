@@ -279,11 +279,14 @@ for (epoch in 1:5)
     # now check if the correct class was recalled (and reward)
     # or an incorrect (and punish):
 
+	# in LVQ layers, the 'bias' node (PE) register is used to indicate if
+	# positive (reward) or negative (punishment) should be applied for the node.
+
     new_output_flags <- rep(LVQ_DEACTI_PE, output_layer_size)
     new_output_flags[current_winner_pe] <- LVQ_PUNISH_PE
     if (returned_class == desired_class_ids[i])
       new_output_flags[current_winner_pe] <- LVQ_REWARD_PE
-    n$set_misc_values_at(3, new_output_flags)
+    n$set_biases_at(3, new_output_flags)
 
     n$encode_at(2)
 
