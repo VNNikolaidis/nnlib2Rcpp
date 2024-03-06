@@ -10,13 +10,14 @@
 //		m_neighborhood_size=1 => Single Winner Unsupervised.
 //		m_neighborhood_size>1 => Multiple Winner Unsupervised.
 //		LVQ:implementation is described as Supervised Learning LVQ
-//		in P.K.Simpson's Artificial Neural Systems (1990)";
+//		in P.K.Simpson's Artificial Neural Systems (1990),p.88.";
 //		-----------------------------------------------------------
 // 		NOTE: this NN was implemented with a much earlier version of the library
 //		and does not take full advantage of its current features and syntax.
 //		I plan to rewrite this with newer (clearer) code if I get the time.
 //		-----------------------------------------------------------
 
+#include <sstream>
 #include "nn_lvq.h"
 
 #include "layer.h"
@@ -147,20 +148,50 @@ lvq_connection_set::lvq_connection_set()
 
 void lvq_connection_set::set_iteration_number(int iteration)
 	{
-	if(iteration>LVQ_MAXITERATION) { warning("Max LVQ iteration reached"); m_iteration=LVQ_MAXITERATION;return;}
+	if(iteration<0)
+		{
+		warning("Attempted to set LVQ iteration number to negative value, setting iteration counter to 0");
+		m_iteration=0;
+		return;
+		}
+
+	if(iteration>LVQ_MAXITERATION)
+		{
+		std::stringstream m;
+		m << "Attempted to set LVQ iteration above maximum limit (" << (int)LVQ_MAXITERATION << ")";
+		warning(m.str()); m_iteration=LVQ_MAXITERATION;
+		return;
+		}
+
 	m_iteration = iteration;
 	}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// a variation of encode, imposes iteration number
 
 void lvq_connection_set::encode(int iteration)
-  {
-  set_iteration_number(iteration);
-  encode();
-  }
+{
+	set_iteration_number(iteration);
+	encode();
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// encodes a single data item. does not affect iteration
 
 void lvq_connection_set::encode()
   {
+  if(m_iteration < 0)
+	{
+	warning("Negative iteration (epoch) number.");
+	m_iteration = 0;
+	}
+
+  if(m_iteration > LVQ_MAXITERATION)
+	{
+  	warning("Maximum iteration (epoch) exceeded.");
+  	m_iteration = LVQ_MAXITERATION;
+	}
+
 //DATA a = 1/(DATA) iteration;							    // (SIMPSON 5-110)
   DATA a = 0.2*(1.0-((DATA)m_iteration)/LVQ_MAXITERATION);	// (SIMPSON 5-111) we assume it means "epoch" here
 
@@ -175,17 +206,16 @@ void lvq_connection_set::encode()
    if(destin_pe.bias == LVQ_REWARD_PE) 						// if destination PE is activated...
 	{
     DATA d = c.misc;										// get difference, it was already computed during recall (see below)...
-    DATA x = a*d ;
-    c.weight() += x;										// adjust weight (SIMPSON 5-109)
+    DATA dw = a*d ;
+    c.weight() += dw;										// adjust weight (SIMPSON 5-109)
     }
 
-   if(destin_pe.bias == LVQ_PUNISH_PE)						// if destination PE is activated but is to be punished (supervised mode)...
-	{
+    if(destin_pe.bias == LVQ_PUNISH_PE)						// if destination PE is activated but is to be punished (supervised mode)...
+ 	{
     DATA d = c.misc;										// get difference, it was already computed during recall (see below)...
-    DATA x = a*d ;
-    c.weight() -= x;										// adjust weight (SIMPSON 5-113)
+    DATA dw = -a*d ;
+    c.weight() += dw;										// adjust weight (SIMPSON 5-113)
     }
-
    }
   while(connections.goto_next());
   }
@@ -327,7 +357,7 @@ void kohonen_nn::from_stream ( std::istream REF s )
 		p_connection_set = new lvq_connection_set;
 		p_connection_set->set_error_flag(my_error_flag());
 		topology.append(p_connection_set);
-		p_connection_set->from_stream(s);								// load connection set
+		p_connection_set->from_stream(s);							// load connection set
 
 		p_output_layer = new lvq_output_layer ();
 		p_output_layer->set_error_flag(my_error_flag());
@@ -357,12 +387,16 @@ lvq_nn::lvq_nn()
  {
  m_number_of_output_nodes_per_class = 0;
  set_number_of_output_nodes_per_class(1);
+ punish_enable(TRUE);
  }
 
-lvq_nn::lvq_nn(int number_of_output_nodes_per_class)
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+lvq_nn::lvq_nn(int number_of_output_nodes_per_class, bool allow_punish)
  {
  m_number_of_output_nodes_per_class = 0;
  set_number_of_output_nodes_per_class(number_of_output_nodes_per_class);
+ punish_enable(allow_punish);
  }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -388,6 +422,20 @@ void lvq_nn::set_number_of_output_nodes_per_class(int number_of_output_nodes_per
 int lvq_nn::get_number_of_output_nodes_per_class()
 {
 	return m_number_of_output_nodes_per_class;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+void lvq_nn::punish_enable(bool enable)
+{
+	m_punish_enabled = enable;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+bool lvq_nn::punish_enabled()
+{
+	return(m_punish_enabled);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -476,7 +524,8 @@ DATA lvq_nn::encode_s(	DATA PTR input,
   	OUTPUT_LAYER.PE(current_winner_pe).misc = OUTPUT_LAYER.PE(current_winner_pe).misc + 1;  // just a counter of rewards given to the PE (for inspection purposes, not affecting results)
     }
   else
-	OUTPUT_LAYER.PE(current_winner_pe).bias = LVQ_PUNISH_PE;
+	if(m_punish_enabled)
+		OUTPUT_LAYER.PE(current_winner_pe).bias = LVQ_PUNISH_PE;
 
   if(no_error()) LVQ_CONNECTIONS.encode(iteration);
   }

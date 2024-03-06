@@ -137,11 +137,11 @@ protected:
 			lvq::lvq_connection_set PTR pc = new lvq::lvq_connection_set;
 			if(pc!=NULL)
 			{
-				DATA LVQ_iteration = 100;
+				DATA LVQ_iteration = 1;
 				if(optional_parameter!=DATA_MIN)
 					LVQ_iteration = optional_parameter;
+				TEXTOUT << "(Reseting internal iteration counter for " << name << " set of connections to " << LVQ_iteration << ")\n";
 				pc->set_iteration_number(LVQ_iteration);
-				TEXTOUT << "(This " << name << " connection set uses iteration parameter = " << LVQ_iteration << ")\n";
 				pc->name() = name;
 			}
 			return pc;
@@ -156,8 +156,8 @@ protected:
 				DATA bp_learnrate = 0.6;
 				if(optional_parameter!=DATA_MIN)
 					bp_learnrate = optional_parameter;
+				TEXTOUT << "(Setting learning rate for " << name << " set of connections to " << bp_learnrate << ")\n";
 				pc->set_learning_rate(bp_learnrate);
-				TEXTOUT << "(This " << name << " connection set uses learning rate = " << bp_learnrate << ")\n";
 			}
 			return pc;
 		}

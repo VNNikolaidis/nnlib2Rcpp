@@ -59,15 +59,19 @@ class lvq_nn : public kohonen_nn
  {
  protected:
 
- int m_number_of_output_nodes_per_class;	 // for supervised training (LVQ) this is number of output PEs (and codebook vectors) per class.
+ int  m_number_of_output_nodes_per_class;	 // for supervised training (LVQ) this is number of output PEs (and codebook vectors) per class.
+ bool m_punish_enabled;
 
  public:
 
  lvq_nn();
- lvq_nn(int number_of_output_nodes_per_class);
+ lvq_nn(int number_of_output_nodes_per_class, bool allow_punish);
 
  void set_number_of_output_nodes_per_class(int number_of_output_nodes_per_class);
  int  get_number_of_output_nodes_per_class();
+
+ void punish_enable(bool enable);
+ bool punish_enabled();
 
  bool setup(int input_dimension, int number_of_classes, DATA ** initial_cluster_centers_matrix = NULL);   			// optional matrix initializes weights; must be sized output_dimension X input_dimension
 
@@ -130,7 +134,7 @@ public:
 
         void recall();						// virtual, defined in component
         void encode();						// virtual, defined in component
-        void encode(int iteration);		                // a variation of above, imposes iteration
+        void encode(int iteration);			// a variation of above, imposes iteration number
 };
 
 /*-----------------------------------------------------------------------*/

@@ -160,9 +160,9 @@ a$set_input_at(1,1:4)
 a$recall_all(TRUE)
 a$get_output_from(3)
 
-# (3.C) add_R_pipelining is similar to add_R_forwarding but allows reading the output of
-# component below, and feed result to component above (for encode/recalls in backwards
-# direction)
+# (3.C) add_R_pipelining is similar to add_R_forwarding but allows reading
+# the output of component below, and feed result to component above
+# (for encode/recalls in backwards direction)
 
 a<-new("NN")
 a$add_layer("pass-through",4)
@@ -177,7 +177,8 @@ a$recall_all(FALSE)
 a$get_output_from(1)
 
 # (3.D) add_R_function allows us to define the destination for the function's
-# results. This may include destinations such as PE biases, connection weights etc.
+# results. This may include destinations such as PE biases, connection
+# weights etc.
 
 a<-new("NN")
 a$add_layer("pass-through",4)
@@ -196,13 +197,14 @@ a$get_output_from(3)
 # Example 4: A more complete example where a NN similar to that of help(LVQs)
 # is implemented via 'NN'. It is a (supervised) LVQ. This version
 # also allows using multiple output nodes per class.
+# Note: while this is similar to LVQs, learning rate is NOT affected by epoch.
 
 # some options:
 
 # define how many output nodes will be implicitly assigned for each class,
 # i.e. groups of connections / prototype vectors / codebook vectors per class:
 
-number_of_output_pes_per_class <- 1
+number_of_output_pes_per_class <- 3
 
 # plot results?
 
@@ -236,76 +238,78 @@ number_of_classes <- length(unique(desired_class_ids))
 # output layer may be expanded to accommodate multiple PEs per class:
 
 output_layer_size <-
-  number_of_classes * number_of_output_pes_per_class
+	number_of_classes * number_of_output_pes_per_class
 
 # next, implement a supervised LVQ using NN module:
 
-LVQ_PUNISH_PE <- 10   # just a definition used in the C++ LVQ code
-LVQ_DEACTI_PE <- 20   # just a definition used in the C++ LVQ code
-LVQ_REWARD_PE <- 30   # just a definition used in the C++ LVQ code
-LVQ_RND_MIN <-    0   # just a definition used in the C++ LVQ code
-LVQ_RND_MAX <-   +1   # just a definition used in the C++ LVQ code
+LVQ_PUNISH_PE <- 10   # as defined in the C++ LVQ code.
+LVQ_DEACTI_PE <- 20   # as defined in the C++ LVQ code.
+LVQ_REWARD_PE <- 30   # as defined in the C++ LVQ code.
+LVQ_RND_MIN <-    0   # as defined in the C++ LVQ code.
+LVQ_RND_MAX <-   +1   # as defined in the C++ LVQ code.
 
 # create a typical LVQ topology for this problem:
 
 n <- new('NN')
 n$add_layer('pass-through', input_length)
-n$add_connection_set('LVQ')
+n$add_connection_set('LVQ', 0)
 n$add_layer('LVQ-output', output_layer_size)
 n$create_connections_in_sets(LVQ_RND_MIN, LVQ_RND_MAX)
 
 # optional, store current weights (so we can plot them later):
 
 if (record_weights_at_each_iteration)
-  cvs <- n$get_weights_at(2)
+	cvs <- n$get_weights_at(2)
 
 # an ugly (nested loop) encoding code:
 
 for (epoch in 1:5)
-  for (i in 1:nrow(data))
-  {
-    # recall a data vector:
+	for (i in 1:nrow(data))
+	{
+		# recall a data vector:
 
-    n$input_at(1, data[i,])
-    n$recall_all_fwd()
+		n$input_at(1, data[i,])
+		n$recall_all_fwd()
 
-    # find which output node is best for input vector (has smallest distance)
-    current_winner_pe <- which.min(n$get_output_at(3))
+		# find which output node is best for input vector (has smallest distance)
+		current_winner_pe <- which.min(n$get_output_at(3))
 
-    # translate winning node to class id:
-    returned_class <-
-      ceiling(current_winner_pe / number_of_output_pes_per_class)
+		# translate winning node to class id:
+		returned_class <-
+			ceiling(current_winner_pe / number_of_output_pes_per_class)
 
-    # now check if the correct class was recalled (and reward)
-    # or an incorrect (and punish):
+		# now check if the correct class was recalled (and reward)
+		# or an incorrect (and punish):
 
-	# in LVQ layers, the 'bias' node (PE) register is used to indicate if
-	# positive (reward) or negative (punishment) should be applied for the node.
+		# in LVQ layers, the 'bias' node (PE) register is used to indicate if
+		# positive (reward) or negative (punishment) should be applied.
 
-    new_output_flags <- rep(LVQ_DEACTI_PE, output_layer_size)
-    new_output_flags[current_winner_pe] <- LVQ_PUNISH_PE
-    if (returned_class == desired_class_ids[i])
-      new_output_flags[current_winner_pe] <- LVQ_REWARD_PE
-    n$set_biases_at(3, new_output_flags)
+		new_output_flags <- rep(LVQ_DEACTI_PE, output_layer_size)
+		new_output_flags[current_winner_pe] <- LVQ_PUNISH_PE
+		if (returned_class == desired_class_ids[i])
+			new_output_flags[current_winner_pe] <- LVQ_REWARD_PE
+		n$set_biases_at(3, new_output_flags)
 
-    n$encode_at(2)
+		# note: here, learning rate is constant and NOT affected by epoch.
 
-    # optional, store current weights (so we can plot them later):
+		n$encode_at(2)
 
-    if (record_weights_at_each_iteration)
-      cvs <- rbind(cvs, n$get_weights_at(2))
-  }
+		# optional, store current weights (so we can plot them later):
+
+		if (record_weights_at_each_iteration)
+			cvs <- rbind(cvs, n$get_weights_at(2))
+	}
 
 # done encoding.
 
 # recall all data:
 
 lvq_recalled_winning_nodes <-
-  apply(n$recall_dataset(data, 1, 3, TRUE), 1, which.min)
+	apply(n$recall_dataset(data, 1, 3, TRUE), 1, which.min)
 
 # translate winning node to class id:
 lvq_recalled_class_ids <-
-  ceiling(lvq_recalled_winning_nodes / number_of_output_pes_per_class)
+	ceiling(lvq_recalled_winning_nodes / number_of_output_pes_per_class)
 
 correct <- lvq_recalled_class_ids == desired_class_ids
 cat("Correct:", sum(correct), "\n")
@@ -315,19 +319,18 @@ cat("Number of produced classes:", length(unique(lvq_recalled_class_ids)), "\n")
 
 if (plot_result)
 {
-  plot(data, pch = lvq_recalled_class_ids,
-       main = "LVQ recalled clusters (module)")
+	plot(data, pch = lvq_recalled_class_ids,
+		 main = "LVQ recalled clusters (module)")
 
-  # optional, if weights were stored, plot them later:
+	# optional, if weights were stored, plot them later:
 
-  if (record_weights_at_each_iteration)
-  {
-    for (cv in 0:(output_layer_size - 1))
-      lines(cvs[, (cv * input_length + 1):(cv * input_length + 2)],
-            lwd = 2, col = cv+1)
-  }
+	if (record_weights_at_each_iteration)
+	{
+		for (cv in 0:(output_layer_size - 1))
+			lines(cvs[, (cv * input_length + 1):(cv * input_length + 2)],
+				  lwd = 2, col = cv + 1)
+	}
 }
-
 
 }
 

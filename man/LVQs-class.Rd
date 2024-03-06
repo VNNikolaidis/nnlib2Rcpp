@@ -16,7 +16,7 @@ All reference classes extend and inherit methods from \code{"\linkS4class{envRef
 
 }
 \references{
-Simpson, P. K. (1991). Artificial neural systems: Foundations, paradigms, applications, and implementations. New York: Pergamon Press.
+Simpson, P. K. (1991). Artificial neural systems: Foundations, paradigms, applications, and implementations. New York: Pergamon Press. p.88.
 }
 \author{
 Vasilis N. Nikolaidis <vnnikolaidis@gmail.com>
@@ -35,39 +35,74 @@ The NN used in this module uses supervised training for data classification (des
 
 \examples{
 # LVQ expects data in 0 to 1 range, so scale some numeric data...
-iris_s<-as.matrix(iris[1:4])
-c_min<-apply(iris_s,2,FUN = "min")
-c_max<-apply(iris_s,2,FUN = "max")
-c_rng<-c_max-c_min
-iris_s<-sweep(iris_s,2,FUN="-",c_min)
-iris_s<-sweep(iris_s,2,FUN="/",c_rng)
+iris_s <- as.matrix(iris[1:4])
+c_min <- apply(iris_s, 2, FUN = "min")
+c_max <- apply(iris_s, 2, FUN = "max")
+c_rng <- c_max - c_min
+iris_s <- sweep(iris_s, 2, FUN = "-", c_min)
+iris_s <- sweep(iris_s, 2, FUN = "/", c_rng)
 
 # create a vector of desired class ids (starting from 0):
-iris_desired_class_ids<-as.integer(iris$Species)-1;
+iris_desired_class_ids <- as.integer(iris$Species) - 1
+
+DATA <- iris_s
+CLASS <- iris_desired_class_ids
 
 # now create the NN:
-lvq<-new("LVQs")
+lvq <- new("LVQs")
 
 # Optionally, the output layer could be expanded, e.g. use 5 nodes per class:
 # lvq$set_number_of_nodes_per_class(5)
 
+# Optionally, for experimentation negative reinforcement can be disabled:
+# lvq$disable_punishment()
+
 # train it:
-lvq$encode(iris_s,iris_desired_class_ids,100)
-
-# Optionally, examine how many times each output PE was positively reinforced.
-# print(lvq$get_number_of_rewards())
-
-# Optionally, get the connection weights (codebook vector coordinates).
-# print(lvq$get_weights())
+lvq$encode(DATA, CLASS, 100)
 
 # recall the same data (a simple check of how well the LVQ was trained):
-lvq_recalled_class_ids<-lvq$recall(iris_s);
+lvq_recalled_class_ids <- lvq$recall(DATA)
 
 # show results:
-cat("Correct: ",sum(lvq_recalled_class_ids==iris_desired_class_ids),"\n")
-plot(iris_s, pch=lvq_recalled_class_ids, main="LVQ recalled clusters (module)")
+cat("Correct: ", sum(lvq_recalled_class_ids == CLASS), "\n")
 
+# Optional part for further examining results of training:
+if (FALSE)
+{
+	plot(DATA, pch = lvq_recalled_class_ids,
+		 main = "LVQ recalled clusters (LVQs module)")
+
+	# Examine how many times each output PE was positively reinforced.
+	num_rewards <- lvq$get_number_of_rewards()
+
+	# get the connection weights (codebook vector coordinates).
+	lvq_weights <- lvq$get_weights()
+
+	# collect some info related to the codebook vectors:
+	lvq_cb_vector_coords <-
+		matrix(lvq_weights, ncol = ncol(DATA), byrow = T)
+	lvq_cb_vector_class <-
+		rep(1:length(unique(CLASS) - 1),
+			rep(lvq$get_number_of_nodes_per_class(), length(unique(CLASS)))) - 1
+	lvq_codebook_vector_info <-
+		cbind(lvq_cb_vector_coords, num_rewards, lvq_cb_vector_class)
+	colnames(lvq_codebook_vector_info) <-
+		c(colnames(DATA), "Rewarded", "Class")
+	rm(lvq_cb_vector_coords, lvq_cb_vector_class)
+
+	print(lvq_codebook_vector_info)
+
+	# plot codebook vectors:
+	points(
+		lvq_codebook_vector_info[, 1:2],
+		pch = 19,
+		col = ifelse(lvq_codebook_vector_info[, "Rewarded"] > 0,
+					 "blue",
+					 "red")
+	)
 }
+}
+
 \keyword{classes}
 \section{Fields}{
   \describe{
@@ -103,7 +138,14 @@ plot(iris_s, pch=lvq_recalled_class_ids, main="LVQ recalled clusters (module)")
     }
     }
 
-  \item{\code{get_number_of_rewards( )}:}{ Get the number of times an output node was positively reinforced during data encoding. Returns NumericVector containing results per output node. }
+\item{\code{get_number_of_nodes_per_class( )}:}{Get the number of nodes in the output layer that are used per class.}
+
+ \item{\code{enable_punishment( )}:}{ Enables negative reinfoncement. During encoding incorrect winner nodes will be notified and incoming weights will be adjusted accordingly. Returns TRUE if punishment is enabled, FALSE otherwise. }
+
+ \item{\code{disable_punishment( )}:}{ Disables negative reinfoncement. During encoding incorrect winner nodes will not be notified, thus incoming weights will not be adjusted accordingly. Adjustments will only occur in correct winning nodes. Returns TRUE if punishment is enabled, FALSE otherwise. }
+
+
+ \item{\code{get_number_of_rewards( )}:}{ Get the number of times an output node was positively reinforced during data encoding. Returns NumericVector containing results per output node. }
 
     \item{\code{print()}:}{ print NN structure. }
 

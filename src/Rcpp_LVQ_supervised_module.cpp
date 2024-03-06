@@ -50,10 +50,48 @@ public:
   }
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // set number of output PEs (nodes) per class
+
+  int get_number_of_nodes_per_class()
+  {
+  	return lvq.get_number_of_output_nodes_per_class();
+  }
+
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ // set number of output PEs (nodes) per class
+
+ bool enable_punishment()
+	{
+		TEXTOUT << "LVQ will notify winner nodes with incorrect classification when encoding data.\n";
+		lvq.punish_enable(TRUE);
+		return lvq.punish_enabled();
+	}
+
+ bool disable_punishment()
+	{
+		TEXTOUT << "LVQ will NOT notify winner nodes with incorrect classification when encoding data.\n";
+		lvq.punish_enable(FALSE);
+		return lvq.punish_enabled();
+	}
+
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // recommended cluster ids should be in 0 to n-1 range (n the number of clusters)
 
   void encode(NumericMatrix data,IntegerVector desired_class_ids,int training_epochs)
   {
+  	if(training_epochs<0)
+  	{
+  		training_epochs = 0;
+  		warning("Number of epochs set to 0");
+  	}
+
+  	if(training_epochs>LVQ_MAXITERATION)
+  	{
+  		training_epochs = LVQ_MAXITERATION;
+  		warning("Number of epochs set to maximum allowed");
+
+  	}
+
     int min_class_id = min(desired_class_ids);
     int max_class_id = max(desired_class_ids);
     int input_data_dim = data.cols();
@@ -283,7 +321,10 @@ RCPP_MODULE(class_LVQs) {
   .method( "get_weights",						&LVQs::get_weights,						"Get current weight values" )
   .method( "set_weights",						&LVQs::set_weights,						"Set current weight values" )
   .method( "set_number_of_nodes_per_class",		&LVQs::set_number_of_nodes_per_class,	"Set number of output PEs to be used per class" )
+  .method( "get_number_of_nodes_per_class",		&LVQs::get_number_of_nodes_per_class,	"Get number of output PEs to be used per class" )
   .method( "get_number_of_rewards",				&LVQs::get_number_of_rewards,			"Get number of times each output PE was positively reinforced during encoding" )
+  .method( "enable_punishment",					&LVQs::enable_punishment,				"During encoding incorrect winner nodes will be notified" )
+  .method( "disable_punishment",				&LVQs::disable_punishment,				"During encoding incorrect winner nodes will not be notified" )
   ;
 }
 
