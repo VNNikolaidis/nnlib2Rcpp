@@ -147,6 +147,7 @@ Changes to nnlib2Rcpp version 0.2.5 (from 0.2.4)
 -	added set_number_of_nodes_per_class method to LVQs (allows multiple output nodes (i.e codebook vectors) per class in the training data).
 -	added get_number_of_nodes_per_class method to LVQs (returns number of output nodes that are used per class).
 -	added get_number_of_rewards method to LVQs (counts number of times each output node was positively reinforced).
+-	added setup method to LVQs (allows setting up an untrained supervised LVQ).
 -	added enable_punishment, disable_punishment methods to LVQs (enable/disable negative reinforcement).
 -	other minor changes.
 

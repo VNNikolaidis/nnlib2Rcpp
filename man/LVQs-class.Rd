@@ -35,18 +35,16 @@ The NN used in this module uses supervised training for data classification (des
 
 \examples{
 # LVQ expects data in 0 to 1 range, so scale some numeric data...
-iris_s <- as.matrix(iris[1:4])
-c_min <- apply(iris_s, 2, FUN = "min")
-c_max <- apply(iris_s, 2, FUN = "max")
+DATA <- as.matrix(iris[1:4])
+c_min <- apply(DATA, 2, FUN = "min")
+c_max <- apply(DATA, 2, FUN = "max")
 c_rng <- c_max - c_min
-iris_s <- sweep(iris_s, 2, FUN = "-", c_min)
-iris_s <- sweep(iris_s, 2, FUN = "/", c_rng)
+DATA <- sweep(DATA, 2, FUN = "-", c_min)
+DATA <- sweep(DATA, 2, FUN = "/", c_rng)
 
 # create a vector of desired class ids (starting from 0):
-iris_desired_class_ids <- as.integer(iris$Species) - 1
-
-DATA <- iris_s
-CLASS <- iris_desired_class_ids
+CLASS <- as.integer(iris$Species) - 1
+NUM_CLASSES <- length(unique(CLASS))
 
 # now create the NN:
 lvq <- new("LVQs")
@@ -66,9 +64,8 @@ lvq_recalled_class_ids <- lvq$recall(DATA)
 # show results:
 cat("Correct: ", sum(lvq_recalled_class_ids == CLASS), "\n")
 
-# Optional part for further examining results of training:
-if (FALSE)
-{
+# Done. Optional part for further examining results of training:
+\dontrun{
 	plot(DATA, pch = lvq_recalled_class_ids,
 		 main = "LVQ recalled clusters (LVQs module)")
 
@@ -76,19 +73,19 @@ if (FALSE)
 	num_rewards <- lvq$get_number_of_rewards()
 
 	# get the connection weights (codebook vector coordinates).
-	lvq_weights <- lvq$get_weights()
 
-	# collect some info related to the codebook vectors:
-	lvq_cb_vector_coords <-
-		matrix(lvq_weights, ncol = ncol(DATA), byrow = T)
-	lvq_cb_vector_class <-
-		rep(1:length(unique(CLASS) - 1),
-			rep(lvq$get_number_of_nodes_per_class(), length(unique(CLASS)))) - 1
 	lvq_codebook_vector_info <-
-		cbind(lvq_cb_vector_coords, num_rewards, lvq_cb_vector_class)
-	colnames(lvq_codebook_vector_info) <-
-		c(colnames(DATA), "Rewarded", "Class")
-	rm(lvq_cb_vector_coords, lvq_cb_vector_class)
+		cbind(
+			matrix(
+				lvq$get_weights(),
+				ncol = ncol(DATA),
+				byrow = T ),
+			lvq$get_number_of_rewards(),
+			rep( 0:(NUM_CLASSES - 1),
+				 rep(lvq$get_number_of_nodes_per_class(),
+					NUM_CLASSES) )
+			)
+	colnames(lvq_codebook_vector_info) <- c(colnames(DATA), "Rewarded", "Class")
 
 	print(lvq_codebook_vector_info)
 
@@ -97,9 +94,7 @@ if (FALSE)
 		lvq_codebook_vector_info[, 1:2],
 		pch = 19,
 		col = ifelse(lvq_codebook_vector_info[, "Rewarded"] > 0,
-					 "blue",
-					 "red")
-	)
+												"blue", "red") )
 }
 }
 
@@ -139,6 +134,13 @@ if (FALSE)
     }
 
 \item{\code{get_number_of_nodes_per_class( )}:}{Get the number of nodes in the output layer that are used per class.}
+
+\item{\code{setup(  input_length, int number_of_classes )}:}{Setup an untrained supervised LVQ for given input data vector dimension and number of classes.Parameters are:
+    \itemize{
+    \item\code{input_length}: integer, dimension (length) of input data vectors.
+    \item\code{number_of_classes}: integer, number of classes in data.
+    }
+    }
 
  \item{\code{enable_punishment( )}:}{ Enables negative reinfoncement. During encoding incorrect winner nodes will be notified and incoming weights will be adjusted accordingly. Returns TRUE if punishment is enabled, FALSE otherwise. }
 

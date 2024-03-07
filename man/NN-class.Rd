@@ -198,6 +198,10 @@ a$get_output_from(3)
 # is implemented via 'NN'. It is a (supervised) LVQ. This version
 # also allows using multiple output nodes per class.
 # Note: while this is similar to LVQs, learning rate is NOT affected by epoch.
+# Obviously (as goes for most NN, especially simple ones like this), one could
+# easily create the model using just a matrix and some R code processing it;
+# more elaborately, it could be implemented via R components (see help(NN_R_components));
+# but how could one then be able to use all that fancy NN terminology? :)
 
 # some options:
 
@@ -217,12 +221,12 @@ record_weights_at_each_iteration <- FALSE
 # Next, prepare some data (based on iris).
 # LVQ expects data in 0 to 1 range, so scale some numeric data...
 
-iris_s <- as.matrix(iris[1:4])
-c_min <- apply(iris_s, 2, FUN = "min")
-c_max <- apply(iris_s, 2, FUN = "max")
+DATA <- as.matrix(iris[1:4])
+c_min <- apply(DATA, 2, FUN = "min")
+c_max <- apply(DATA, 2, FUN = "max")
 c_rng <- c_max - c_min
-iris_s <- sweep(iris_s, 2, FUN = "-", c_min)
-iris_s <- sweep(iris_s, 2, FUN = "/", c_rng)
+DATA <- sweep(DATA, 2, FUN = "-", c_min)
+DATA <- sweep(DATA, 2, FUN = "/", c_rng)
 
 # create a vector of desired class ids:
 
@@ -230,8 +234,7 @@ desired_class_ids <- as.integer(iris$Species)
 
 # defined just to make names more general (independent from iris):
 
-data              <- iris_s
-input_length      <- ncol(data)
+input_length      <- ncol(DATA)
 number_of_classes <- length(unique(desired_class_ids))
 
 # Next, setup the LVQ NN.
@@ -264,11 +267,11 @@ if (record_weights_at_each_iteration)
 # an ugly (nested loop) encoding code:
 
 for (epoch in 1:5)
-	for (i in 1:nrow(data))
+	for (i in 1:nrow(DATA))
 	{
 		# recall a data vector:
 
-		n$input_at(1, data[i,])
+		n$input_at(1, DATA[i, ])
 		n$recall_all_fwd()
 
 		# find which output node is best for input vector (has smallest distance)
@@ -290,7 +293,8 @@ for (epoch in 1:5)
 			new_output_flags[current_winner_pe] <- LVQ_REWARD_PE
 		n$set_biases_at(3, new_output_flags)
 
-		# note: here, learning rate is constant and NOT affected by epoch.
+		# note: for this example (and unlike LVQs) learning rate is constant,
+		# NOT dicreasing as epochs increase.
 
 		n$encode_at(2)
 
@@ -305,7 +309,7 @@ for (epoch in 1:5)
 # recall all data:
 
 lvq_recalled_winning_nodes <-
-	apply(n$recall_dataset(data, 1, 3, TRUE), 1, which.min)
+	apply(n$recall_dataset(DATA, 1, 3, TRUE), 1, which.min)
 
 # translate winning node to class id:
 lvq_recalled_class_ids <-
@@ -489,7 +493,7 @@ if (plot_result)
 
  \item{\code{set_input_at( pos, data_in )}:}{Same as \code{input_at} (see above)}
 
- \item{\code{get_input_at( pos )}:}{Get the current input for the component at specified topology index. Currenly applicable to \code{connection_set} (returning for each connection the output of corresponding source PE), or \code{layer} (returning a preview of current PE inputs; note: many PE implementations clear their inputs once they have processed them and produced the corresponding output). If successful, returns NumericVector, otherwise vector of zero length. Parameters are:
+ \item{\code{get_input_at( pos )}:}{Get the current input for the component at specified topology index. Currently applicable to \code{connection_set} (returning for each connection the output of corresponding source PE), or \code{layer} (returning a preview of current PE inputs; note: many PE implementations clear their inputs once they have processed them and produced the corresponding output). If successful, returns NumericVector, otherwise vector of zero length. Parameters are:
     \itemize{
     \item\code{pos}: integer, position (in NN's topology) of component to use.
     }
@@ -503,7 +507,7 @@ if (plot_result)
 
  \item{\code{get_output_at( pos )}:}{Same as \code{get_output_from}, see above.}
 
- \item{\code{set_output_at( pos, data_in )}:}{Set the values in the \code{output} data register that \code{pe} objects maintain, for \code{layer} at specified topology index (currenly only \code{layer} components are supported). If successful, returns TRUE. Parameters are:
+ \item{\code{set_output_at( pos, data_in )}:}{Set the values in the \code{output} data register that \code{pe} objects maintain, for \code{layer} at specified topology index (currently only \code{layer} components are supported). If successful, returns TRUE. Parameters are:
     \itemize{
     \item\code{pos}: integer, position (in NN's topology) of component to use.
     \item\code{data_in}: NumericVector, data to be used for new values in \code{misc} registers (sizes must match).
@@ -582,20 +586,20 @@ if (plot_result)
  \item{\code{add_R_forwarding( trigger, FUN )}:}{Adds a control component which will invoke an R function. The R function will receive (as its first argument) a vector of values containing the output of the previous component in the topology. The object returned by the function will be fed as input to the next (in forward direction) component in the topology. Notes: (a) once the R function is invoked, its result will be maintained as this component's output; (b) the component will fail to perform processing if the R function's result cannot be converted to a numeric vector. If successful, returns TRUE. Parameters are:
     \itemize{
     \item\code{trigger}: string, specifies when to invoke the R function. Valid options are \code{"on encode"}, \code{"on recall"}, \code{"always"} or \code{"never"}.
-    \item\code{FUN}: string, the R function to be invoked. If \code{""}, no R function is invoked and data is tranfered unmodified.
+    \item\code{FUN}: string, the R function to be invoked. If \code{""}, no R function is invoked and data is transferred unmodified.
     }}
 
- \item{\code{add_R_pipelining( trigger, FUN, fwd )}:}{Adds a control component which will invoke an R function. The R function will process  (as its first argument)  a vector of values which are the output of a neighbouring component in the topology; The result of invoking the function will be fed as input to the other neighbouring component in the topology. The components are selected according to the value of parameter \code{fwd} (see below). Notes: (a) once the R function is invoked, its result will be maintained as this component's output; (b) the component will fail to perform processing if the R function's result cannot be converted to a numeric vector. If successful, returns TRUE. Parameters are:
+ \item{\code{add_R_pipelining( trigger, FUN, fwd )}:}{Adds a control component which will invoke an R function. The R function will process  (as its first argument)  a vector of values which are the output of a neighboring component in the topology; The result of invoking the function will be fed as input to the other neighboring component in the topology. The components are selected according to the value of parameter \code{fwd} (see below). Notes: (a) once the R function is invoked, its result will be maintained as this component's output; (b) the component will fail to perform processing if the R function's result cannot be converted to a numeric vector. If successful, returns TRUE. Parameters are:
     \itemize{
     \item\code{trigger}: string, specifies when to invoke the R function. Valid options are \code{"on encode"}, \code{"on recall"}, \code{"always"} or \code{"never"}.
-    \item\code{FUN}: string, the R function to be invoked. If \code{""}, no R function is invoked and data is tranfered unmodified.
+    \item\code{FUN}: string, the R function to be invoked. If \code{""}, no R function is invoked and data is transferred unmodified.
     \item\code{fwd}: logical, set to TRUE if encoding or recalling in forward, top-to-bottom, direction and need to read from previous component in the topology feeding the result as input to the next (same as \code{add_R_forwarding}). If FALSE, reads from next component in the topology and feeds the result as input to the previous (useful when encoding/recalling in backward, bottom-to-top, direction).
     }}
 
  \item{\code{add_R_ignoring( trigger, FUN, i_mode, input_from )}:}{Adds a control component which will invoke an R function ignoring its result. The R function will process (as its first argument)  a vector of values taken from a specified component in the topology, but the function's result will be ignored. This is suitable for invoking functions such as \code{print}, \code{plot} etc. Note: the component maintains the original values as its output values but does not send to any other component neither these original values nor the result of the R function. If successful, returns TRUE. Parameters are:
     \itemize{
     \item\code{trigger}: string, specifies when to invoke the R function. Valid options are \code{"on encode"}, \code{"on recall"}, \code{"always"} or \code{"never"}.
-    \item\code{FUN}: string, the R function to be invoked. If \code{""}, no R function is invoked and data is tranfered unmodified.
+    \item\code{FUN}: string, the R function to be invoked. If \code{""}, no R function is invoked and data is transferred unmodified.
     \item\code{i_mode}: string, specifies the source of data to be retrieved and processed by the R function. Valid options are \code{"none"}, \code{"input of"}, \code{"output of"}, \code{"weights at"}, \code{"biases at"} and \code{"misc at"}.
     \item\code{input_from}: integer, position (in NN's topology) of component to retrieve data from.
 }}
@@ -603,7 +607,7 @@ if (plot_result)
  \item{\code{add_R_function( trigger, FUN, i_mode, input_from, o_mode, output_to, ignore_result )}:}{Adds a control component which will invoke an R function. The R function will process process (as its first argument) a vector of values taken from a specified component and feed the results to another component. Notes: (a) once the R function is invoked, its result will be maintained as this component's output (unless \code{ignore_result} is set to TRUE, in which case the original values will be maintained); (b) the component will fail to perform processing if the R function's result cannot be converted to a numeric vector and \code{ignore_result} is FALSE. If successful, returns TRUE. Parameters are:
     \itemize{
     \item\code{trigger}: string, specifies when to invoke the R function. Valid options are \code{"on encode"}, \code{"on recall"}, \code{"always"} or \code{"never"}.
-    \item\code{FUN}: string, the R function to be invoked. If \code{""}, no R function is invoked and data is tranfered unmodified.
+    \item\code{FUN}: string, the R function to be invoked. If \code{""}, no R function is invoked and data is transferred unmodified.
     \item\code{i_mode}: string, specifies the source of data to be retrieved and processed by the R function. Valid options are \code{"none"}, \code{"input of"}, \code{"output of"}, \code{"weights at"}, \code{"biases at"} and \code{"misc at"}.
     \item\code{input_from}: integer, position (in NN's topology) of component to retrieve data from.
   \item\code{o_mode}: string, specifies the destination for the result returned by the R function. Valid options are \code{"none"}, \code{"to input"}, \code{"to output"}, \code{"to weights"}, \code{"to biases"} and \code{"to misc"}.

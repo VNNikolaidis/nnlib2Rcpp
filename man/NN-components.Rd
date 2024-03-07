@@ -65,6 +65,6 @@ These are component names that can be currently used to add components to a NN  
 More information on expanding the library with new, user-defined types of NN components (nodes, layers, connections etc) and models, can be found in the package's vignette as well as the related \href{https://github.com/VNNikolaidis/nnlib2Rcpp}{repository on Github}). A quick example can also be found \href{https://www.r-bloggers.com/2020/07/creating-custom-neural-networks-with-nnlib2rcpp/}{in this post}. Please consider submitting any useful components you create, to enrich  future versions of the package.
 }
 
-\seealso{\code{\link{NN}}.}
+\seealso{\code{\link{NN}}, \link{NN_R_components}.}
 
 

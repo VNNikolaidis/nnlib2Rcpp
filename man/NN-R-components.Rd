@@ -71,7 +71,7 @@ Vasilis N. Nikolaidis <vnnikolaidis@gmail.com>
 Defining NN components with custom behavior in R does have a cost in terms of run-time performance. It also, to a certain degree, defies some of the reasons for using C++ classes. However, it may be useful for experimentation, prototyping, education purposes etc.
 }
 
-\seealso{\code{\link{NN}}.}
+\seealso{\code{\link{NN}}, \link{NN_component_names}.}
 
 \examples{
 \dontrun{

@@ -44,6 +44,12 @@ public:
 
   int set_number_of_nodes_per_class(int n)
   {
+  	if(lvq.is_ready())
+  	if(lvq.get_number_of_output_nodes_per_class()!=n)
+  	{
+  		error(NN_INTEGR_ERR,"LVQ is already set up. Define the number of nodes per class before setup or encode");
+  		return lvq.get_number_of_output_nodes_per_class();
+  	}
   	TEXTOUT << "LVQ will use " << n << " output PE(s) per class when encoding or recalling data.\n";
     lvq.set_number_of_output_nodes_per_class(n);
     return lvq.get_number_of_output_nodes_per_class();
@@ -74,6 +80,21 @@ public:
 		return lvq.punish_enabled();
 	}
 
+
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // Setup an lvq for future use
+
+  bool setup(int input_length, int number_of_classes)
+  {
+  	if(!lvq.setup(input_length,number_of_classes))
+  	{
+  		error(NN_INTEGR_ERR,"Cannot setup LVQ NN");
+  		lvq.reset();
+  		return false;
+  	}
+  	return lvq.is_ready();
+  }
+
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // recommended cluster ids should be in 0 to n-1 range (n the number of clusters)
 
@@ -95,28 +116,37 @@ public:
     int min_class_id = min(desired_class_ids);
     int max_class_id = max(desired_class_ids);
     int input_data_dim = data.cols();
-    int output_dim = max_class_id+1;                      // assumes cluster indexing starts with 0
+    int output_dim = max_class_id+1;	// assumes cluster indexing starts with 0
 
     if((data.rows()<=0) OR
        (data.rows()!=desired_class_ids.size()))
     {
-      error(NN_DATAST_ERR,"Cannot setup LVQ for these datasets");
+      error(NN_DATAST_ERR,"Cannot encode data on LVQ using these datasets");
       return;
     }
 
     if((min_class_id<0) OR (min_class_id>max_class_id) OR (output_dim<1))
     {
-      error(NN_DATAST_ERR,"Cannot setup LVQ for these classes");
+      error(NN_DATAST_ERR,"Cannot encode data on LVQ using these classes");
       return;
     }
 
-    TEXTOUT << "Setting up LVQ for 0 to " << max_class_id << " ids (" << output_dim << " classes). \n";
 
-    if(!lvq.setup(input_data_dim,output_dim))
+    if(lvq.is_ready() &&
+       (lvq.input_length() == input_data_dim) &&
+       ((int)(lvq.output_length()/lvq.get_number_of_output_nodes_per_class()) == output_dim))
     {
-      error(NN_INTEGR_ERR,"Cannot setup LVQ NN");
-      lvq.reset();
-      return;
+     	TEXTOUT << "Encoding will continue using existing LVQ.\n";
+    }
+    else
+    {
+    	TEXTOUT << "Setting up LVQ for 0 to " << max_class_id << " ids (" << output_dim << " classes). \n";
+    	if(!lvq.setup(input_data_dim,output_dim))
+    	{
+    		error(NN_INTEGR_ERR,"Cannot setup LVQ NN");
+    		lvq.reset();
+    		return;
+    	}
     }
 
     if(!lvq.no_error()) return;
@@ -325,6 +355,7 @@ RCPP_MODULE(class_LVQs) {
   .method( "get_number_of_rewards",				&LVQs::get_number_of_rewards,			"Get number of times each output PE was positively reinforced during encoding" )
   .method( "enable_punishment",					&LVQs::enable_punishment,				"During encoding incorrect winner nodes will be notified" )
   .method( "disable_punishment",				&LVQs::disable_punishment,				"During encoding incorrect winner nodes will not be notified" )
+  .method( "setup",								&LVQs::setup,							"Setup an untrained supervised LVQ for given input data vector dimensions and number of classes" )
   ;
 }
 
