@@ -93,8 +93,10 @@ cat("Correct: ", sum(lvq_recalled_class_ids == CLASS), "\n")
 	points(
 		lvq_codebook_vector_info[, 1:2],
 		pch = 19,
-		col = ifelse(lvq_codebook_vector_info[, "Rewarded"] > 0,
-												"blue", "red") )
+		col = ifelse(
+		            lvq_codebook_vector_info[, "Rewarded"] > 0,
+								"blue",
+								"red") )
 }
 }
 
