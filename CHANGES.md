@@ -151,3 +151,5 @@ Changes to nnlib2Rcpp version 0.2.5 (from 0.2.4)
 -	added enable_punishment, disable_punishment methods to LVQs (enable/disable negative reinforcement).
 -	other minor changes.
 
+---
+
