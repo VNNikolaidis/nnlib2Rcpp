@@ -49,8 +49,8 @@ NUM_CLASSES <- length(unique(CLASS))
 # now create the NN:
 lvq <- new("LVQs")
 
-# Optionally, the output layer could be expanded, e.g. use 5 nodes per class:
-# lvq$set_number_of_nodes_per_class(5)
+# Optionally, the output layer could be expanded, e.g. use 2 nodes per class:
+# lvq$set_number_of_nodes_per_class(2)
 
 # Optionally, for experimentation negative reinforcement can be disabled:
 # lvq$disable_punishment()
@@ -66,37 +66,53 @@ cat("Correct: ", sum(lvq_recalled_class_ids == CLASS), "\n")
 
 # Done. Optional part for further examining results of training:
 \dontrun{
-	plot(DATA, pch = lvq_recalled_class_ids,
-		 main = "LVQ recalled clusters (LVQs module)")
 
-	# Examine how many times each output PE was positively reinforced.
-	num_rewards <- lvq$get_number_of_rewards()
+# collect the connection weights (codebook vector coordinates), number
+# of rewards per node and corresponding class:
 
-	# get the connection weights (codebook vector coordinates).
-
-	lvq_codebook_vector_info <-
-		cbind(
-			matrix(
-				lvq$get_weights(),
-				ncol = ncol(DATA),
-				byrow = T ),
+lvq_codebook_vector_info <-
+	cbind(
+		matrix(
+			lvq$get_weights(),
+			ncol = ncol(DATA),
+			byrow = T ),
 			lvq$get_number_of_rewards(),
 			rep( 0:(NUM_CLASSES - 1),
 				 rep(lvq$get_number_of_nodes_per_class(),
-					NUM_CLASSES) )
-			)
-	colnames(lvq_codebook_vector_info) <- c(colnames(DATA), "Rewarded", "Class")
+				 NUM_CLASSES) )
+	)
+colnames(lvq_codebook_vector_info) <- c(colnames(DATA), "Rewarded", "Class")
 
-	print(lvq_codebook_vector_info)
+print(lvq_codebook_vector_info)
 
-	# plot codebook vectors:
-	points(
-		lvq_codebook_vector_info[, 1:2],
-		pch = 19,
-		col = ifelse(
-		            lvq_codebook_vector_info[, "Rewarded"] > 0,
-								"blue",
-								"red") )
+# plot original classification:
+
+plot(
+	DATA,
+	pch = CLASS,
+	main = "Original classes",
+	xlim = c(-0.2, 1.2),
+	ylim = c(-0.2, 1.2)
+)
+
+# plot recalled classification:
+
+plot(
+	DATA,
+	pch = lvq_recalled_class_ids,
+	main = "LVQ recalled clusters (LVQs module)",
+	xlim = c(-0.2, 1.2),
+	ylim = c(-0.2, 1.2) )
+
+# plot connection weights (a.k.a codebook vectors):
+# the big circles are codebook vectors, (crossed-out if they were never used
+# to assign a training data point to the correct class, i.e. never rewarded)
+
+points(
+	lvq_codebook_vector_info[, 1:2],
+	cex = 4,
+	pch = ifelse(lvq_codebook_vector_info[, "Rewarded"] > 0,	1, 13),
+	col  = lvq_codebook_vector_info[, "Class"] + 10 )
 }
 }
 

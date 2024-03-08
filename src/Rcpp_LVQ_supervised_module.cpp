@@ -193,7 +193,7 @@ public:
       returned_cluster_ids[r] = lvq.recall_class(fpdata, data_in.cols());
     }
 
-    TEXTOUT << "Lvq returned " << unique(returned_cluster_ids).length() << " clusters with ids: " << unique(returned_cluster_ids) << "\n";
+    TEXTOUT << "Lvq returned " << unique(returned_cluster_ids).length() << " classes with ids: " << unique(returned_cluster_ids) << "\n";
 
     return returned_cluster_ids;
     }

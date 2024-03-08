@@ -16,7 +16,7 @@
 
 %% bibliography
 %\usepackage[english]{inputenc}
-\usepackage[english]{babel}
+%\usepackage[english]{babel}
 \usepackage{natbib}
 \bibpunct{(}{)}{;}{a}{}{,}
 \bibliographystyle{apalike}
@@ -49,7 +49,7 @@ Two interrelated projects are discussed in this document, \pkg{nnlib2} and \pkg{
 
 \subsection{The \pkg{nnlib2} C++ library}
 
-The \pkg{nnlib2} library is a small collection of C++ classes for implementation of neural networks (NN). It contains base classes and class-templates that model typical NN parts and components (processing nodes, connections, layers, groups of connections etc) as well as a class for composing these parts in complete NN. Users of this library can combine predefined parts and components with custom ones they can create by sub-classing the ones available. In all cases, considerable predefined functionality is provided, s.a methods for building the NN models from the components, presenting data and retrieving output, encoding and mapping data, serialization of the model to and from files etc. The produced models can be included and used in any C++ application. 
+The \pkg{nnlib2} library is a small collection of C++ classes for implementation of neural networks (NN). It contains base classes and class-templates that model typical NN parts and components (processing nodes, connections, layers, groups of connections etc) as well as a class for composing these parts in complete NN. Users of this library can combine predefined parts and components with custom ones they can create by sub-classing the ones available. In all cases, considerable predefined functionality is provided, s.a methods for building the NN models from the components, presenting data and retrieving output, encoding and mapping data, serialization of the model to and from files etc. The produced models can be included and used in any C++ application.
 \newline
 The \pkg{nnlib2} code can be found on GitHub at \href{https://github.com/VNNikolaidis/nnlib2}{https://github.com/VNNikolaidis/nnlib2}.
 \newline
@@ -237,7 +237,7 @@ A (very minimal) C++ application that uses this \code{mam\_nn} could be as follo
 \begin{verbatim}
 #include "nn_mam.h"
 
-int main() 
+int main()
 	{
 	DATA input[4][3] =
 	{
@@ -270,7 +270,7 @@ int main()
 	return 0;
 	}
 \end{verbatim}
- 
+
  \pagebreak
 \section{The  \pkg{nnlib2Rcpp} R package}\label{sec:nnlib2Rcpp}
 
@@ -327,7 +327,7 @@ Once trained, the model can be used to recall the class id for given data by usi
 lvq_recalled_class_ids <- lvq$recall( iris_s )
 plot( iris_s, pch = lvq_recalled_class_ids + 1)
 \end{verbatim}
-In addition to \code{encode} and \code{recall}, all supervised NN modules provide methods to display their internal state (\code{print}) and store it (\code{save}) or retrieve it (\code{load}) using files. The ability to store a NN to file allows a trained model to be applied on new data without retraining it, or interrupt training and later resume it, or share a trained model with other \pkg{nnlib2Rcpp} users (or even \pkg{nnlib2} C++ apps), or include and invoke a trained model on \pkg{Shiny} web apps etc. 
+In addition to \code{encode} and \code{recall}, all supervised NN modules provide methods to display their internal state (\code{print}) and store it (\code{save}) or retrieve it (\code{load}) using files. The ability to store a NN to file allows a trained model to be applied on new data without retraining it, or interrupt training and later resume it, or share a trained model with other \pkg{nnlib2Rcpp} users (or even \pkg{nnlib2} C++ apps), or include and invoke a trained model on \pkg{Shiny} web apps etc.
 \begin{figure}[htbp]
   \centering
   \includegraphics{nLVQs}
@@ -574,7 +574,7 @@ An example of the steps needed to add a new custom NN component to the package (
 (a) Preparation.
 \begin{enumerate}
 \item
-Tools required for this example are R, Rtools, and RStudio. Download and install them, if necessary. In R, install package \pkg{Rcpp} and its dependencies. You may also want to install package \pkg{devtools} and its dependencies. 
+Tools required for this example are R, Rtools, and RStudio. Download and install them, if necessary. In R, install package \pkg{Rcpp} and its dependencies. You may also want to install package \pkg{devtools} and its dependencies.
 \item
 Download the \CRANpkg{nnlib2Rcpp} source code from either CRAN or GitHub. Extract if necessary, placing all files in a directory of your choice. You will be building your version of the package (with your custom components added) from this directory.
 \item
@@ -584,7 +584,7 @@ Just to verify all is ok, rebuild the package. Go to the directory containing fi
 (b) Create your own types of NN parts (nodes, layers, connections etc).
 \begin{enumerate}
 \item
-When creating a new NN part, you will have to consider how it will cooperate with other parts you plan to include in the model. This is unavoidable in NN design, where all components cooperate with each other towards the final result. Traditionally -but not necessarily-, each part of a NN has two different modes of operation, one performed while encoding (training, learning) and another performed when recalling (mapping) data. To add your new NN part, you will subclass \CRANpkg{nnlib2} C++ classes to define new parts (nodes, node layers, connections, sets of connections etc) with customized behavior. The particulars will determine whether you need to add extra variables to your class, or overload any of the base methods (usually methods \fct{setup}, \fct{encode} and \fct{recall}). Only minimal experience with C++ is required. The \CRANpkg{nnlib2} base classes are already available in \CRANpkg{nnlib2Rcpp}, under its \code{src} directory and you may place your creations is the \code{additional\_parts.h} file. This file already contains some minimal examples of NN parts (nodes, layers etc). Alternately, you can create your own source code files (again in \code{src} directory) and include appropriate header files in \code{additional\_parts.h}. In any case, new user-defined components should be accessible from this file, and exist inside \code{namespace nnlib2} (similarly to the examples). For this short guide, all changes (below) will be done exclusively inside \code{additional\_parts.h} file. 
+When creating a new NN part, you will have to consider how it will cooperate with other parts you plan to include in the model. This is unavoidable in NN design, where all components cooperate with each other towards the final result. Traditionally -but not necessarily-, each part of a NN has two different modes of operation, one performed while encoding (training, learning) and another performed when recalling (mapping) data. To add your new NN part, you will subclass \CRANpkg{nnlib2} C++ classes to define new parts (nodes, node layers, connections, sets of connections etc) with customized behavior. The particulars will determine whether you need to add extra variables to your class, or overload any of the base methods (usually methods \fct{setup}, \fct{encode} and \fct{recall}). Only minimal experience with C++ is required. The \CRANpkg{nnlib2} base classes are already available in \CRANpkg{nnlib2Rcpp}, under its \code{src} directory and you may place your creations is the \code{additional\_parts.h} file. This file already contains some minimal examples of NN parts (nodes, layers etc). Alternately, you can create your own source code files (again in \code{src} directory) and include appropriate header files in \code{additional\_parts.h}. In any case, new user-defined components should be accessible from this file, and exist inside \code{namespace nnlib2} (similarly to the examples). For this short guide, all changes (below) will be done exclusively inside \code{additional\_parts.h} file.
 \item
 Define a new NN part, for example a new type of \class{pe}s or \class{connection}s. In the example below we will create a type of \class{connection}s and call them \class{MEX\_connection}s (\code{MEX\_} for Manual EXample). The definition must be inside \code{namespace nnlib2}. The appropriate base class (\class{connection}) will be sub-classed, and only \fct{encode} and \fct{recall} will be modified (as often the case in many new NN parts regardless of type). This being a \class{connection} it connects a source node (\code{source\_pe()}) to a destination node (\code{destin\_pe()}) and can send or receive data to them via their methods.
 \begin{verbatim}
@@ -593,16 +593,16 @@ class MEX_connection: public connection
 public:
 
 	// model-specific behavior during mapping stage:
-	
+
 	void recall()
 	{
 		destin_pe().receive_input_value(pow( source_pe().output - weight() , 2) );
 	}
-	
+
 	// model-specific behavior during training stage:
-	// in this example, only the current  connection weight (i.e. weight()) 
-	// and incoming value from the source node (i.e. source_pe().output) are 
-	// used in a series of calculations that eventually change the 
+	// in this example, only the current  connection weight (i.e. weight())
+	// and incoming value from the source node (i.e. source_pe().output) are
+	// used in a series of calculations that eventually change the
 	// connection weight (see last line).
 
 	void encode()
@@ -627,7 +627,7 @@ Finally, locate the \fct{generate\_custom\_connection\_set}  in \code{additional
 \begin{verbatim}
 if(name == "MEX")   return new MEX_connection_set(name);
 \end{verbatim}
-This will create a set of \class{MEX\_connection}s when the text "MEX" is specified as parameter to \class{NN}  methods such as \code{add\_connection\_set}. Note: the \code{name} passed as parameter in the right side of the above simply copies it (i.e. "MEX") as the name of the new set (this is a label used only for display purposes and can be changed at any time). 
+This will create a set of \class{MEX\_connection}s when the text "MEX" is specified as parameter to \class{NN}  methods such as \code{add\_connection\_set}. Note: the \code{name} passed as parameter in the right side of the above simply copies it (i.e. "MEX") as the name of the new set (this is a label used only for display purposes and can be changed at any time).
 
 \textit{[A side-note: the above steps are similar to those needed for defining new nodes (or processing elements , \code{pe}s) and \code{layer}s of such nodes. Below is a simple example where a new type of \class{pe} and a \class{layer} containing such nodes is defined (new names used also start with \code{MEX\_}, for Manual EXample):
 }
@@ -656,7 +656,7 @@ There is a corresponding \fct{generate\_custom\_layer} function  in \code{additi
 \textit{
 Thus a layer of this specific type will be used when the text \code{"MEX"} is passed as parameter to \class{NN} methods such as \code{add\_layer}.]}
 \item
-Build the package. In RStudio, select \code{Build / Install and Restart} menu option. Once finished your new part definition will be available in the package.  From now on you can directly go to (c) below where your new parts (along with other available components) can be combined in R to form NNs. 
+Build the package. In RStudio, select \code{Build / Install and Restart} menu option. Once finished your new part definition will be available in the package.  From now on you can directly go to (c) below where your new parts (along with other available components) can be combined in R to form NNs.
 \end{enumerate}
 (c) Use your NN parts in R. As mentioned earlier, you only do (a) and (b) once to 'install' your user-defined type in your version of the package. From now on you can bypass them and directly go to R to use your new parts (along with other available components) in a NN. You can now create NNs in R that employ your newly defined parts (along with others already available in the package). This is done using \class{NN} R objects (type \code{?NN} for more information, or see earlier section). An example using the \code{iris} data set and the \code{MEX\_} types created in (b) above. Output is shown in Figure~\ref{figure:nNNMEX}:
 \begin{figure}[htbp]
@@ -694,7 +694,7 @@ ann$outline()
 #  (optional) show the NN internal state
 ann$print()
 
-# train it. Present data to component at position 1, 
+# train it. Present data to component at position 1,
 # do 200 epochs, encode from first to last component:
 ann$encode_dataset_unsupervised(iris_s,1,200,TRUE)
 
