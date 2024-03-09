@@ -49,8 +49,8 @@ NUM_CLASSES <- length(unique(CLASS))
 # now create the NN:
 lvq <- new("LVQs")
 
-# Optionally, the output layer could be expanded, e.g. use 2 nodes per class:
-lvq$set_number_of_nodes_per_class(2)
+# Optionally, the output layer could be expanded, e.g. use 3 nodes per each class:
+# lvq$set_number_of_nodes_per_class(3)
 
 # Optionally, for experimentation negative reinforcement can be disabled:
 # lvq$disable_punishment()
