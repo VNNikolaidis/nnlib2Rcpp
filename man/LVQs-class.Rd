@@ -49,8 +49,8 @@ NUM_CLASSES <- length(unique(CLASS))
 # now create the NN:
 lvq <- new("LVQs")
 
-# Optionally, the output layer could be expanded, e.g. use 3 nodes per each class:
-# lvq$set_number_of_nodes_per_class(3)
+# Optionally, the output layer could be expanded, e.g. use 2 nodes per each class:
+lvq$set_number_of_nodes_per_class(2)
 
 # Optionally, for experimentation negative reinforcement can be disabled:
 # lvq$disable_punishment()
@@ -65,7 +65,6 @@ lvq_recalled_class_ids <- lvq$recall(DATA)
 cat("Correct: ", sum(lvq_recalled_class_ids == CLASS), "\n")
 
 # Done. Optional part for further examining results of training:
-\dontrun{
 
 # collect the connection weights (codebook vector coordinates), number
 # of rewards per node and corresponding class:
@@ -75,25 +74,16 @@ lvq_codebook_vector_info <-
 		matrix(
 			lvq$get_weights(),
 			ncol = ncol(DATA),
-			byrow = T ),
+			byrow = TRUE ),
 			lvq$get_number_of_rewards(),
 			rep( 0:(NUM_CLASSES - 1),
 				 rep(lvq$get_number_of_nodes_per_class(),
 				 NUM_CLASSES) )
 	)
+
 colnames(lvq_codebook_vector_info) <- c(colnames(DATA), "Rewarded", "Class")
 
 print(lvq_codebook_vector_info)
-
-# plot original classification:
-
-plot(
-	DATA,
-	pch = CLASS,
-	main = "Original classes",
-	xlim = c(-0.2, 1.2),
-	ylim = c(-0.2, 1.2)
-)
 
 # plot recalled classification:
 
@@ -113,7 +103,6 @@ points(
 	cex = 4,
 	pch = ifelse(lvq_codebook_vector_info[, "Rewarded"] > 0,	1, 13),
 	col  = lvq_codebook_vector_info[, "Class"] + 10 )
-}
 }
 
 \keyword{classes}
