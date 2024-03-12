@@ -32,11 +32,11 @@ Once installed, for package help (including documentation and examples for each 
 
     help(package='nnlib2Rcpp')
 
-while the package vingette (containing information on adding custom components) can be viewed using the following R command:
+while the package vignette (containing information on adding custom components) can be viewed using the following R command:
 
-    vignette("manual", package='nnlib2Rcpp')
+    vignette("intro", package='nnlib2Rcpp')
 
-The package vingette is also available in PDF format here:
+The package vignette is also available in PDF format here:
 
 https://github.com/VNNikolaidis/nnlib2Rcpp/blob/master/support/manual.pdf
 
