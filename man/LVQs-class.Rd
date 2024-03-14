@@ -134,7 +134,7 @@ points(
     }
     }
 
- \item{\code{set_number_of_nodes_per_class( n )}:}{Set the number of nodes in the output layer (and thus incoming connections whose weights form codebook vectors) that will be used per class. Default is 1, i.e. each class in the data to be encoded in the NN corresponds to a single node (PE) in it's output layer. Returns resulting number of nodes that will be used. Parameters are:
+ \item{\code{set_number_of_nodes_per_class( n )}:}{Set the number of nodes in the output layer (and thus incoming connections whose weights form codebook vectors) that will be used per class. Default is 1, i.e. each class in the data to be encoded in the NN corresponds to a single node (PE) in it's output layer. This method affects how the NN topology will be created; therefore this method should be used before the NN has been set up (either by \code{setup} or \code{encode}). Returns number of nodes to be used per class. Parameters are:
     \itemize{
     \item\code{n}: integer, number of nodes to be used per each class.
     }
@@ -142,7 +142,7 @@ points(
 
 \item{\code{get_number_of_nodes_per_class( )}:}{Get the number of nodes in the output layer that are used per class.}
 
-\item{\code{setup(  input_length, int number_of_classes )}:}{Setup an untrained supervised LVQ for given input data vector dimension and number of classes.Parameters are:
+\item{\code{setup(  input_length, int number_of_classes )}:}{Setup an untrained supervised LVQ for given input data vector dimension and number of classes. Parameters are:
     \itemize{
     \item\code{input_length}: integer, dimension (length) of input data vectors.
     \item\code{number_of_classes}: integer, number of classes in data.
@@ -155,6 +155,20 @@ points(
 
 
  \item{\code{get_number_of_rewards( )}:}{ Get the number of times an output node was positively reinforced during data encoding. Returns NumericVector containing results per output node. }
+
+\item{\code{set_weight_limits(  min, max )}:}{Define the minimum and maximum values that will be allowed in connection weights during encoding (limiting results of punishment). The NN must have been set up before using this method (either by \code{setup} or \code{encode}). Parameters are:
+    \itemize{
+    \item\code{min}: numeric, minimum weight allowed.
+    \item\code{max}: numeric, maximum weight allowed.
+    }
+    }
+
+\item{\code{set_encoding_coefficients( reward, punish )}:}{Define coefficients used for reward and punishment during encoding. The NN must have been set up before using this method (either by \code{setup} or \code{encode}). Parameters are:
+    \itemize{
+    \item\code{reward}: numeric, coefficient used to reward a node that classified data correctly (usually positive, e.g. 0.2).
+    \item\code{reward}: numeric, coefficient used to punish a node that classified data incorrectly (usually negative, e.g. -0.2).
+    }
+    }
 
     \item{\code{print()}:}{ print NN structure. }
 

@@ -142,6 +142,11 @@ lvq_connection_set::lvq_connection_set()
 :generic_connection_set()
  {
  m_iteration=0;
+ m_min_weight_allowed = DATA_MIN;
+ m_max_weight_allowed = DATA_MAX;
+
+ m_reward_coefficient = +0.2;
+ m_punish_coefficient = -0.2;
  }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -193,7 +198,9 @@ void lvq_connection_set::encode()
 	}
 
 //DATA a = 1/(DATA) iteration;							    // (SIMPSON 5-110)
-  DATA a = 0.2*(1.0-((DATA)m_iteration)/LVQ_MAXITERATION);	// (SIMPSON 5-111) we assume it means "epoch" here
+//DATA a = 0.2*(1.0-((DATA)m_iteration)/LVQ_MAXITERATION);	// (SIMPSON 5-111) we assume it means "epoch" here
+  DATA a = (1.0-((DATA)m_iteration)/LVQ_MAXITERATION);
+
 
   layer REF destin = destin_layer();
 
@@ -206,16 +213,22 @@ void lvq_connection_set::encode()
    if(destin_pe.bias == LVQ_REWARD_PE) 						// if destination PE is activated...
 	{
     DATA d = c.misc;										// get difference, it was already computed during recall (see below)...
-    DATA dw = a*d ;
+    DATA dw = m_reward_coefficient * a * d ;
     c.weight() += dw;										// adjust weight (SIMPSON 5-109)
     }
 
-    if(destin_pe.bias == LVQ_PUNISH_PE)						// if destination PE is activated but is to be punished (supervised mode)...
+   if(destin_pe.bias == LVQ_PUNISH_PE)						// if destination PE is activated but is to be punished (supervised mode)...
  	{
     DATA d = c.misc;										// get difference, it was already computed during recall (see below)...
-    DATA dw = -a*d ;
+    DATA dw = m_punish_coefficient * a * d ;
     c.weight() += dw;										// adjust weight (SIMPSON 5-113)
     }
+
+   if(c.weight()<m_min_weight_allowed)
+   	c.weight()=m_min_weight_allowed;
+
+   if(c.weight()>m_max_weight_allowed)
+   	c.weight()=m_max_weight_allowed;
    }
   while(connections.goto_next());
   }
@@ -249,6 +262,35 @@ void lvq_connection_set::recall()
    }
   while(connections.goto_next());
   }
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// helper functions for experimentation with this connection set:
+
+void lvq_connection_set::set_weight_limits(DATA min, DATA max)
+	{
+	m_min_weight_allowed = min;
+	m_max_weight_allowed = max;
+	}
+
+DATA lvq_connection_set::get_min_weight_allowed()
+	{ return m_min_weight_allowed; }
+
+DATA lvq_connection_set::get_max_weight_allowed()
+	{ return m_max_weight_allowed; }
+
+void lvq_connection_set::set_encoding_coefficients(DATA reward, DATA punish)
+{
+	if(reward<=0) warning("Negative or zero reward coefficient, are you sure?");
+	m_reward_coefficient = reward;
+	if(punish> 0) warning("Positive punishment coefficient, are you sure?");
+	m_punish_coefficient = punish;
+}
+
+DATA lvq_connection_set::get_reward_coefficient()
+	{ return m_reward_coefficient; }
+
+DATA lvq_connection_set::get_punish_coefficient()
+	{ return m_punish_coefficient; }
 
 /*-----------------------------------------------------------------------*/
 /* Base class for Kohonen - inspired ANS (currently LVQ or SOM)			 */
@@ -385,7 +427,6 @@ void kohonen_nn::from_stream ( std::istream REF s )
 
 lvq_nn::lvq_nn()
  {
- m_number_of_output_nodes_per_class = 0;
  set_number_of_output_nodes_per_class(1);
  punish_enable(TRUE);
  }
@@ -394,7 +435,6 @@ lvq_nn::lvq_nn()
 
 lvq_nn::lvq_nn(int number_of_output_nodes_per_class, bool allow_punish)
  {
- m_number_of_output_nodes_per_class = 0;
  set_number_of_output_nodes_per_class(number_of_output_nodes_per_class);
  punish_enable(allow_punish);
  }
@@ -449,10 +489,49 @@ bool lvq_nn::setup(int input_dimension,
 							input_dimension,
 							number_of_classes * m_number_of_output_nodes_per_class,
 							1,
-							initial_cluster_centers_matrix
-							);
-
+							initial_cluster_centers_matrix);
  }
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+bool lvq_nn::set_weight_limits(DATA min, DATA max)
+{
+	if(is_ready())
+		{
+		LVQ_CONNECTIONS.set_weight_limits(min,max);
+		return true;
+		}
+	warning("LVQ is not set up, cannot set weight limits");
+	return false;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+bool lvq_nn::set_encoding_coefficients(DATA reward, DATA punish)
+{
+	if(is_ready())
+		{
+		LVQ_CONNECTIONS.set_encoding_coefficients(reward, punish);
+		return true;
+		}
+	warning("LVQ is not set up, cannot set encoding coefficients");
+	return false;
+}
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+DATA lvq_nn::get_reward_coefficient()
+{
+	if(is_ready()) return LVQ_CONNECTIONS.get_reward_coefficient();
+	warning("LVQ not set up, returning 0 as reward coefficient");
+	return 0;
+}
+
+DATA lvq_nn::get_punish_coefficient()
+{
+	if(is_ready()) return LVQ_CONNECTIONS.get_punish_coefficient();
+	warning("LVQ not set up, returning 0 as punish coefficient");
+	return 0;
+}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

@@ -50,8 +50,12 @@ public:
   		error(NN_INTEGR_ERR,"LVQ is already set up. Define the number of nodes per class before setup or encode");
   		return lvq.get_number_of_output_nodes_per_class();
   	}
-  	TEXTOUT << "LVQ will use " << n << " output PE(s) per class when encoding or recalling data.\n";
+
+  	if(lvq.get_number_of_output_nodes_per_class()!=n)
+  		TEXTOUT << "LVQ will use " << n << " output PE(s) per class when encoding or recalling data.\n";
+
     lvq.set_number_of_output_nodes_per_class(n);
+
     return lvq.get_number_of_output_nodes_per_class();
   }
 
@@ -62,6 +66,28 @@ public:
   {
   	return lvq.get_number_of_output_nodes_per_class();
   }
+
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+ bool set_weight_limits(double min, double max)
+ {
+
+ 	if(lvq.set_weight_limits(min,max))
+ 	{
+ 	TEXTOUT << "LVQ will limit connection weights to [" << min << "," << max << "] when encoding data.\n";
+ 	return true;
+ 	}
+
+	return false;
+ }
+
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+ bool set_encoding_coefficients(double reward, double punish)
+	{
+	return lvq.set_encoding_coefficients(reward, punish);
+	}
 
  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  // set number of output PEs (nodes) per class
@@ -79,7 +105,6 @@ public:
 		lvq.punish_enable(FALSE);
 		return lvq.punish_enabled();
 	}
-
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // Setup an lvq for future use
@@ -151,7 +176,18 @@ public:
 
     if(!lvq.no_error()) return;
 
-    TEXTOUT << "LVQ will be trained for " << output_dim << " classes.\n";
+    if(lvq.get_reward_coefficient() != 0.2)
+    TEXTOUT << "LVQ reward coefficient = " << lvq.get_reward_coefficient() << " .\n";
+
+    if(lvq.punish_enabled())
+    {
+     if(lvq.get_punish_coefficient() != -0.2)
+      TEXTOUT << "LVQ punishment coefficient = " << lvq.get_punish_coefficient() << " .\n";
+    }
+    else
+      TEXTOUT << "LVQ punishment disabled.\n";
+
+    TEXTOUT << "Training LVQ to encode " << output_dim << " classes...\n";
 
     // encode all data
 
@@ -342,6 +378,7 @@ RCPP_MODULE(class_LVQs) {
   class_<LVQs>( "LVQs" )
   .constructor()
   //.constructor<NumericMatrix,IntegerVector,int>()
+  .method( "setup",								&LVQs::setup,							"Setup an untrained supervised LVQ for given input data vector dimensions and number of classes" )
   .method( "encode",    						&LVQs::encode,							"Encode input and output (classification) for a dataset using LVQ NN" )
   .method( "recall",    						&LVQs::recall,							"Get output (classification) for a dataset using LVQ NN" )
   .method( "print",     						&LVQs::print,							"Print LVQ NN details" )
@@ -355,7 +392,8 @@ RCPP_MODULE(class_LVQs) {
   .method( "get_number_of_rewards",				&LVQs::get_number_of_rewards,			"Get number of times each output PE was positively reinforced during encoding" )
   .method( "enable_punishment",					&LVQs::enable_punishment,				"During encoding incorrect winner nodes will be notified" )
   .method( "disable_punishment",				&LVQs::disable_punishment,				"During encoding incorrect winner nodes will not be notified" )
-  .method( "setup",								&LVQs::setup,							"Setup an untrained supervised LVQ for given input data vector dimensions and number of classes" )
+  .method( "set_weight_limits",					&LVQs::set_weight_limits,				"Define minimum and maximum values allowed in weights" )
+  .method( "set_encoding_coefficients",			&LVQs::set_encoding_coefficients,		"Define coefficients used for reward and punishment" )
   ;
 }
 

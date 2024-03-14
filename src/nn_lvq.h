@@ -30,75 +30,9 @@
 namespace nnlib2 {
 namespace lvq {
 
-/*-----------------------------------------------------------------------*/
-/* Base class for Kohonen - inspired ANS (currently LVQ or SOM)			 */
-/*-----------------------------------------------------------------------*/
-
-class kohonen_nn : public NN_PARENT_CLASS
-{
-protected:
-
-bool setup(int input_dimension,
-           int output_dimension,
-           int output_neighborhood_size,						// for for unsupervised training (SOM) output_neighborhood_size is how many output nodes are affected,
-		   DATA ** initial_cluster_centers_matrix = NULL);  	// optional matrix initializes weights; must be sized output_dimension X input_dimension
-
-public:
-
-kohonen_nn();
-~kohonen_nn();
-
-void from_stream ( std::istream REF s );
-};
 
 /*-----------------------------------------------------------------------*/
-/* LVQ ANS (Supervised LVQ)												 */
-/*-----------------------------------------------------------------------*/
-
-class lvq_nn : public kohonen_nn
- {
- protected:
-
- int  m_number_of_output_nodes_per_class;	 // for supervised training (LVQ) this is number of output PEs (and codebook vectors) per class.
- bool m_punish_enabled;
-
- public:
-
- lvq_nn();
- lvq_nn(int number_of_output_nodes_per_class, bool allow_punish);
-
- void set_number_of_output_nodes_per_class(int number_of_output_nodes_per_class);
- int  get_number_of_output_nodes_per_class();
-
- void punish_enable(bool enable);
- bool punish_enabled();
-
- bool setup(int input_dimension, int number_of_classes, DATA ** initial_cluster_centers_matrix = NULL);   			// optional matrix initializes weights; must be sized output_dimension X input_dimension
-
- DATA encode_s(DATA PTR input, int input_dim, DATA PTR desired_output, int output_dim, int iteration);
- DATA encode_s(DATA PTR input, int input_dim, int desired_class, int iteration);
-
- int recall_class (DATA PTR input, int input_dim);
- };
-
-/*-----------------------------------------------------------------------*/
-/* Self-Organized Map (SOM) ANS	(Unsupervised LVQ NN)					 */
-/*-----------------------------------------------------------------------*/
-
-class som_nn : public kohonen_nn
- {
-
- int	 m_output_neighborhood_size;		 // for unsupervised training (SOM) this is number of output nodes (near the winning one) which will be affected.
-
- public:
-
- som_nn(int neighborhood_size);
-
- bool setup(int input_dimension,int output_dimension, DATA ** initial_cluster_centers_matrix = NULL);   			// optional matrix initializes weights; must be sized output_dimension X input_dimension
-
- DATA encode_u(DATA PTR input, int input_dim, int iteration);
- };
-
+/* Components for Kohonen - type NNS:									 */
 /*-----------------------------------------------------------------------*/
 
 class lvq_input_layer : public pe_layer
@@ -126,6 +60,12 @@ class lvq_connection_set : public generic_connection_set
 private:
         int m_iteration;
 
+		DATA m_min_weight_allowed;
+		DATA m_max_weight_allowed;
+
+		DATA m_reward_coefficient;
+		DATA m_punish_coefficient;
+
 public:
 
         lvq_connection_set();
@@ -135,6 +75,94 @@ public:
         void recall();						// virtual, defined in component
         void encode();						// virtual, defined in component
         void encode(int iteration);			// a variation of above, imposes iteration number
+
+		// helper functions for experimentation:
+
+		void set_weight_limits(DATA min, DATA max);
+		DATA get_min_weight_allowed();
+		DATA get_max_weight_allowed();
+
+		void set_encoding_coefficients(DATA reward, DATA punish);
+		DATA get_reward_coefficient();
+		DATA get_punish_coefficient();
+};
+
+
+/*-----------------------------------------------------------------------*/
+/* Base class for Kohonen - inspired ANS (currently LVQ or SOM)			 */
+/*-----------------------------------------------------------------------*/
+
+class kohonen_nn : public NN_PARENT_CLASS
+{
+protected:
+
+	bool setup(int input_dimension,
+            int output_dimension,
+            int output_neighborhood_size,						// for for unsupervised training (SOM) output_neighborhood_size is how many output nodes are affected,
+            DATA ** initial_cluster_centers_matrix = NULL);  	// optional matrix initializes weights; must be sized output_dimension X input_dimension
+
+public:
+
+	kohonen_nn();
+	~kohonen_nn();
+
+	void from_stream ( std::istream REF s );
+};
+
+/*-----------------------------------------------------------------------*/
+/* LVQ ANS (Supervised LVQ)												 */
+/*-----------------------------------------------------------------------*/
+
+class lvq_nn : public kohonen_nn
+{
+protected:
+
+	int  m_number_of_output_nodes_per_class;	 // for supervised training (LVQ) this is number of output PEs (and codebook vectors) per class.
+	bool m_punish_enabled;
+
+public:
+
+	lvq_nn();
+	lvq_nn(int number_of_output_nodes_per_class, bool allow_punish);
+
+	void set_number_of_output_nodes_per_class(int number_of_output_nodes_per_class);
+	int  get_number_of_output_nodes_per_class();
+
+	bool set_weight_limits(DATA min,DATA max);
+	DATA get_min_weight_allowed();
+	DATA get_max_weight_allowed();
+
+	bool set_encoding_coefficients(DATA reward, DATA punish);
+	DATA get_reward_coefficient();
+	DATA get_punish_coefficient();
+
+	void punish_enable(bool enable);
+	bool punish_enabled();
+
+	bool setup(int input_dimension, int number_of_classes, DATA ** initial_cluster_centers_matrix = NULL);   			// optional matrix initializes weights; must be sized output_dimension X input_dimension
+
+	DATA encode_s(DATA PTR input, int input_dim, DATA PTR desired_output, int output_dim, int iteration);
+	DATA encode_s(DATA PTR input, int input_dim, int desired_class, int iteration);
+
+	int recall_class (DATA PTR input, int input_dim);
+};
+
+/*-----------------------------------------------------------------------*/
+/* Self-Organized Map (SOM) ANS	(Unsupervised LVQ NN)					 */
+/*-----------------------------------------------------------------------*/
+
+class som_nn : public kohonen_nn
+{
+
+	int	 m_output_neighborhood_size;		 // for unsupervised training (SOM) this is number of output nodes (near the winning one) which will be affected.
+
+public:
+
+	som_nn(int neighborhood_size);
+
+	bool setup(int input_dimension,int output_dimension, DATA ** initial_cluster_centers_matrix = NULL);   			// optional matrix initializes weights; must be sized output_dimension X input_dimension
+
+	DATA encode_u(DATA PTR input, int input_dim, int iteration);
 };
 
 /*-----------------------------------------------------------------------*/

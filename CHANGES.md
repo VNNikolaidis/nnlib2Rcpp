@@ -154,3 +154,8 @@ Changes to nnlib2Rcpp version 0.2.5 (from 0.2.4)
 
 ---
 
+Changes to nnlib2Rcpp version 0.2.6 (from 0.2.5)
+- changes to LVQs (and related lvq_nn, lvq_connection_set classes) to allow getting and setting limits for weight values, define training coefficients etc. Added related methods to LVQs (set_weight_limits", set_encoding_coefficients).
+- removed offending directive (usepackage[english]{babel}) from vignette file ('intro.ltx').
+
+
