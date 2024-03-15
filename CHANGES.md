@@ -30,7 +30,7 @@ Changes to nnlib2Rcpp version 0.1.4 (from 0.1.3)
 -	(checked on Linux Mint 19.3 with R 3.6.3)
 -	(checked with R 4.0.0 and RTools40 (produces 1 extra NOTE).
 -	includes nnlib2 v.0.2.0.
--	added module "NN" which allows creation and control of custom NNs from R using predefined components. It also provides fixed method for adding user-defined NN components which can be used in the module.
+-	added module "NN" which allows creation and control of custom NN from R using predefined components. It also provides fixed method for adding user-defined NN components which can be used in the module.
 
 ---
 
@@ -47,7 +47,7 @@ Changes to nnlib2Rcpp version 0.1.6 (from 0.1.5)
 -	includes nnlib2 v.0.2.4
 -	added method to module "NN" (get_output_at).
 -	added method to module "NN" (set_output_at).
--	added package vingette.
+-	added package vignette.
 -	other minor changes.
 
 ---
@@ -73,7 +73,7 @@ Changes to nnlib2Rcpp version 0.1.9 (from 0.1.8)
 Changes to nnlib2Rcpp version 0.1.10 (from 0.1.9)
 -	NN method add_layer now accepts additional optional parameter (double) to be used by specific layer implementations (for example, BP layers interpret it is as the learning rate). More optional parameters may be added in future versions.
 -	NN methods add_connection_set, connect_layers_at and fully_connect_layers_at now accept additional optional parameter (double) to be used by specific connection set implementations (for example, BP connection sets interpret it is as the learning rate). More optional parameters may be added in future versions.
--	includes nnlib2 v.0.2.6 (added functionality to directly get/set biases in layer processing elements (PEs)).
+-	includes nnlib2 v.0.2.6 (added functionality to directly get/set biases in layer processing elements (PE)).
 -	changes in NN module to support get/set biases (added functions: set_biases_at, set_bias_at, get_biases_at, get_bias_at).
 -	numbers specifying PE and connections in NN module functions now start from 0 (was 1, changed to agree with those shown when NN is printed. This affects functions: get_weight_at, set_weight_at and remove_single_connection).
 -	other minor changes.
@@ -155,7 +155,10 @@ Changes to nnlib2Rcpp version 0.2.5 (from 0.2.4)
 ---
 
 Changes to nnlib2Rcpp version 0.2.6 (from 0.2.5)
-- changes to LVQs (and related lvq_nn, lvq_connection_set classes) to allow getting and setting limits for weight values, define training coefficients etc. Added related methods to LVQs (set_weight_limits", set_encoding_coefficients).
-- removed offending directive (usepackage[english]{babel}) from vignette file ('intro.ltx').
-
+-	changes to LVQs (and related lvq_nn, lvq_connection_set classes) to make it more fit for use on real data.
+-	allow lvq_nn getting and setting limits for weight values, define training coefficients etc. Added related methods to LVQs (set_weight_limits", set_encoding_coefficients).
+-	removed directive (usepackage[english]{babel}) from vignette file ('intro.ltx').
+-	other minor changes.
+-	to do: LVQs option to recall (classify) data ignoring nodes with zero or small number of rewards received during encoding (rewards_required_to_recall).
+-	to do: LVQs modifications allowing different training coefficients (reward, punish) per class; this may be useful in highly unbalanced class problems.
 

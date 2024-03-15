@@ -163,7 +163,7 @@ points(
     }
     }
 
-\item{\code{set_encoding_coefficients( reward, punish )}:}{Define coefficients used for reward and punishment during encoding. The NN must have been set up before using this method (either by \code{setup} or \code{encode}). Parameters are:
+\item{\code{set_encoding_coefficients( reward, punish )}:}{Define coefficients used for reward and punishment during encoding. In this version, the actual learning rate a(t) also depends on the epoch t, i.e. a(t) = coefficient * (1 - (t/10000)). The NN must have been set up before using this method (either by \code{setup} or \code{encode}). Parameters are:
     \itemize{
     \item\code{reward}: numeric, coefficient used to reward a node that classified data correctly (usually positive, e.g. 0.2).
     \item\code{reward}: numeric, coefficient used to punish a node that classified data incorrectly (usually negative, e.g. -0.2).
