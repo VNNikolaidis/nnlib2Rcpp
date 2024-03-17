@@ -139,12 +139,12 @@ public:
 	void punish_enable(bool enable);
 	bool punish_enabled();
 
-	bool setup(int input_dimension, int number_of_classes, DATA ** initial_cluster_centers_matrix = NULL);   			// optional matrix initializes weights; must be sized output_dimension X input_dimension
+	bool setup(int input_dimension, int number_of_classes, DATA ** initial_cluster_centers_matrix = NULL);	/// optional matrix initializes weights; must be sized output_dimension X input_dimension
 
-	DATA encode_s(DATA PTR input, int input_dim, DATA PTR desired_output, int output_dim, int iteration);
-	DATA encode_s(DATA PTR input, int input_dim, int desired_class, int iteration);
+	DATA encode_s(DATA PTR input, int input_dim, DATA PTR desired_output, int output_dim, int iteration);	// Note: 0 indicates no error (success), DATA_MAX failure.
+	DATA encode_s(DATA PTR input, int input_dim, int desired_class, int iteration);							// Note: 0 indicates no error (success), DATA_MAX failure.
 
-	int recall_class (DATA PTR input, int input_dim);
+	int recall_class (DATA PTR input, int input_dim, int min_rewards = 0);									// min_rewards allows ignoring PE that were not rewarded during encoding (training).
 };
 
 /*-----------------------------------------------------------------------*/
