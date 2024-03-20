@@ -22,9 +22,8 @@ Simpson, P. K. (1991). Artificial neural systems: Foundations, paradigms, applic
 Vasilis N. Nikolaidis <vnnikolaidis@gmail.com>
 }
 \note{
-The NN used in this module uses supervised training for data classification (described as Supervised Learning LVQ in Simpson (1991)). Data should be scaled in 0 to 1 range.
-
-(This module uses Rcpp to employ 'lvq_nn' class in nnlib2.)
+This module uses Rcpp to employ 'lvq_nn' class in nnlib2.
+The NN used in this module uses supervised training for data classification (described as Supervised Learning LVQ in Simpson (1991)). Initial weights are random (uniform distribution) in 0 to 1 range. As these weights represent vector coordinates (forming the class reference, prototype or codebook vector(s)), it is important that input data is also scaled to 0 to 1 range.
 }
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
@@ -34,6 +33,8 @@ The NN used in this module uses supervised training for data classification (des
 }
 
 \examples{
+# Example 1:
+
 # LVQ expects data in 0 to 1 range, so scale some numeric data...
 DATA <- as.matrix(iris[1:4])
 c_min <- apply(DATA, 2, FUN = "min")
@@ -71,17 +72,19 @@ cat("Correct: ", sum(lvq_recalled_class_ids == CLASS), "\n")
 
 lvq_codebook_vector_info <-
 	cbind(
-		matrix(
-			lvq$get_weights(),
-			ncol = ncol(DATA),
-			byrow = TRUE ),
-			lvq$get_number_of_rewards(),
-			rep( 0:(NUM_CLASSES - 1),
-				 rep(lvq$get_number_of_nodes_per_class(),
-				 NUM_CLASSES) )
+		matrix(lvq$get_weights(),
+			   ncol = ncol(DATA),
+			   byrow = TRUE),
+		lvq$get_number_of_rewards(),
+		rep(
+			0:(NUM_CLASSES - 1),
+			rep(lvq$get_number_of_nodes_per_class(),
+				NUM_CLASSES)
+		)
 	)
 
-colnames(lvq_codebook_vector_info) <- c(colnames(DATA), "Rewarded", "Class")
+colnames(lvq_codebook_vector_info) <-
+	c(colnames(DATA), "Rewarded", "Class")
 
 print(lvq_codebook_vector_info)
 
@@ -92,7 +95,8 @@ plot(
 	pch = lvq_recalled_class_ids,
 	main = "LVQ recalled clusters (LVQs module)",
 	xlim = c(-0.2, 1.2),
-	ylim = c(-0.2, 1.2) )
+	ylim = c(-0.2, 1.2)
+)
 
 # plot connection weights (a.k.a codebook vectors):
 # the big circles are codebook vectors, (crossed-out if they were never used
@@ -102,7 +106,28 @@ points(
 	lvq_codebook_vector_info[, 1:2],
 	cex = 4,
 	pch = ifelse(lvq_codebook_vector_info[, "Rewarded"] > 0,	1, 13),
-	col  = lvq_codebook_vector_info[, "Class"] + 10 )
+	col  = lvq_codebook_vector_info[, "Class"] + 10
+)
+
+# Example 2: (to demonstrate using setup method)
+# Note: using the same data (DATA,CLASS,NUM_CLASSES variables) as Example 1 above
+
+# create the NN:
+lvq2 <- new("LVQs")
+
+# setup the LVQ:
+lvq2$setup(length(DATA[1, ]), NUM_CLASSES, 2)
+lvq2$set_weight_limits(-0.5 , 1.5)
+lvq2$set_encoding_coefficients(0.2,-sum(CLASS == 0) / length(CLASS))
+
+# train it:
+lvq2$encode(DATA, CLASS, 100)
+
+# recall the same data (a simple check of how well the LVQ was trained):
+lvq2_recalled_class_ids <- lvq2$recall(DATA, 1)
+
+# show results:
+cat("Correct: ", sum(lvq2_recalled_class_ids == CLASS), "\n")
 }
 
 \keyword{classes}

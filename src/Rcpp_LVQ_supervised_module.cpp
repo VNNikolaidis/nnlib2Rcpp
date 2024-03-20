@@ -56,9 +56,10 @@ public:
   	}
 
   	if(lvq.get_number_of_output_nodes_per_class()!=n)
+  	{
   		lvq.set_number_of_output_nodes_per_class(n);
-
-  	TEXTOUT << "LVQ will use " << lvq.get_number_of_output_nodes_per_class()  << " output node(s) per class when encoding or recalling data.\n";
+  		TEXTOUT << "LVQ will use " << lvq.get_number_of_output_nodes_per_class()  << " output node(s) per class when encoding or recalling data.\n";
+  	}
 
     return lvq.get_number_of_output_nodes_per_class();
   }
@@ -184,7 +185,7 @@ public:
        (lvq.input_length() == input_data_dim) &&
        ((int)(lvq.output_length()/lvq.get_number_of_output_nodes_per_class()) == output_dim))
     {
-     	TEXTOUT << "Encoding will continue using existing LVQ.\n";
+     	TEXTOUT << "Encoding will be performed on existing LVQ.\n";
     }
     else
     {
