@@ -160,8 +160,5 @@ Changes to nnlib2Rcpp version 0.2.6 (from 0.2.5)
 -	removed directive (usepackage[english]{babel}) from vignette file ('intro.ltx').
 -	added train_single method (encodes a single [data vector,class] pair). Used in combination with set_encoding_coefficients, allows allowing different training coefficients (reward, punish) per class (this may be useful in highly unbalanced class problems).
 -	added option to LVQs recall (classify) data ignoring nodes that had less than a number of rewards received during encoding.
+-	changed LVQs examples.
 -	other minor changes.
-
----
-
--	future to do: LVQs modifications allowing different training coefficients (reward, punish) per class/variable (this could use some presumed variable distribution in class).

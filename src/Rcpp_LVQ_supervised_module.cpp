@@ -359,7 +359,12 @@ public:
 		int pos = 2;
 
 		double * fpdata_in  = REAL(data_in);                    // my (lame?) way to interface with R, cont.)
-		return lvq.set_weights_at_component(pos-1,fpdata_in,data_in.length());
+		if(!lvq.set_weights_at_component(pos-1,fpdata_in,data_in.length()))
+		{
+			error(NN_INTEGR_ERR,"Cannot change weights at specified NN component, incompatible type or sizes");
+			return false;
+		}
+		return true;
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

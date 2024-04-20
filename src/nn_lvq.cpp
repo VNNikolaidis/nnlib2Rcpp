@@ -667,10 +667,9 @@ int lvq_nn::recall_class( DATA PTR input,
 
 		if(current_winner_pe_rewards<min_rewards)
 		{
-			error(NN_DATAST_ERR,"No winner node was found having specified number of rewards or above");
+			error(NN_METHOD_ERR,"No winning output node had required number of rewards");
 			returned_class = -1;
 		}
-
 	}
 
 	return returned_class;

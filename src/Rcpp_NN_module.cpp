@@ -937,7 +937,12 @@ public:
 	bool set_weights_at(int pos, NumericVector data_in)
 	{
 		double * fpdata_in  = REAL(data_in);                    // my (lame?) way to interface with R, cont.)
-		return m_nn.set_weights_at_component(pos-1,fpdata_in,data_in.length());
+		if(!m_nn.set_weights_at_component(pos-1,fpdata_in,data_in.length()))
+		{
+			error(NN_INTEGR_ERR,"Cannot change weights at specified NN component, incompatible type or sizes");
+			return false;
+		}
+		return true;
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -21,6 +21,7 @@ namespace nnlib2 {
 #define NN_DATAST_ERR	6								/* data (test/train) set  */
 #define NN_ARITHM_ERR	7								/* arithmetic             */
 #define NN_USRABR_ERR	8								/* user aborted           */
+#define NN_METHOD_ERR	9								/* method failed          */
 
 extern bool error(unsigned id, string message,bool * p_error_flag=NULL);
 extern void warning(string message);

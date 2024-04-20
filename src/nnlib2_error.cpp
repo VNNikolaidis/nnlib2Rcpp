@@ -93,6 +93,11 @@ switch(i)
 		  severity=1;
 		  break;
 
+ case NN_METHOD_ERR:
+		 m1 ="method failure";
+		 severity=1;
+		 break;
+
  default: m1 = "Unknown error";
 		  severity=1;
 		  break;

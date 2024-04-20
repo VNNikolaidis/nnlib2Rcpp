@@ -33,7 +33,7 @@ The NN used in this module uses supervised training for data classification (des
 }
 
 \examples{
-# Example 1:
+# Create some compatible data (here, from iris data set):
 
 # LVQ expects data in 0 to 1 range, so scale some numeric data...
 DATA <- as.matrix(iris[1:4])
@@ -42,92 +42,159 @@ c_max <- apply(DATA, 2, FUN = "max")
 c_rng <- c_max - c_min
 DATA <- sweep(DATA, 2, FUN = "-", c_min)
 DATA <- sweep(DATA, 2, FUN = "/", c_rng)
+NUM_VARIABLES <- ncol(DATA)
 
-# create a vector of desired class ids (starting from 0):
+# create a vector of desired class ids (consecutive ids, starting from 0):
 CLASS <- as.integer(iris$Species) - 1
 NUM_CLASSES <- length(unique(CLASS))
 
-# now create the NN:
-lvq <- new("LVQs")
+# avoid using data with NA or other special values:
+if (sum(is.na(DATA)) > 0)
+  stop("NAs found in DATA")
+if (sum(is.na(CLASS)) > 0)
+  stop("NAs found in CLASS")
 
-# Optionally, the output layer could be expanded, e.g. use 2 nodes per each class:
-lvq$set_number_of_nodes_per_class(2)
+# Example 1:
+# (Note: the example uses DATA and CLASS variables defined earlier).
 
-# Optionally, for experimentation negative reinforcement can be disabled:
-# lvq$disable_punishment()
+  # use half of the data to train, the other half to evaluate how well LVQ was
+  # trained (interlaced half is used to select members of these data sets):
 
-# train it:
-lvq$encode(DATA, CLASS, 100)
+  l1_train_dataset <- DATA[c(TRUE, FALSE),]
+  l1_train_class   <- CLASS[c(TRUE, FALSE)]
+  l1_test_dataset <- DATA[c(FALSE, TRUE),]
+  l1_test_class   <- CLASS[c(FALSE, TRUE)]
 
-# recall the same data (a simple check of how well the LVQ was trained):
-lvq_recalled_class_ids <- lvq$recall(DATA)
+  # now create the NN:
+  l1 <- new("LVQs")
 
-# show results:
-cat("Correct: ", sum(lvq_recalled_class_ids == CLASS), "\n")
+  # train it:
+  l1$encode(l1_train_dataset, l1_train_class, 100)
 
-# Done. Optional part for further examining results of training:
+  # recall the same data (a simple check of how well the LVQ was trained):
+  l1_recalled_class_ids <- l1$recall(l1_test_dataset)
 
-# collect the connection weights (codebook vector coordinates), number
-# of rewards per node and corresponding class:
+  # show results:
+  cat(
+    "Example 1 results: Correct ",
+    sum(l1_recalled_class_ids == l1_test_class),
+    "out of",
+    nrow(l1_test_dataset),
+    ".\n"
+  )
 
-lvq_codebook_vector_info <-
-	cbind(
-		matrix(lvq$get_weights(),
-			   ncol = ncol(DATA),
-			   byrow = TRUE),
-		lvq$get_number_of_rewards(),
-		rep(
-			0:(NUM_CLASSES - 1),
-			rep(lvq$get_number_of_nodes_per_class(),
-				NUM_CLASSES)
-		)
-	)
+# Example 2: (playing around with some optional settings)
+# (Note: the example uses DATA, CLASS, NUM_CLASSES variables defined earlier).
 
-colnames(lvq_codebook_vector_info) <-
-	c(colnames(DATA), "Rewarded", "Class")
+  # create the NN:
+  l2 <- new("LVQs")
 
-print(lvq_codebook_vector_info)
+  # Optionally, the output layer could be expanded, e.g. use 2 nodes per each class:
+  l2$set_number_of_nodes_per_class(2)
 
-# plot recalled classification:
+  # Optionally, for experimentation negative reinforcement can be disabled:
+  l2$disable_punishment()
 
-plot(
-	DATA,
-	pch = lvq_recalled_class_ids,
-	main = "LVQ recalled clusters (LVQs module)",
-	xlim = c(-0.2, 1.2),
-	ylim = c(-0.2, 1.2)
-)
+  # train it:
+  l2$encode(DATA, CLASS, 100)
 
-# plot connection weights (a.k.a codebook vectors):
-# the big circles are codebook vectors, (crossed-out if they were never used
-# to assign a training data point to the correct class, i.e. never rewarded)
+  # recall the same data (a simple check of how well the LVQ was trained):
+  l2_recalled_class_ids <- l2$recall(DATA)
 
-points(
-	lvq_codebook_vector_info[, 1:2],
-	cex = 4,
-	pch = ifelse(lvq_codebook_vector_info[, "Rewarded"] > 0,	1, 13),
-	col  = lvq_codebook_vector_info[, "Class"] + 10
-)
+  # Done. Optional part for further examining results of training:
 
-# Example 2: (to demonstrate using setup method)
-# Note: using the same data (DATA,CLASS,NUM_CLASSES variables) as Example 1 above
+  # collect the connection weights (codebook vector coordinates), number
+  # of rewards per node and corresponding class:
 
-# create the NN:
-lvq2 <- new("LVQs")
+  l2_codebook_vector_info <-
+    cbind(
+      matrix(l2$get_weights(),
+             ncol = ncol(DATA),
+             byrow = TRUE),
+      l2$get_number_of_rewards(),
+      rep(
+        0:(NUM_CLASSES - 1),
+        rep(l2$get_number_of_nodes_per_class(),
+            NUM_CLASSES)
+      )
+    )
 
-# setup the LVQ:
-lvq2$setup(length(DATA[1, ]), NUM_CLASSES, 2)
-lvq2$set_weight_limits(-0.5 , 1.5)
-lvq2$set_encoding_coefficients(0.2,-sum(CLASS == 0) / length(CLASS))
+  colnames(l2_codebook_vector_info) <-
+    c(colnames(DATA), "Rewarded", "Class")
 
-# train it:
-lvq2$encode(DATA, CLASS, 100)
+  print(l2_codebook_vector_info)
 
-# recall the same data (a simple check of how well the LVQ was trained):
-lvq2_recalled_class_ids <- lvq2$recall(DATA, 1)
+  # plot recalled classification:
 
-# show results:
-cat("Correct: ", sum(lvq2_recalled_class_ids == CLASS), "\n")
+  plot(
+    DATA,
+    pch = l2_recalled_class_ids,
+    main = "LVQ recalled clusters (LVQs module)",
+    xlim = c(-0.2, 1.2),
+    ylim = c(-0.2, 1.2)
+  )
+
+  # plot connection weights (a.k.a codebook vectors):
+  # the big circles are codebook vectors, (crossed-out if they were never used
+  # to assign a training data point to the correct class, i.e. never rewarded)
+
+  points(
+    l2_codebook_vector_info[, 1:2],
+    cex = 4,
+    pch = ifelse(l2_codebook_vector_info[, "Rewarded"] > 0,	1, 13),
+    col  = l2_codebook_vector_info[, "Class"] + 10
+  )
+
+  # show results:
+  cat(
+    "Example 2 results: Correct ",
+    sum(l2_recalled_class_ids == CLASS),
+    "out of",
+    nrow(DATA),
+    ".\n"
+  )
+
+# Example 3 (demonstrate 'setup' and some other methods it allows):
+# (Note: uses DATA, CLASS, NUM_VARIABLES, NUM_CLASSES defined earlier).
+
+  # create the NN:
+  l3 <- new("LVQs")
+
+  l3_number_of_output_nodes_per_class <- 3
+
+  # setup the LVQ:
+  l3$setup(NUM_VARIABLES,
+           NUM_CLASSES,
+           l3_number_of_output_nodes_per_class)
+  l3$set_weight_limits(-0.5 , 1.5)
+  l3$set_encoding_coefficients(0.2,-sum(CLASS == 0) / length(CLASS))
+
+  # experiment with setting initial weights (codebook vectors) per output node;
+  # here, weights are set to the mean vector of the training set data for the
+  # class the output node corresponds to:
+
+  class_means <- aggregate(DATA, list(CLASS), FUN = mean)
+  class_means <- t(class_means)[-1,]
+  l3_initial_weights <- NULL
+  for (i in 1:l3_number_of_output_nodes_per_class)
+    l3_initial_weights <- rbind(l3_initial_weights, class_means)
+
+  l3$set_weights(as.vector(l3_initial_weights))
+
+  # now train it:
+  l3$encode(DATA, CLASS, 100)
+
+  # recall the same data (a simple check of how well the LVQ was trained):
+  l3_recalled_class_ids <- l3$recall(DATA, 0)
+
+  # show results:
+  cat(
+    "Example 3 results: Correct ",
+    sum(l3_recalled_class_ids == CLASS),
+    "out of",
+    nrow(DATA),
+    ".\n"
+  )
 }
 
 \keyword{classes}
