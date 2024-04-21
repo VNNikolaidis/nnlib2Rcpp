@@ -94,7 +94,7 @@ switch(i)
 		  break;
 
  case NN_METHOD_ERR:
-		 m1 ="method failure";
+		 m1 ="method error";
 		 severity=1;
 		 break;
 

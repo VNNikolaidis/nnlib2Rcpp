@@ -637,16 +637,35 @@ int lvq_nn::recall_class( DATA PTR input,
 		INPUT_LAYER.input_data_from_vector(input,input_dim);
 		recall();
 
-		// find which output node is best for input vector (has smallest distance)
+		// find which output node wins, i.e is has smallest distance to input vector
 
 		int current_winner_pe			= 0;
-		int current_winner_pe_rewards	= 0;
 
-		DATA current_win_output = OUTPUT_LAYER.PE(0).output;			// this should be the distance, see lvq_output_layer::recall.
+		// find at least one output node with requested number of rewards.
+
+		if(min_rewards>0)
+		{
+		bool found_rewarded = false;
+		for(int i=0;i<output_dimension() AND NOT found_rewarded;i++)
+			{
+			if(OUTPUT_LAYER.PE(i).misc >= min_rewards)					// misc in output PEs is just a counter of rewards given to the PE
+				{
+				current_winner_pe = i;
+				found_rewarded = true;
+				}
+			}
+		if(NOT found_rewarded)
+			{
+			error(NN_METHOD_ERR,"No output node has requested number of rewards");
+			return(-1);
+			}
+		}
+
+		DATA current_win_output = OUTPUT_LAYER.PE(current_winner_pe).output;	// this should be the distance, see lvq_output_layer::recall.
 
 		for(int i=0;i<output_dimension();i++)
 		{
-			OUTPUT_LAYER.PE(i).bias = LVQ_DEACTI_PE;
+			OUTPUT_LAYER.PE(i).bias = LVQ_DEACTI_PE;					// (is this really necessary?) deactivate all
 
 			if(OUTPUT_LAYER.PE(i).misc >= min_rewards)					// misc in output PEs is just a counter of rewards given to the PE
 				{
@@ -655,7 +674,6 @@ int lvq_nn::recall_class( DATA PTR input,
 					{
 					current_win_output = d;
 					current_winner_pe  = i;
-					current_winner_pe_rewards = OUTPUT_LAYER.PE(i).misc;
 					}
 				}
 		}
@@ -664,12 +682,6 @@ int lvq_nn::recall_class( DATA PTR input,
 
 		returned_class =
 			(int)(current_winner_pe / m_number_of_output_nodes_per_class);
-
-		if(current_winner_pe_rewards<min_rewards)
-		{
-			error(NN_METHOD_ERR,"No winning output node had required number of rewards");
-			returned_class = -1;
-		}
 	}
 
 	return returned_class;
