@@ -443,18 +443,16 @@ lvq_nn::lvq_nn(int number_of_output_nodes_per_class, bool allow_punish)
 
 void lvq_nn::set_number_of_output_nodes_per_class(int number_of_output_nodes_per_class)
 {
-	if(number_of_output_nodes_per_class==m_number_of_output_nodes_per_class)
-		return;
-
 	if(number_of_output_nodes_per_class<=1)
 		{
 		m_name = "LVQs (Supervised LVQ) ANS";
 		m_number_of_output_nodes_per_class = 1;
-		return;
 		}
-
-	m_name = "LVQs (Supervised LVQ) ANS with multiple output nodes per class";
-	m_number_of_output_nodes_per_class = number_of_output_nodes_per_class;
+	else
+		{
+		m_name = "LVQs (Supervised LVQ) ANS with multiple output nodes per class";
+		m_number_of_output_nodes_per_class = number_of_output_nodes_per_class;
+		}
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

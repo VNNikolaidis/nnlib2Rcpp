@@ -162,3 +162,12 @@ Changes to nnlib2Rcpp version 0.2.6 (from 0.2.5)
 -	added option to LVQs recall (classify) data ignoring nodes that had less than a number of rewards received during encoding.
 -	changed LVQs examples.
 -	other minor changes.
+
+---
+
+Changes to nnlib2Rcpp version 0.2.7 (from 0.2.6)
+-	minor change to eliminate Valgrind issue (detected uninitialized value when a new LVQs is created). Fixed, does not affect functionality.
+
+
+---
+
