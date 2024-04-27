@@ -168,6 +168,5 @@ Changes to nnlib2Rcpp version 0.2.6 (from 0.2.5)
 Changes to nnlib2Rcpp version 0.2.7 (from 0.2.6)
 -	minor change to eliminate Valgrind issue (detected uninitialized value when a new LVQs is created). Fixed, does not affect functionality.
 
-
 ---
 
