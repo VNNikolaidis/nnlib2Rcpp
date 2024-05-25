@@ -170,3 +170,7 @@ Changes to nnlib2Rcpp version 0.2.7 (from 0.2.6)
 
 ---
 
+Changes to nnlib2Rcpp version 0.2.8 (from 0.2.7)
+- minor change in documentation of LVQ, explaining why data should be in 0 to 1 range if random values in [0 1] are used for initial weights.
+
+---

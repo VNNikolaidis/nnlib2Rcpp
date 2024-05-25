@@ -23,7 +23,7 @@ Vasilis N. Nikolaidis <vnnikolaidis@gmail.com>
 }
 \note{
 This module uses Rcpp to employ 'lvq_nn' class in nnlib2.
-The NN used in this module uses supervised training for data classification (described as Supervised Learning LVQ in Simpson (1991)). Initial weights are random (uniform distribution) in 0 to 1 range. As these weights represent vector coordinates (forming the class reference, prototype or codebook vector(s)), it is important that input data is also scaled to 0 to 1 range.
+The NN used in this module uses supervised training for data classification (described as Supervised Learning LVQ in Simpson (1991)). By default, initial weights are random values (uniform distribution) in 0 to 1 range. As these weights represent vector coordinates (forming the class reference, prototype or codebook vectors), it is important that input data is also scaled to 0 to 1 range.
 }
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
@@ -35,7 +35,10 @@ The NN used in this module uses supervised training for data classification (des
 \examples{
 # Create some compatible data (here, from iris data set):
 
-# LVQ expects data in 0 to 1 range, so scale some numeric data...
+# Data should be in 0 to 1 range if random values in that range are used 
+# as initial weights (the default method).
+# Thus, LVQ expects data in 0 to 1 range, scale the (numeric) data...
+
 DATA <- as.matrix(iris[1:4])
 c_min <- apply(DATA, 2, FUN = "min")
 c_max <- apply(DATA, 2, FUN = "max")

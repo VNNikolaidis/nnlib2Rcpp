@@ -20,7 +20,7 @@ LVQu(
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{data}{
-data to be clustered, a numeric matrix, (2d, cases in rows, variables in columns). Data should be in 0 to 1 range.
+data to be clustered, a numeric matrix, (2d, cases in rows, variables in columns). By default, initial weights are set to random values in [0 1], so data should also be in 0 to 1 range.
 }
   \item{max_number_of_desired_clusters}{
 clusters to be produced (at most)
