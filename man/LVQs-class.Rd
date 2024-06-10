@@ -29,13 +29,14 @@ The NN used in this module uses supervised training for data classification (des
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-  \code{\link{LVQu}} (unsupervised LVQ function).
+  \code{\link{LVQs_train}}, \code{\link{LVQs_recall}} (LVQs helper functions) and \code{\link{LVQu}} (unsupervised LVQ function)
+
 }
 
 \examples{
 # Create some compatible data (here, from iris data set):
 
-# Data should be in 0 to 1 range if random values in that range are used 
+# Data should be in 0 to 1 range if random values in that range are used
 # as initial weights (the default method).
 # Thus, LVQ expects data in 0 to 1 range, scale the (numeric) data...
 

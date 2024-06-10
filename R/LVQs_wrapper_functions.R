@@ -8,7 +8,7 @@ LVQs_train <- function( train_data,
 						number_of_output_nodes_per_class = 1,
 						reward_coef = +0.2,
 						punish_coef = -0.2,
-						training_order = "original",
+						training_order = "reorder",
 						initialization_method = 'sample',
 						recall_train_data = FALSE)
 {
@@ -274,7 +274,12 @@ LVQs_train <- function( train_data,
 				  training_min_values)
 	}
 
-	lvq_codebook_vector_info_returned[, "Class"] <- lvq_codebook_vector_info_returned[, "Class"]+1
+	# Add one to make it 1..num classes (R style)
+	# note: to handle case where there is a "Class" in actual data, reference to last column
+	# lvq_codebook_vector_info_returned[,"Class"] was replaced by lvq_codebook_vector_info_returned[,ncol(lvq_codebook_vector_info_returned)]
+
+	lvq_codebook_vector_info_returned[,ncol(lvq_codebook_vector_info_returned)] <-
+		lvq_codebook_vector_info_returned[,ncol(lvq_codebook_vector_info_returned)] + 1
 
 	if (recall_train_data)
 	{
@@ -296,7 +301,7 @@ LVQs_train <- function( train_data,
 
 #--------------------------------------------------------------------------
 # Use the codebook vector information produced by LVQs_train to classify data.
-# Essentially this runs a k-NNC classifier (class::knn) with some additional 
+# Essentially this runs a k-NNC classifier (class::knn) with some additional
 # features. The function returns id numbers from 1 to (number of classes) (R-style).
 
 LVQs_recall <- function(codebook_info,  data, k=1, recall_rewards_limit=1, verbose = FALSE, ...)
@@ -309,19 +314,26 @@ LVQs_recall <- function(codebook_info,  data, k=1, recall_rewards_limit=1, verbo
 	if(ncol(data)!=num_variables)
 		stop("Data and codebook sizes are not compatible")
 
-	selected_codebook_info <- codebook_info[codebook_info[,"Rewards"]>=recall_rewards_limit,]
+	# note: to handle case where there is a "Rewards" in actual data, reference to second from last column
+	# codebook_info[,"Rewards"] was replaced by codebook_info[,ncol(codebook_info)-1]
+
+	selected_codebook_info <- codebook_info[codebook_info[,ncol(codebook_info)-1]>=recall_rewards_limit,]
 
 	if (verbose)
 	{
 		cat("\nNot used in recall:\n")
-		print(round(codebook_info[codebook_info[,"Rewards"]<recall_rewards_limit,], digits = 4))
+		print(round(codebook_info[codebook_info[,ncol(codebook_info)-1]<recall_rewards_limit,], digits = 4))
 
 		cat("\nUsed in recall:\n")
 		print(round(selected_codebook_info, digits = 4))
 	}
 
 	class_prototypes <- selected_codebook_info[,1:num_variables]
-	class_ids <- selected_codebook_info[,"Class"]
+
+	# note: to handle case where there is a "Class" in actual data, reference to last column
+	# codebook_info[,"Class"] was replaced by codebook_info[,ncol(codebook_info)]
+
+	class_ids <- selected_codebook_info[,ncol(codebook_info)]
 
 	lvq_recalled_class_ids <-
 		knn(train=class_prototypes,
@@ -331,21 +343,22 @@ LVQs_recall <- function(codebook_info,  data, k=1, recall_rewards_limit=1, verbo
 			...)
 
 	if (verbose)
+	if (ncol(data)>=2)
 	{
 		# the big circles are codebook vectors, (crossed-out if they were not used during
 		# recall to assign data to a correct class, i.e. below reward limit)
 
 		plot(
-			data,
+			data[ ,1:2],
 			pch = (as.integer(lvq_recalled_class_ids) %% 10) + 1,
 			col = as.integer(lvq_recalled_class_ids) + 10,
-			main = "LVQ recalled clusters (testing data)" )
+			main = "LVQs recalled clusters" )
 
 		points(
 			codebook_info[, 1:2],
 			cex = 4,
-			pch = ifelse(codebook_info[, "Rewards"] > recall_rewards_limit, 1, 13),
-			col  = as.integer(codebook_info[, "Class"]) + 10
+			pch = ifelse(codebook_info[,ncol(codebook_info)-1] > recall_rewards_limit, 1, 13),
+			col  = as.integer(codebook_info[,ncol(codebook_info)]) + 10
 		)
 	}
 
