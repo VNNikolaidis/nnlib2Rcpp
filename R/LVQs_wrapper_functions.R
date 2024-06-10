@@ -8,7 +8,7 @@ LVQs_train <- function( train_data,
 						number_of_output_nodes_per_class = 1,
 						reward_coef = +0.2,
 						punish_coef = -0.2,
-						training_order = "reorder",
+						training_order = "reorder_once",
 						initialization_method = 'sample',
 						recall_train_data = FALSE)
 {
@@ -200,6 +200,8 @@ LVQs_train <- function( train_data,
 
 	if (training_order == 'original')
 	{
+		cat("Note: internal training data not reordered.\n")
+
 		capture.output(lvq$encode(train_data,
 								  train_class,
 								  iterations),type="output")
@@ -226,16 +228,29 @@ LVQs_train <- function( train_data,
 
 	if (training_order == 'reorder')
 	{
-		for(i in 1:iterations)
+		cat("Note: internal training data randomly reordered at each iteration (epoch).\n")
+
+		if(iterations>10000)
+		{
+			warning("Number of epochs set to maximum allowed")
+			iterations <- 10000
+		}
+
+		for(i in 0:(iterations-1))
 		{
 			newpos <- sample(nrow(train_data), replace = FALSE)
 
 			train_data  <- train_data[newpos, ]
 			train_class <- train_class[newpos]
 
-			capture.output(lvq$encode(train_data,
-									  train_class,
-									  1),type="output")
+			capture.output(
+				{
+				lvq$encode(train_data,
+				    	   train_class,
+						    1)
+				lvq$set_encoding_coefficients(reward_coef * (1 - (i/10000)),
+											  punish_coef * (1 - (i/10000)))
+				},type="output")
 		}
 		cat("Training completed.\n")
 	}

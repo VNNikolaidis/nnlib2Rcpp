@@ -5,7 +5,7 @@
 Classify Data Using LVQs Code-Book Vectors
 }
 \description{
-This function simplifies applying a supervised LVQ to data (as compared to using the \code{\link{LVQs}} module directly). It uses the codebook vector information returned by \code{\link{LVQs_train}} to assign data to classes.
+This function simplifies applying a trained supervised Learning Vector Quantizer Neural Network (LVQ NN) to data (as compared to using the \code{\link{LVQs}} module directly). It uses the codebook vector information returned by \code{\link{LVQs_train}} to assign data to classes.
 }
 \usage{
 LVQs_recall(codebook_info,
@@ -28,17 +28,17 @@ number of neighbours (codebook vectors) considered. See \code{help("knn",package
 }
 
   \item{recall_rewards_limit}{
-Do not use codebook vectors that were rewarded less that this limit during training.
+do not use codebook vectors that were rewarded less that this limit during training.
 }
   \item{verbose}{
-Show extra information and plots.
+show extra information and plots.
 }
   \item{\dots}{
-Additional parameters for k-Nearest Neighbour Classification function (\code{class::knn}), see \code{help("knn",package = class)}.
+additional parameters for k-Nearest Neighbour Classification function (\code{class::knn}), see \code{help("knn",package = class)}.
 }
 }
 \details{
-This is a k-Nearest Neighbor Classifier (employs \code{class::knn}) customized for LVQs codebook vectors.
+This is a k-Nearest Neighbor Classifier (employs \code{class::knn}), customized for LVQs codebook vectors.
 }
 \value{
 Factor of classifications ids for \code{data} (as returned by function \code{class::knn}, see \code{help("knn",package = class)}).
@@ -73,9 +73,9 @@ test_class <- CLASS[-indices]
 
 # train LVQ using train data and class:
 
-cv<- LVQs_train(train_data,
-				train_class,
-				number_of_output_nodes_per_class = 4)
+cv <- LVQs_train(train_data,
+				 train_class,
+				 number_of_output_nodes_per_class = 4)
 
 # recall (classify) test data:
 
