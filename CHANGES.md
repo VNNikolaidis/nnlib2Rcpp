@@ -175,3 +175,9 @@ Changes to nnlib2Rcpp version 0.2.8 (from 0.2.7)
 - added (due to recent supervised LVQ popularity) two LVQs wrapper functions to simplify using LVQs (functions LVQs_train, LVQs_recall). 
 
 ---
+
+Changes to nnlib2Rcpp version 0.2.9 (from 0.2.8)
+- minor changes in documentation of LVQ helper functions.
+- support importing a set of codebook vectors in LVQs_train function (to continue training from previous LVQs_train invocations).
+
+---

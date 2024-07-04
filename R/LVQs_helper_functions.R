@@ -10,7 +10,8 @@ LVQs_train <- function( train_data,
 						punish_coef = -0.2,
 						training_order = "reorder_once",
 						initialization_method = 'sample',
-						recall_train_data = FALSE)
+						recall_train_data = FALSE,
+						initial_codebook_vectors = NULL)
 {
 	if (training_order != 'original' &
 		training_order != 'reorder_once' &
@@ -20,7 +21,8 @@ LVQs_train <- function( train_data,
 	if (initialization_method != '0to1' &
 		initialization_method != 'means' &
 		initialization_method != 'first' &
-		initialization_method != 'sample')
+		initialization_method != 'sample' &
+		initialization_method != 'user-defined')
 		stop("Unknown initialization method")
 
 	if ((sum(is.na(train_data))  > 0) |
@@ -79,6 +81,25 @@ LVQs_train <- function( train_data,
 	# set initial weights (if not default 0 to 1 random values):
 
 	initial_weights <- NULL
+
+	if (initialization_method == 'user-defined')
+	{
+		if (is.null(initial_codebook_vectors))
+			stop("No initial codebook vectors provided")
+
+		if (!is.matrix(initial_codebook_vectors))
+			stop("Initial codebook vectors must be given as a matrix")
+
+		if (ncol(initial_codebook_vectors)!=ncol(train_data))
+			stop("Number of columns in matrix containing initial codebook vectors must match those of data")
+
+		if (nrow(initial_codebook_vectors) != (num_classes * number_of_output_nodes_per_class))
+			stop(paste("Invalid number of initial codebook vectors (expected",num_classes * number_of_output_nodes_per_class,"rows), cannot initialize weights"))
+
+		cat("Note: initializing weights to provided codebook vectors.\n")
+		# note, nothing else to do, weights are provided by the user.
+		initial_weights <- initial_codebook_vectors
+	}
 
 	# below, weights are set to the mean vector of the training set data for the
 	# class the output node corresponds to:

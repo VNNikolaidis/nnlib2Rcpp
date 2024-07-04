@@ -72,12 +72,13 @@ Link to related paper in the Journal of Open Source Software:
 
 ---
 
-My future goals for this project (iF AND WHEN time permits):
+Known future goals for this project (iF AND WHEN time permits) include:
 
-- to add more classic neural network component and model implementations in nnlib2 (and thus nnlib2Rcpp).
-- to parallelize component base classes.
+- adding more classic neural network component and model implementations in ‘nnlib2’ (and thus 'nnlib2Rcpp').
+- adding parallelism to ‘nnlib2’ component base classes.
+- adding support for package 'nn2poly' (https://arxiv.org/pdf/2406.01588)
 
-Let me know if interested to contribute, or want to add your neural network components to the package. Or, as stated below:
+Let us know if interested to contribute, or want to add your neural network components to the package. Or, as stated below:
 
 ---
 

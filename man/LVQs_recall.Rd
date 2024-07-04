@@ -2,10 +2,10 @@
 \alias{LVQs_recall}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Classify Data Using LVQs Code-Book Vectors
+LVQs Helper Function: Classify Data Using Supervised LVQ Code-Book Vectors
 }
 \description{
-This function simplifies applying a trained supervised Learning Vector Quantizer Neural Network (LVQ NN) to data (as compared to using the \code{\link{LVQs}} module directly). It uses the codebook vector information returned by \code{\link{LVQs_train}} to assign data to classes.
+This function simplifies using a Supervised Learning Vector Quantizer Neural Network on data (as compared to using the \code{\link{LVQs}} module directly). It employs the codebook vector information returned by \code{\link{LVQs_train}} to assign data to classes.
 }
 \usage{
 LVQs_recall(codebook_info,
@@ -38,7 +38,7 @@ additional parameters for k-Nearest Neighbour Classification function (\code{cla
 }
 }
 \details{
-This is a k-Nearest Neighbor Classifier (employs \code{class::knn}), customized for LVQs codebook vectors.
+This is a k-Nearest Neighbor Classifier (employs \code{class::knn}), customized for LVQs codebook vectors and related information returned by \code{\link{LVQs_train}} function.
 }
 \value{
 Factor of classifications ids for \code{data} (as returned by function \code{class::knn}, see \code{help("knn",package = class)}).
