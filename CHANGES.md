@@ -178,6 +178,6 @@ Changes to nnlib2Rcpp version 0.2.8 (from 0.2.7)
 
 Changes to nnlib2Rcpp version 0.2.9 (from 0.2.8)
 - minor changes in documentation of LVQ helper functions.
-- support importing a set of codebook vectors in LVQs_train function (to continue training from previous LVQs_train invocations).
+- support importing a set of codebook vectors in LVQs_train function (to continue training from previous LVQs_train invocations, use custom initial weights etc).
 
 ---
