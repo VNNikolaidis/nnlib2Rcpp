@@ -74,15 +74,18 @@ Link to related paper in the Journal of Open Source Software:
 
 Known future goals for this project (iF AND WHEN time permits) include:
 
-- adding more classic neural network component and model implementations in ‘nnlib2’ (and thus 'nnlib2Rcpp').
-- adding parallelism to ‘nnlib2’ component base classes.
-- adding support for package 'nn2poly' (https://arxiv.org/pdf/2406.01588)
+- implement additional neural network components and models using 'nnlib2' classes and templates (and thus new neural network components compatible with "NN" module in nnlib2Rcpp).
+- create a library of 'classic' neural network components and models.
+- add parallelism to ‘nnlib2’ component base classes (possibly via OpenMP, CUDA etc.).
+- replace custom data structures with STL containers.
+- add support for package 'nn2poly' (https://arxiv.org/pdf/2406.01588)
+to the package.
+- other performance enhancements.
 
-Let us know if interested to contribute, or want to add your neural network components to the package. Or, as stated below:
-
+Let us know if interested to contribute.
 ---
 
-We invite anyone to contribute to this software and/or provide feedback, suggestions, report issues or problems. Possible improvements and contributions may include (but are not limited to) implementation of additional neural network models using nnlib2 classes and templates (and thus new neural network components compatible with "NN" module in nnlib2Rcpp), parallelism (possibly via OpenMP), replacement of custom data structures with STL containers, performance enhancements etc.
+We invite anyone to contribute to this software and/or provide feedback, suggestions, report issues or problems.
 
 Please use the issues option in GitHub or email (vnnikolaidis AT gmail.com) if interested to contribute.
 
