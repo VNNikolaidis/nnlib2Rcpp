@@ -62,7 +62,7 @@ For implementing new NN components and models in nnlib2 that can be used in nnli
 
 https://r-posts.com/creating-custom-neural-networks-with-nnlib2rcpp/ ( permalink: https://wp.me/p8rgs6-sh )
 
-As mentioned earlier, more instructions on using 'nnlib2' and 'nnlib2Rcpp' can be found in the package vingette, also available in PDF format here:
+Instructions on using 'nnlib2' and 'nnlib2Rcpp' can also be found in the package vingette, also available in PDF format here:
 
 https://github.com/VNNikolaidis/nnlib2Rcpp/blob/master/support/manual.pdf
 
@@ -72,12 +72,12 @@ Link to related paper in the Journal of Open Source Software:
 
 ---
 
-Known future goals for this project (iF AND WHEN time permits) include:
+Future goals for this project (iF AND WHEN time permits) include:
 
 - implement additional neural network components and models using 'nnlib2' classes and templates (and thus new neural network components compatible with "NN" module in nnlib2Rcpp).
 - create a library of 'classic' neural network components and models.
 - add parallelism to ‘nnlib2’ component base classes (possibly via OpenMP, CUDA etc.).
-- replace custom data structures with STL containers.
+- replace custom data structures in 'nnlib2' with STL containers.
 - add support for package 'nn2poly' (https://arxiv.org/pdf/2406.01588)
 to the package.
 - other performance enhancements.
