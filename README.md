@@ -83,11 +83,12 @@ to the package.
 - other performance enhancements.
 
 Let us know if interested to contribute.
+
 ---
 
 We invite anyone to contribute to this software and/or provide feedback, suggestions, report issues or problems.
 
-Please use the issues option in GitHub or email (vnnikolaidis AT gmail.com) if interested to contribute.
+To contact us, please use the issues option in GitHub or email (vnnikolaidis AT gmail.com).
 
 ---
 
